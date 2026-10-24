@@ -15,6 +15,7 @@ const dict = {
     heroLead: 'Dream Palace is a residential complex in Tbilisi: eight-floor monolithic blocks, 2.9&nbsp;m ceilings and apartments from 32.4 to 147&nbsp;m².',
     ctaApartments: 'Explore apartments', ctaConsultLong: 'Request a consultation',
     schematic: 'Schematic · not to scale', scroll: 'Scroll',
+    conceptNote: 'Concept by atskoba · not the official Dream Palace website', conceptFooter: 'Design concept by atskoba',
     projectTitle: '<span class="line"><span>The project</span></span>',
     projectStatement: 'Dream Palace is being built in phases on Bob Walsh Street. <em class="fact"><b data-count="2">2</b> eight-floor blocks</em> are already completed, each with <em class="fact"><b data-count="60">60</b> apartments</em>. Ceilings are <em class="fact"><b data-count="2.9" data-decimals="1">2.9</b> metres</em> high, and apartments are handed over as <em class="fact">green frame</em>.',
     factAddressK: 'Address', factAddressV: '10 Bob Walsh St, Tbilisi',
@@ -75,6 +76,7 @@ const dict = {
     heroLead: 'Dream Palace — жилой комплекс в Тбилиси: восьмиэтажные монолитные корпуса, потолки 2,9&nbsp;м и квартиры от 32,4 до 147&nbsp;м².',
     ctaApartments: 'Смотреть квартиры', ctaConsultLong: 'Запросить консультацию',
     schematic: 'Схема · без масштаба', scroll: 'Листайте',
+    conceptNote: 'Концепция: atskoba · не официальный сайт Dream Palace', conceptFooter: 'Дизайн-концепция: atskoba',
     projectTitle: '<span class="line"><span>Проект</span></span>',
     projectStatement: 'Dream Palace строится поэтапно на улице Боба Уолша. <em class="fact"><b data-count="2">2</b> восьмиэтажных корпуса</em> уже завершены, в каждом <em class="fact"><b data-count="60">60</b> квартир</em>. Высота потолков — <em class="fact"><b data-count="2.9" data-decimals="1">2,9</b> метра</em>, квартиры сдаются в <em class="fact">зелёном каркасе</em>.',
     factAddressK: 'Адрес', factAddressV: 'ул. Боба Уолша, 10, Тбилиси',
@@ -272,9 +274,11 @@ export function setLang(next, { animate = true } = {}) {
   if (!LANGS.includes(next)) return;
   lang = next;
   try { localStorage.setItem('dp-lang', next); } catch (_) { /* storage unavailable */ }
-  const url = new URL(location.href);
-  if (next === 'ka') url.searchParams.delete('lang'); else url.searchParams.set('lang', next);
-  history.replaceState(null, '', url);
+  try {
+    const url = new URL(location.href);
+    if (next === 'ka') url.searchParams.delete('lang'); else url.searchParams.set('lang', next);
+    history.replaceState(null, '', url);
+  } catch (_) { /* sandboxed frame */ }
   const root = document.documentElement;
   if (!animate || root.classList.contains('reduced-motion')) { apply(); return; }
   root.classList.add('is-swapping');

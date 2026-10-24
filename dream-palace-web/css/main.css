@@ -200,6 +200,8 @@ html[lang="ru"] .hero__title { font-size: calc(var(--fs-hero) * 0.78); }
 .hero__lead { max-width: 46ch; font-size: var(--fs-l); color: rgba(247,246,240,.82); margin-bottom: 32px; }
 .hero__ctas { display: flex; flex-wrap: wrap; gap: 12px; }
 .hero__meta { grid-column: 1 / -1; grid-row: 2; display: flex; justify-content: space-between; align-items: end; position: relative; z-index: 2; font-size: var(--fs-xs); color: rgba(247,246,240,.6); }
+.hero__credit { display: grid; gap: 6px; }
+.hero__concept { color: var(--gold-soft); font-weight: 650; letter-spacing: .04em; }
 .hero__schematic { letter-spacing: .1em; text-transform: uppercase; }
 .scroll-cue { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; letter-spacing: .12em; text-transform: uppercase; min-height: 44px; }
 .scroll-cue__rail { width: 1px; height: 44px; background: var(--line-dark); position: relative; overflow: hidden; }
@@ -600,7 +602,7 @@ html[lang="en"] .final__title, html[lang="ru"] .final__title { letter-spacing: -
   .hero__drawing svg { max-height: 40svh; margin-inline: auto; }
   .hero__content { grid-column: 1 / -1; grid-row: 2; padding-bottom: 20px; }
   .hero__meta { grid-row: 3; }
-  .hero__schematic { max-width: 50%; }
+  .hero__credit { max-width: 62%; }
   .project__facts { grid-template-columns: 1fr 1fr; }
   .pfact { border-right: 0; margin-right: 0; padding-bottom: 18px; border-bottom: 1px solid var(--line-light); }
   .build { height: 300vh; }

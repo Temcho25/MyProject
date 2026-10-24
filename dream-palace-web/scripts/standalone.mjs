@@ -27,3 +27,19 @@ swap('<script src="js/config.js"></script>\n  <script type="module" src="js/main
 mkdirSync(join(root, 'dist'), { recursive: true });
 writeFileSync(join(root, 'dist', 'dream-palace.html'), html);
 console.log(`dist/dream-palace.html — ${(Buffer.byteLength(html) / 1024).toFixed(0)} KB`);
+
+// Portfolio/artifact variant: no document skeleton (the host adds it), no SEO markup that
+// would present the concept as the developer's official site.
+const art = html
+  .replace(/<!doctype html>\s*<html[^>]*>\s*<head>\s*/i, '')
+  .replace(/<meta charset="utf-8">\s*/i, '')
+  .replace(/<meta name="viewport"[^>]*>\s*/i, '')
+  .replace(/<title>[^<]*<\/title>/, '<title>Dream Palace Concept</title>')
+  .replace(/\s*<link rel="(canonical|alternate)"[^>]*>/g, '')
+  .replace(/\s*<meta property="og:url"[^>]*>/, '')
+  .replace(/\s*<meta property="og:image"[^>]*>/, '')
+  .replace(/\s*<script type="application\/ld\+json">[\s\S]*?<\/script>/, '')
+  .replace(/<\/head>\s*<body>/i, '<meta name="robots" content="noindex">\n')
+  .replace(/<\/body>\s*<\/html>\s*$/i, '');
+writeFileSync(join(root, 'dist', 'dream-palace-artifact.html'), art);
+console.log(`dist/dream-palace-artifact.html — ${(Buffer.byteLength(art) / 1024).toFixed(0)} KB`);
