@@ -64,6 +64,19 @@ export function locationMap(L) {
 }
 
 /* ---------------------------------------------------------------- site plan */
+// Shrinks a convex polygon towards its centre by roughly `d` units (keeps a gap between plots).
+export function insetPoints(pts, d) {
+  const cx = pts.reduce((a, q) => a + q[0], 0) / pts.length;
+  const cy = pts.reduce((a, q) => a + q[1], 0) / pts.length;
+  return pts
+    .map(([x, y]) => {
+      const dx = cx - x, dy = cy - y;
+      const len = Math.hypot(dx, dy) || 1;
+      const k = (d * Math.SQRT2) / len;
+      return `${(x + dx * k).toFixed(2)},${(y + dy * k).toFixed(2)}`;
+    })
+    .join(' ');
+}
 export function sitePlan(P, { id = 'siteplan', interactive = true } = {}) {
   const [vx, vy, vw, vh] = plan.viewBox;
   const plots = plan.plots
@@ -72,11 +85,13 @@ export function sitePlan(P, { id = 'siteplan', interactive = true } = {}) {
       const attrs = interactive
         ? ` tabindex="0" role="button" aria-pressed="false" aria-label="${esc(label)}" data-plot="${p.id}"`
         : ' aria-hidden="true"';
+      // Usable depth: the shallowest side of the plot, so the house sits inside wedge-shaped plots.
+      const depth = Math.min(...p.pts.filter((q) => q[1] > p.y).map((q) => q[1])) - p.y;
       const cx = p.x + p.w / 2;
-      const cy = p.y + p.h / 2;
+      const cy = p.y + depth / 2;
       return `<g class="plot"${attrs} style="--i:${p.id}">
-  <rect class="plot__shape" x="${p.x + 0.6}" y="${p.y + 0.6}" width="${p.w - 1.2}" height="${p.h - 1.2}" pathLength="1"/>
-  <rect class="plot__house" x="${cx - p.w * 0.22}" y="${cy - p.h * 0.18}" width="${p.w * 0.44}" height="${p.h * 0.36}"/>
+  <polygon class="plot__shape" points="${insetPoints(p.pts, 0.6)}" pathLength="1"/>
+  <rect class="plot__house" x="${cx - p.w * 0.22}" y="${cy - depth * 0.18}" width="${p.w * 0.44}" height="${depth * 0.36}"/>
   <text class="plot__num" x="${cx}" y="${cy + 2.6}" text-anchor="middle">${String(p.id).padStart(2, '0')}</text>
 </g>`;
     })

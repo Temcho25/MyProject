@@ -4,7 +4,7 @@ import { site } from './content/site.js';
 import { media } from './content/media.js';
 import { plan } from './content/plots.js';
 import { topography } from './lib/topo.js';
-import { locationMap, sitePlan, streetSection, plateSvg } from './lib/drawings.js';
+import { locationMap, sitePlan, streetSection, plateSvg, insetPoints } from './lib/drawings.js';
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -19,9 +19,9 @@ const arrow = `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d=
 const arrowDown = `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v15m-6-6 6 6 6-6"/></svg>`;
 const external = `<svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>`;
 
-function picture(m, lang, cls, eager = false) {
+function picture(m, lang, cls, eager = false, sizes = '100vw') {
   if (!m) return '';
-  return `<img class="${cls}" src="${esc(m.src)}" ${m.srcset ? `srcset="${esc(m.srcset)}" sizes="100vw"` : ''} width="${m.width}" height="${m.height}" alt="${esc(m.alt?.[lang] ?? '')}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`;
+  return `<img class="${cls}" src="${esc(m.src)}" ${m.srcset ? `srcset="${esc(m.srcset)}" sizes="${sizes}"` : ''} width="${m.width}" height="${m.height}" alt="${esc(m.alt?.[lang] ?? '')}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`;
 }
 
 let topoCache;
@@ -65,7 +65,7 @@ function heroTopo() {
   const [vx, vy, vw, vh] = plan.viewBox;
   const cluster = `<svg class="hero__site" viewBox="${vx} ${vy} ${vw} ${vh}" aria-hidden="true" focusable="false">
     ${plan.roads.map((r) => `<rect class="site__road" x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}"/>`).join('')}
-    ${plan.plots.map((p) => `<rect class="site__plot" style="--i:${p.id}" x="${p.x + 1.4}" y="${p.y + 1.4}" width="${p.w - 2.8}" height="${p.h - 2.8}"/>`).join('')}
+    ${plan.plots.map((p) => `<polygon class="site__plot" style="--i:${p.id}" points="${insetPoints(p.pts, 1.4)}"/>`).join('')}
   </svg>`;
   const { contact } = topoLayers();
   const contactSvg = `<svg class="topo topo--mid" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
@@ -123,14 +123,23 @@ export function renderBody(lang) {
 
   const plates = t.drawings.plates;
   const P = { ...t.drawings.labels, planCopy: t.plots };
-  const galleryPhotos = media.gallery.map(
-    (m, i) => `<figure class="plate plate--photo" data-reveal>
-      <button class="plate__open" type="button" data-lightbox="${i}" aria-label="${esc(t.drawings.open)}: ${esc(m.alt?.[lang] ?? '')}">${picture(m, lang, 'plate__img')}</button>
-    </figure>`,
-  );
+  const pad = (n) => String(n).padStart(2, '0');
+  const reel = media.reel
+    .map((m, i) => `<figure class="reel__frame" style="--k:${i}">${picture(m, lang, 'reel__img', false)}</figure>`)
+    .join('');
+  // Grid sizes: wide shots take ~60% of the viewport on desktop, the rest ~40%.
+  const shotSizes = ['(min-width: 900px) 60vw, 100vw', '(min-width: 900px) 34vw, 100vw', '(min-width: 900px) 42vw, 100vw', '(min-width: 900px) 42vw, 100vw', '100vw', '(min-width: 900px) 50vw, 100vw'];
+  const shots = media.grid
+    .map((m, i) => `<figure class="shot shot--${i}" data-reveal>
+      <button class="shot__open" type="button" data-lightbox="${i}" aria-label="${esc(t.views.open)}: ${esc(m.alt?.[lang] ?? '')}">
+        <span class="shot__frame">${picture(m, lang, 'shot__img', false, shotSizes[i] ?? '100vw')}</span>
+      </button>
+      <figcaption><span class="shot__n">${pad(media.reel.length + i + 1)}</span>${esc(m.alt?.[lang] ?? '')}</figcaption>
+    </figure>`)
+    .join('');
   const plateItems = plates.map(
     (p, i) => `<figure class="plate plate--${p.id}" data-reveal style="--d:${i % 3}">
-      <button class="plate__open" type="button" data-lightbox="${media.gallery.length + i}" aria-label="${esc(t.drawings.open)}: ${esc(p.t)}">
+      <button class="plate__open" type="button" data-lightbox="${media.grid.length + i}" aria-label="${esc(t.drawings.open)}: ${esc(p.t)}">
         <span class="plate__art">${plateSvg(p.id, p.t, P)}</span>
       </button>
       <figcaption><span class="plate__n">${String(i + 1).padStart(2, '0')}</span><strong>${esc(p.t)}</strong><span>${esc(p.s)}</span></figcaption>
@@ -225,6 +234,25 @@ export function renderBody(lang) {
   </div>
 </section>
 
+<!-- 02 VIEWS -->
+<section class="views" id="views" data-theme="dark" data-scene="views" aria-labelledby="views-title">
+  <div class="views__reel" data-reel>
+    <div class="views__pin">
+      ${reel}
+      <div class="views__head wrap" data-reel-head>
+        <p class="kicker">${esc(t.views.kicker)}</p>
+        <h2 class="views__title" id="views-title">${esc(t.views.title)}</h2>
+      </div>
+      <p class="reel__cap wrap" aria-hidden="true"><span class="reel__count"><span data-reel-n>01</span> / ${pad(media.photos.length)}</span><span class="reel__text" data-reel-cap>${esc(media.reel[0]?.alt?.[lang] ?? '')}</span></p>
+    </div>
+  </div>
+  <div class="wrap views__body">
+    <p class="views__lead" data-reveal>${esc(t.views.lead)}</p>
+    <div class="views__grid">${shots}</div>
+    <p class="views__note" data-reveal>${esc(t.views.note)}</p>
+  </div>
+</section>
+
 <!-- 03 LOCATION -->
 <section class="location" id="location" data-theme="light" data-tone="stone" aria-labelledby="loc-title">
   <div class="wrap location__head">
@@ -285,7 +313,8 @@ export function renderBody(lang) {
       <div class="panel__legend">
         <p class="panel__label">${esc(t.plots.legend)}</p>
         <ul>
-          <li><span class="sw sw--unknown" aria-hidden="true"></span>${esc(t.plots.statuses.unknown)}</li>
+          <li><span class="sw sw--available" aria-hidden="true"></span>${esc(t.plots.statuses.available)}</li>
+          <li><span class="sw sw--sold" aria-hidden="true"></span>${esc(t.plots.statuses.sold)}</li>
           <li><span class="sw sw--selected" aria-hidden="true"></span>${esc(t.plots.plot)} — ✓</li>
           <li><span class="sw sw--road" aria-hidden="true"></span>${esc(t.plots.road)}</li>
         </ul>
@@ -336,7 +365,7 @@ export function renderBody(lang) {
     <p class="drawings__lead" data-reveal>${esc(t.drawings.lead)} <a href="${site.links.gallery}" target="_blank" rel="noopener">${esc(t.drawings.gallery)} ${external}</a></p>
   </div>
   <div class="wrap plates">
-    ${[...galleryPhotos, ...plateItems].join('')}
+    ${plateItems.join('')}
   </div>
 </section>
 

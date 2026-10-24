@@ -444,6 +444,77 @@ $$('.qa').forEach((qa) => {
   });
 });
 
+/* ---------------------------------------------------------------- views: a plot-shaped window opens onto the renders */
+{
+  const reel = $('[data-reel]');
+  if (reel && !reduced()) {
+    const frames = $$('.reel__frame', reel);
+    const imgs = frames.map((f) => $('img', f));
+    const head = $('[data-reel-head]', reel);
+    const nEl = $('[data-reel-n]', reel);
+    const capEl = $('[data-reel-cap]', reel);
+    const caps = imgs.map((i) => i.alt);
+    const n = frames.length;
+    const OPEN = 0.24; // share of the scroll spent opening the first window
+    let cur = 0;
+    let swap = 0;
+
+    scene(reel, (p) => {
+      const m = mobile();
+      // 1. The first photo grows from a plot-shaped window to full bleed.
+      const o = ease.inOut(range(p, 0, OPEN));
+      const iy = lerp(m ? 30 : 26, 0, o);
+      const ix = lerp(m ? 10 : 34, 0, o);
+      frames[0].style.clipPath = `inset(${iy}% ${ix}% ${iy}% ${ix}%)`;
+      // 2. Each next photo rises over the previous one; the covered photo drifts up.
+      const seg = (1 - OPEN - 0.06) / (n - 1);
+      const t = [o];
+      for (let k = 1; k < n; k++) {
+        const a = OPEN + 0.04 + (k - 1) * seg;
+        t[k] = ease.inOut(range(p, a, a + seg * 0.72));
+        frames[k].style.clipPath = `inset(${((1 - t[k]) * 100).toFixed(2)}% 0 0 0)`;
+      }
+      imgs.forEach((img, k) => {
+        const inT = t[k];
+        const outT = k + 1 < n ? t[k + 1] : 0;
+        const scale = k === 0 ? lerp(1.32, 1.06, inT) : lerp(1.16, 1.04, inT);
+        img.style.transform = `translate3d(0, ${(outT * -7).toFixed(2)}%, 0) scale(${scale.toFixed(4)})`;
+      });
+      // Title rests over the small window, then steps aside.
+      const h = range(p, OPEN * 0.7, OPEN + 0.06);
+      head.style.opacity = String(1 - h);
+      head.style.transform = `translate3d(0, ${(-h * 40).toFixed(1)}px, 0)`;
+      // Caption follows the photo that covers most of the screen.
+      let idx = 0;
+      for (let k = 1; k < n; k++) if (t[k] > 0.5) idx = k;
+      if (idx !== cur) {
+        cur = idx;
+        clearTimeout(swap);
+        capEl.classList.add('is-swap');
+        nEl.textContent = String(idx + 1).padStart(2, '0');
+        swap = setTimeout(() => {
+          capEl.textContent = caps[cur];
+          capEl.classList.remove('is-swap');
+        }, 180);
+      }
+    });
+  }
+
+  // Grid: each photo moves slower than the page inside its frame.
+  if (!reduced()) {
+    $$('.shot').forEach((shot) => {
+      const img = $('.shot__img', shot);
+      scene(
+        shot,
+        (p) => {
+          img.style.transform = `translate3d(0, ${lerp(-6, 6, p).toFixed(2)}%, 0)`;
+        },
+        { start: (r, vh) => -vh, end: (r) => r.height },
+      );
+    });
+  }
+}
+
 /* ---------------------------------------------------------------- lightbox */
 {
   const dlg = $('[data-lightbox-dialog]');
@@ -451,13 +522,16 @@ $$('.qa').forEach((qa) => {
   const cap = $('[data-lightbox-cap]', dlg);
   const count = $('[data-lightbox-count]', dlg);
   // Lightbox items are built from the plates already on the page.
-  const items = $$('.plate').map((fig) => {
+  const items = $$('.shot, .plate').map((fig) => {
     const f = document.createElement('figure');
-    const art = $('.plate__art, .plate__img', fig);
+    const art = $('.plate__art, .plate__img, .shot__img', fig);
     f.innerHTML = art.classList.contains('plate__art') ? art.innerHTML : art.outerHTML;
     $$('[id]', f).forEach((n) => n.removeAttribute('id'));
+    $$('[style]', f).forEach((n) => n.removeAttribute('style'));
+    $$('img', f).forEach((n) => (n.className = 'lightbox__img', n.removeAttribute('loading'), n.setAttribute('sizes', '100vw')));
     const cap = $('figcaption', fig);
-    f.dataset.cap = cap ? `${$('strong', cap).textContent} — ${cap.lastElementChild.textContent}` : art.getAttribute('alt') || '';
+    const strong = cap && $('strong', cap);
+    f.dataset.cap = strong ? `${strong.textContent} — ${cap.lastElementChild.textContent}` : art.getAttribute('alt') || '';
     return f;
   });
   let i = 0;

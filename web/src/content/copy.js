@@ -12,6 +12,7 @@ export const copy = {
       home: 'ორიენტირი ლისი — მთავარი',
       items: [
         ['#place', 'პროექტი'],
+        ['#views', 'ხედები'],
         ['#location', 'მდებარეობა'],
         ['#plots', 'ნაკვეთები'],
         ['#infrastructure', 'ინფრასტრუქტურა'],
@@ -53,8 +54,15 @@ export const copy = {
         { pre: '', n: '4', u: 'მ', l: 'ჭიშკრის სიგანე' },
       ],
     },
+    views: {
+      kicker: '02 — ხედები',
+      title: 'ასე გამოიყურება უბანი',
+      lead: 'დეველოპერის ოფიციალური რენდერები და დრონის ფოტოები — ქუჩები, ღობეები, შესასვლელი და ტბა.',
+      note: 'რენდერები ვიზუალიზაციაა. სახლებს ნაკვეთებზე მყიდველები თავად აშენებენ.',
+      open: 'გადიდება',
+    },
     location: {
-      kicker: '02 — მდებარეობა',
+      kicker: '03 — მდებარეობა',
       title: 'ქალაქთან ახლოს, ტბასთან უფრო ახლოს',
       note: 'სქემა არ არის მასშტაბში. მანძილები — დეველოპერის მონაცემებით.',
       map: 'მდებარეობა რუკაზე',
@@ -83,17 +91,17 @@ export const copy = {
       labels: { site: 'ორიენტირი ლისი', lake: 'ლისის ტბა', street: 'ლ. ქვაჩაძის ქ.', schools: 'სკოლები', path: 'ბილიკი' },
     },
     plots: {
-      kicker: '03 — ნაკვეთები',
+      kicker: '04 — ნაკვეთები',
       title: 'აირჩიეთ ადგილი თქვენი სახლისთვის',
       lead: 'შეეხეთ ნაკვეთს გეგმაზე — ნახავთ მის დეტალებს და შეძლებთ მოთხოვნის გაგზავნას სწორედ ამ ნაკვეთზე.',
       honest:
-        'ეს გეგმა სქემატურია და ნომრები საორიენტაციოა. თითოეული ნაკვეთის ზუსტ ფართობს, ფასსა და ხელმისაწვდომობას გაყიდვების გუნდი ადასტურებს.',
+        'ნომრები, ფართობები და გაყიდული ნაკვეთები — დეველოპერის ოფიციალური გეგმიდან (2026 წლის აგვისტო). ფასსა და მიმდინარე ხელმისაწვდომობას გაყიდვების გუნდი ადასტურებს.',
       official: 'ოფიციალური გეგმა orientiri.ge-ზე',
       plot: 'ნაკვეთი',
       select: 'ნაკვეთის არჩევა სიიდან',
       selectNone: '— აირჩიეთ —',
       empty: 'აირჩიეთ ნაკვეთი გეგმაზე',
-      emptyHint: '24 ნაკვეთი · ჭიშკარი · შიდა გზები',
+      emptyHint: '24 ნაკვეთი · 11 თავისუფალი · 1000–1285 მ²',
       area: 'ფართობი',
       areaFrom: '1000 მ²-დან',
       status: 'სტატუსი',
@@ -114,7 +122,7 @@ export const copy = {
       north: 'ჩ',
     },
     infra: {
-      kicker: '04 — ინფრასტრუქტურა',
+      kicker: '05 — ინფრასტრუქტურა',
       title: 'რა მიიღებთ ნაკვეთთან ერთად',
       lead: 'ქუჩის ჭრილი გვიჩვენებს, რა იმალება მიწის ქვეშ და რა დგას ნაკვეთის საზღვარზე.',
       status: 'სამუშაოები დაწყებულია · დასრულება დაგეგმილია 2026 წლის ბოლოს (დეველოპერის ინფორმაციით). მიმდინარე ეტაპს გაყიდვების გუნდი დაგიზუსტებთ.',
@@ -147,9 +155,9 @@ export const copy = {
       },
     },
     drawings: {
-      kicker: '05 — ნახაზები',
+      kicker: '06 — ნახაზები',
       title: 'მასშტაბი, საზღვარი, შესასვლელი',
-      lead: 'ნახაზები ეფუძნება პროექტის ოფიციალურ პარამეტრებს. ოფიციალური რენდერები და აეროფოტოები იხილეთ პროექტის გალერეაში.',
+      lead: 'ნახაზები ეფუძნება პროექტის ოფიციალურ პარამეტრებს: ნაკვეთის ზომა, ღობე, ჭიშკარი და მანძილები.',
       gallery: 'ოფიციალური გალერეა',
       open: 'გადიდება',
       prev: 'წინა',
@@ -170,7 +178,7 @@ export const copy = {
       ],
     },
     team: {
-      kicker: '06 — გუნდი',
+      kicker: '07 — გუნდი',
       title: 'ვინ დგას პროექტის უკან',
       rows: [
         {
@@ -195,7 +203,7 @@ export const copy = {
       visit: 'ვებგვერდი',
     },
     process: {
-      kicker: '07 — როგორ შევიძინოთ',
+      kicker: '08 — როგორ შევიძინოთ',
       title: 'ოთხი მარტივი ნაბიჯი',
       steps: [
         ['აირჩიეთ', 'მონიშნეთ ნაკვეთი გეგმაზე ან უბრალოდ მოგვწერეთ, რა ზომის ადგილს ეძებთ.'],
@@ -205,7 +213,7 @@ export const copy = {
       ],
     },
     faq: {
-      kicker: '08 — კითხვები',
+      kicker: '09 — კითხვები',
       title: 'ხშირად დასმული კითხვები',
       items: [
         [
@@ -214,7 +222,11 @@ export const copy = {
         ],
         [
           'რა ზომისაა ნაკვეთები?',
-          'ნაკვეთები 1000 მ²-დან იწყება. თითოეული ნაკვეთის ზუსტ ფართობს გაყიდვების გუნდი გაცნობებთ.',
+          'ნაკვეთების უმეტესობა 1000 მ²-ია. ყველაზე დიდი თავისუფალი ნაკვეთებია №13 (1277 მ²) და №14 (1266 მ²); №18 და №20 — 1029 მ².',
+        ],
+        [
+          'რისი აშენება შემიძლია ნაკვეთზე?',
+          'დეველოპერის პრეზენტაციის მიხედვით: K1 — 0.3, K2 — 1, K3 — 0.6, დასაშვები სიმაღლე — 12 მ. განაშენიანების ზოლი: გზის მხრიდან 6 მ, უკანა მხრიდან 3 მ, მეზობელ ნაკვეთთან 1 მ. ნაკვეთის სტატუსი სასოფლო-სამეურნეოა — მისი შეცვლა შესაძლებელია მყიდველის სურვილისამებრ.',
         ],
         [
           'რა კომუნიკაციებია გათვალისწინებული?',
@@ -239,7 +251,7 @@ export const copy = {
       ],
     },
     contact: {
-      kicker: '09 — კონტაქტი',
+      kicker: '10 — კონტაქტი',
       title: ['თქვენი სახლი', 'იწყება ნაკვეთით'],
       lead: 'მოგვწერეთ ან დაგვირეკეთ — გაყიდვების გუნდი გიპასუხებთ ხელმისაწვდომ ნაკვეთებზე, ფასებსა და ადგილზე ვიზიტზე.',
       form: {
@@ -296,6 +308,7 @@ export const copy = {
       home: 'Orientiri Lisi — home',
       items: [
         ['#place', 'Project'],
+        ['#views', 'Views'],
         ['#location', 'Location'],
         ['#plots', 'Plots'],
         ['#infrastructure', 'Infrastructure'],
@@ -338,8 +351,15 @@ export const copy = {
         { pre: '', n: '4', u: 'm', l: 'vehicle gate width' },
       ],
     },
+    views: {
+      kicker: '02 — Views',
+      title: 'What the neighbourhood will look like',
+      lead: 'Official renders and drone photos from the developer — the streets, fences, entrance and the lake.',
+      note: 'Renders are visualisations. Buyers build their own houses on the plots.',
+      open: 'Enlarge',
+    },
     location: {
-      kicker: '02 — Location',
+      kicker: '03 — Location',
       title: 'Close to the city, closer to the lake',
       note: 'Schematic, not to scale. Distances as stated by the developer.',
       map: 'Open on the map',
@@ -368,17 +388,17 @@ export const copy = {
       labels: { site: 'Orientiri Lisi', lake: 'Lisi Lake', street: 'L. Kvachadze St.', schools: 'Schools', path: 'Path' },
     },
     plots: {
-      kicker: '03 — Plots',
+      kicker: '04 — Plots',
       title: 'Choose a place for your house',
       lead: 'Tap a plot on the plan to see its details and send an inquiry about that plot.',
       honest:
-        'This plan is schematic and the numbering is indicative. The sales team confirms each plot’s exact area, price and availability.',
+        'Plot numbers, areas and sold plots follow the developer’s official plan (August 2026). The sales team confirms prices and current availability.',
       official: 'Official plan on orientiri.ge',
       plot: 'Plot',
       select: 'Choose a plot from the list',
       selectNone: '— Select —',
       empty: 'Select a plot on the plan',
-      emptyHint: '24 plots · one gate · internal roads',
+      emptyHint: '24 plots · 11 available · 1,000–1,285 m²',
       area: 'Area',
       areaFrom: 'from 1,000 m²',
       status: 'Status',
@@ -399,7 +419,7 @@ export const copy = {
       north: 'N',
     },
     infra: {
-      kicker: '04 — Infrastructure',
+      kicker: '05 — Infrastructure',
       title: 'What comes with the land',
       lead: 'A street cross-section shows what runs below ground and what stands on the plot boundary.',
       status: 'Works have begun · completion scheduled for the end of 2026 (per the developer). Ask the sales team for the current stage.',
@@ -432,9 +452,9 @@ export const copy = {
       },
     },
     drawings: {
-      kicker: '05 — Drawings',
+      kicker: '06 — Drawings',
       title: 'Scale, boundary, entrance',
-      lead: 'These drawings are based on the project’s official specifications. See the official renders and aerial photography in the project gallery.',
+      lead: 'These drawings are based on the project’s official specifications: plot size, fence, gate and distances.',
       gallery: 'Official gallery',
       open: 'Enlarge',
       prev: 'Previous',
@@ -455,7 +475,7 @@ export const copy = {
       ],
     },
     team: {
-      kicker: '06 — Team',
+      kicker: '07 — Team',
       title: 'Who is behind the project',
       rows: [
         {
@@ -480,7 +500,7 @@ export const copy = {
       visit: 'Website',
     },
     process: {
-      kicker: '07 — How to buy',
+      kicker: '08 — How to buy',
       title: 'Four simple steps',
       steps: [
         ['Choose', 'Mark a plot on the plan, or simply tell us what size of plot you are looking for.'],
@@ -490,7 +510,7 @@ export const copy = {
       ],
     },
     faq: {
-      kicker: '08 — Questions',
+      kicker: '09 — Questions',
       title: 'Frequently asked questions',
       items: [
         [
@@ -499,7 +519,11 @@ export const copy = {
         ],
         [
           'How large are the plots?',
-          'Plots start from 1,000 m². The sales team will give you the exact area of each plot.',
+          'Most plots are 1,000 m². The largest available plots are no. 13 (1,277 m²) and no. 14 (1,266 m²); nos. 18 and 20 are 1,029 m².',
+        ],
+        [
+          'What can I build on a plot?',
+          'According to the developer’s presentation: K1 0.3, K2 1, K3 0.6, maximum height 12 m. Building line: 6 m from the road, 3 m at the rear, 1 m from neighbouring plots. The land is registered as agricultural; the status can be changed at the buyer’s request.',
         ],
         [
           'Which utilities are provided?',
@@ -524,7 +548,7 @@ export const copy = {
       ],
     },
     contact: {
-      kicker: '09 — Contact',
+      kicker: '10 — Contact',
       title: ['Your house', 'begins with the land'],
       lead: 'Write or call — the sales team will answer about available plots, prices and a visit to the site.',
       form: {

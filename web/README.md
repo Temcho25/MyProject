@@ -25,8 +25,8 @@ self-hosted (Noto Serif Georgian, Noto Sans Georgian, Manrope). No animation lib
 
 | What | Where | Why |
 |---|---|---|
-| **Plot data** | `src/content/plots.js` | No current official plot numbers, areas or statuses could be accessed. The plan is an indicative diagram; every plot shows "from 1,000 m²" and "confirmed by the sales team". Replace the `plan` geometry with the official one and fill `data` (`area`, `status`). `npm run check` validates it. |
-| **Official photography** | `src/content/media.js`, `public/media/` | The official renders could not be downloaded. Hero, closing and gallery slots are ready; drawings are shown until photos are added. |
+| **Plot data** | `src/content/plots.js` | Areas and sold plots follow the official plan (deck 15.04.2026, confirmed by @orientirilisi on 11.08.2026). The outline is traced by hand. Update `sold` as plots sell. |
+| **Official photography** | `src/content/media.js`, `public/media/` | Renders and drone photos from orientiri.ge and the developer deck (15.04.2026) are in place. Ask the developer for full-resolution originals and permission before launch. |
 | **Form backend** | `.env` → `VITE_INQUIRY_ENDPOINT` | Without it, the form validates and hands off to the visitor's email app (it never shows a fake "sent" message). |
 | **Contacts** | `src/content/site.js` | Taken from the official site via the brief; re-confirm before launch. |
 | **Infrastructure timing** | `src/content/copy.js` (`infra.status`, FAQ) | Currently "completion scheduled for the end of 2026 (per the developer)". Update as works progress. |
