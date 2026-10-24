@@ -82,12 +82,12 @@
 
   <div class="drawer" id="drawer" data-drawer hidden>
     <nav class="drawer__links" data-i18n-attr="aria-label:nav.label" aria-label="Main">
-      <a href="#kitchen" style="--i:0"><small>II</small><span data-i18n="nav.kitchen">Evening</span></a>
-      <a href="#menu" style="--i:1"><small>III</small><span data-i18n="nav.menu">Menu</span></a>
-      <a href="#room" style="--i:2"><small>IV</small><span data-i18n="nav.room">Building</span></a>
-      <a href="#evenings" style="--i:3"><small>V</small><span data-i18n="nav.evenings">Late</span></a>
-      <a href="#visit" style="--i:4"><small>VI</small><span data-i18n="nav.visit">Terrace</span></a>
-      <a href="#reserve" style="--i:5"><small>VII</small><span data-i18n="nav.reserve">Book</span></a>
+      <a href="#kitchen" style="--i:0"><span data-i18n="nav.kitchen">Evening</span></a>
+      <a href="#menu" style="--i:1"><span data-i18n="nav.menu">Menu</span></a>
+      <a href="#room" style="--i:2"><span data-i18n="nav.room">Building</span></a>
+      <a href="#evenings" style="--i:3"><span data-i18n="nav.evenings">Late</span></a>
+      <a href="#visit" style="--i:4"><span data-i18n="nav.visit">Terrace</span></a>
+      <a href="#reserve" style="--i:5"><span data-i18n="nav.reserve">Book</span></a>
     </nav>
     <div class="drawer__foot">
       <a href="tel:+995591087172" data-phone-link>+995 591 08 71 72</a>
@@ -160,8 +160,6 @@
           <h2 class="display display--l" id="kitchen-title" data-split data-i18n="kitchen.title">From the first lunch to the last table</h2>
           <p class="kitchen__body" data-reveal style="--d:2" data-i18n="kitchen.body">Doors open at noon on weekdays and at 11:00 at the weekend. On Friday and Saturday nights the kitchen and bar serve until 05:00.</p>
           <div class="counter" aria-hidden="true">
-            <span class="counter__roll"><span>01</span><span>02</span><span>03</span></span>
-            <span class="counter__total">/ 03</span>
             <span class="counter__labels">
               <span data-i18n="kitchen.f1">Afternoon — the glass room</span>
               <span data-i18n="kitchen.f2">Evening — by candlelight</span>
@@ -224,7 +222,7 @@
           <figure class="card card--wide card--high" data-depth="1" data-slot="room-3" data-sizes="(min-width: 900px) 44vw, 86vw"></figure>
         </div>
         <div class="room__controls">
-          <span class="room__count" aria-hidden="true"><span data-room-index>01</span> / <span data-room-total>03</span></span>
+          <span class="room__count" hidden aria-hidden="true"><span data-room-index>01</span><span data-room-total>03</span></span>
           <button class="iconbtn" type="button" data-room-prev data-i18n-attr="aria-label:room.prev" aria-label="Previous photograph">←</button>
           <button class="iconbtn" type="button" data-room-next data-i18n-attr="aria-label:room.next" aria-label="Next photograph">→</button>
         </div>
@@ -279,24 +277,25 @@
         <div class="square" aria-labelledby="square-title">
           <p class="kicker" data-reveal data-i18n="square.kicker">The square</p>
           <h3 class="display display--m" id="square-title" data-split data-i18n="square.title">A square with a past</h3>
+          <div class="archive">
+            <figure class="archive__img" data-slot="square-1" data-sizes="(min-width: 900px) 46vw, 92vw"></figure>
+            <figure class="archive__img" data-slot="square-2" data-sizes="(min-width: 900px) 46vw, 92vw"></figure>
+          </div>
+          <p class="square__credit" data-i18n="square.credit">Republic Square in the 1980s. Archive photographs: Republic</p>
           <ol class="timeline">
             <li class="timeline__item" data-reveal>
-              <figure class="timeline__img" data-slot="square-1" data-sizes="(min-width: 900px) 28vw, 90vw"></figure>
               <span class="timeline__year">1983</span>
-              <p data-i18n="square.1983">Architect O. Kalandarishvili’s concrete arches rise on Republic Square — the only finished part of a larger project, soon used as a parade stand and nicknamed “Andropov’s Ears”.</p>
+              <p data-i18n="square.1983">Republic Square is completed with architect O. Kalandarishvili’s concrete arches — the only finished part of a larger project. They become a parade stand, nicknamed “Andropov’s Ears”.</p>
             </li>
             <li class="timeline__item" data-reveal style="--d:1">
-              <figure class="timeline__img" data-slot="square-2" data-sizes="(min-width: 900px) 28vw, 90vw"></figure>
               <span class="timeline__year">2005</span>
               <p data-i18n="square.2005">The structure is dismantled and the square is renamed Rose Revolution Square.</p>
             </li>
             <li class="timeline__item" data-reveal style="--d:2">
-              <figure class="timeline__img" data-slot="square-3" data-sizes="(min-width: 900px) 28vw, 90vw"></figure>
               <span class="timeline__year">2018</span>
               <p data-i18n="square.2018">On 25 May, for the centenary of the Democratic Republic of Georgia, it becomes First Republic Square.</p>
             </li>
           </ol>
-          <p class="square__credit" data-i18n="square.credit">Archive photographs: Republic</p>
         </div>
       </div>
     </section>

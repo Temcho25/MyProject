@@ -766,3 +766,13 @@ html:not(.motion) .closing__ripples span:nth-child(-n+2) { opacity: .6; transfor
 .room.is-pinned .room__head { background: linear-gradient(180deg, var(--espresso) 70%, rgba(23,20,17,0)); padding-bottom: 24px; max-width: none; right: 0; }
 .room.is-pinned .room__head > * { max-width: 620px; }
 @media (max-width: 899px) { .evenings__grid { grid-template-columns: 1fr; } .clock__t { font-size: clamp(72px, 24vw, 120px); } }
+
+/* The square: archive band above a text timeline (photos are 1980s, not of each year). */
+.archive { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 2vw, 24px); margin-top: clamp(28px, 4vw, 48px); }
+.archive__img { aspect-ratio: 3 / 2; border-radius: 2px; }
+.square .square__credit { margin: 14px 0 0; }
+.timeline { margin-top: clamp(40px, 5vw, 64px); }
+.counter { grid-template-columns: 1fr; }
+.counter__labels { margin-left: 0; }
+.counter__labels span { left: 0; }
+@media (max-width: 640px) { .archive { grid-template-columns: 1fr; } }

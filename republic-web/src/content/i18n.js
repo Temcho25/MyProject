@@ -28,7 +28,7 @@ export const strings = {
     'hero.scroll': 'Scroll — the evening begins',
     'hero.place': '6 First Republic Square',
 
-    'intro.kicker': 'I — The table',
+    'intro.kicker': 'The table',
     'intro.title': 'Georgian tradition, with dishes made only for Republic.',
     'intro.body.1': 'Republic Georgian Restaurant is on the third floor of the Republic building on First Republic Square. Its menu was curated by Brand Chef Irakli Asatiani: the traditions of Georgian cuisine alongside dishes created exclusively for Republic.',
     'intro.body.2': 'Inside, a dining room with the city behind the glass. Outside, an open-air terrace with panoramic views of the Tbilisi skyline — for relaxed evenings, lively gatherings and celebrations.',
@@ -39,7 +39,7 @@ export const strings = {
     'intro.fact.2': 'Open-air terrace',
     'intro.fact.3': 'Until 06:00 on Fri & Sat',
 
-    'kitchen.kicker': 'II — Noon to six',
+    'kitchen.kicker': 'Noon to six',
     'kitchen.title': 'From the first lunch to the last table',
     'kitchen.body': 'Doors open at noon on weekdays and at 11:00 at the weekend. On Friday and Saturday nights the kitchen and bar serve until 05:00.',
     'kitchen.f1': 'Afternoon — the glass room',
@@ -48,7 +48,7 @@ export const strings = {
 
     'signature.kicker': 'From the menu',
 
-    'menu.kicker': 'III — The menu',
+    'menu.kicker': 'The menu',
     'menu.title': 'Tonight’s table',
     'menu.lede': 'The food menu as served at Republic. Prices in lari, including 18% VAT; small numbers mark allergens.',
     'menu.tabs': 'Menu categories',
@@ -70,21 +70,21 @@ export const strings = {
     'menu.empty.body': 'See the current menu and prices on our official menu page.',
     'menu.allergen': 'Allergies or dietary needs? Tell the team when you book or at the table.',
 
-    'room.kicker': 'IV — The building',
+    'room.kicker': 'The building',
     'room.title': 'Republic, on the square',
     'room.body': 'A four-level building on First Republic Square, with interiors by contemporary Georgian architects. The restaurant and its rooftop terrace are at the top.',
     'room.prev': 'Previous photograph',
     'room.next': 'Next photograph',
     'room.label': 'Photographs of the Republic building',
 
-    'evenings.kicker': 'V — Late',
+    'evenings.kicker': 'Late',
     'evenings.title': 'Fridays and Saturdays, until six',
     'evenings.body': 'On Friday and Saturday nights the doors stay open until 06:00, with the kitchen and bar serving until 05:00. For live music and DJ nights, follow Republic on Instagram.',
     'evenings.ig': 'Follow @republic.tbilisi',
     'evenings.upcoming': 'Upcoming evenings',
     'evenings.book': 'Book for tonight',
 
-    'terrace.kicker': 'VI — The terrace',
+    'terrace.kicker': 'The terrace',
     'terrace.title': 'Above First Republic Square',
     'terrace.body': 'An open-air terrace with panoramic views of the Tbilisi skyline, just across from the Radisson Blu Iveria. Terrace seating depends on the weather — mention it when you book.',
     'terrace.address': 'Address',
@@ -93,12 +93,12 @@ export const strings = {
 
     'square.kicker': 'The square',
     'square.title': 'A square with a past',
-    'square.1983': 'Architect O. Kalandarishvili’s concrete arches rise on Republic Square — the only finished part of a larger project, soon used as a parade stand and nicknamed “Andropov’s Ears”.',
+    'square.1983': 'Republic Square is completed with architect O. Kalandarishvili’s concrete arches — the only finished part of a larger project. They become a parade stand, nicknamed “Andropov’s Ears”.',
     'square.2005': 'The structure is dismantled and the square is renamed Rose Revolution Square.',
     'square.2018': 'On 25 May, for the centenary of the Democratic Republic of Georgia, it becomes First Republic Square.',
-    'square.credit': 'Archive photographs: Republic',
+    'square.credit': 'Republic Square in the 1980s. Archive photographs: Republic',
 
-    'reserve.kicker': 'VII — Reservations',
+    'reserve.kicker': 'Reservations',
     'reserve.title': 'Your table at Republic',
     'reserve.body': 'Book online in under a minute, or call the restaurant directly.',
     'reserve.book': 'Book on EatApp',
@@ -143,7 +143,7 @@ export const strings = {
     'hero.scroll': 'ჩამოსქროლეთ — საღამო იწყება',
     'hero.place': 'პირველი რესპუბლიკის მოედანი 6',
 
-    'intro.kicker': 'I — სუფრა',
+    'intro.kicker': 'სუფრა',
     'intro.title': 'ქართული ტრადიცია და კერძები, შექმნილი მხოლოდ რესპუბლიკისთვის.',
     'intro.body.1': 'ქართული რესტორანი „რესპუბლიკა“ შენობა „რესპუბლიკის“ მესამე სართულზეა, პირველი რესპუბლიკის მოედანზე. მენიუ ბრენდ-შეფმა ირაკლი ასათიანმა შეადგინა: ქართული სამზარეულოს ტრადიციები და კერძები, რომლებიც მხოლოდ რესპუბლიკისთვის შეიქმნა.',
     'intro.body.2': 'შიგნით — დარბაზი, შუშის მიღმა ქალაქით. გარეთ — ღია ტერასა თბილისის პანორამით: მშვიდი საღამოებისთვის, მხიარული შეკრებებისა და დღესასწაულებისთვის.',
@@ -154,7 +154,7 @@ export const strings = {
     'intro.fact.2': 'ღია ტერასა',
     'intro.fact.3': 'პარ. და შაბ. — 06:00-მდე',
 
-    'kitchen.kicker': 'II — შუადღიდან დილის ექვსამდე',
+    'kitchen.kicker': 'შუადღიდან დილის ექვსამდე',
     'kitchen.title': 'პირველი სადილიდან ბოლო სუფრამდე',
     'kitchen.body': 'სამუშაო დღეებში ვიღებთ შუადღიდან, შაბათ-კვირას — 11:00-დან. პარასკევსა და შაბათს სამზარეულო და ბარი 05:00-მდე მუშაობს.',
     'kitchen.f1': 'შუადღე — შუშის დარბაზი',
@@ -163,7 +163,7 @@ export const strings = {
 
     'signature.kicker': 'მენიუდან',
 
-    'menu.kicker': 'III — მენიუ',
+    'menu.kicker': 'მენიუ',
     'menu.title': 'ამაღამინდელი სუფრა',
     'menu.lede': 'რესპუბლიკის მოქმედი მენიუ. ფასები ლარშია და მოიცავს 18% დღგ-ს; პატარა ციფრები ალერგენებს აღნიშნავს.',
     'menu.tabs': 'მენიუს კატეგორიები',
@@ -185,21 +185,21 @@ export const strings = {
     'menu.empty.body': 'მოქმედი მენიუ და ფასები იხილეთ ჩვენი მენიუს ოფიციალურ გვერდზე.',
     'menu.allergen': 'გაქვთ ალერგია ან კვების განსაკუთრებული მოთხოვნა? გვითხარით დაჯავშნისას ან სუფრასთან.',
 
-    'room.kicker': 'IV — შენობა',
+    'room.kicker': 'შენობა',
     'room.title': 'რესპუბლიკა, მოედანზე',
     'room.body': 'ოთხსართულიანი შენობა პირველი რესპუბლიკის მოედანზე, თანამედროვე ქართველი არქიტექტორების ინტერიერით. რესტორანი და მისი სახურავის ტერასა ზედა სართულზეა.',
     'room.prev': 'წინა ფოტო',
     'room.next': 'შემდეგი ფოტო',
     'room.label': 'შენობა „რესპუბლიკის“ ფოტოები',
 
-    'evenings.kicker': 'V — გვიან',
+    'evenings.kicker': 'გვიან',
     'evenings.title': 'პარასკევს და შაბათს — ექვსამდე',
     'evenings.body': 'პარასკევსა და შაბათს კარი 06:00-მდეა ღია, სამზარეულო და ბარი კი 05:00-მდე მუშაობს. ცოცხალი მუსიკისა და DJ-საღამოების შესახებ — რესპუბლიკის Instagram-ზე.',
     'evenings.ig': 'გამოგვყევით: @republic.tbilisi',
     'evenings.upcoming': 'მომავალი საღამოები',
     'evenings.book': 'დაჯავშნა ამაღამ',
 
-    'terrace.kicker': 'VI — ტერასა',
+    'terrace.kicker': 'ტერასა',
     'terrace.title': 'პირველი რესპუბლიკის მოედნის თავზე',
     'terrace.body': 'ღია ტერასა თბილისის პანორამით, „რედისონ ბლუ ივერიის“ პირდაპირ. ტერასაზე ადგილი ამინდზეა დამოკიდებული — მიუთითეთ დაჯავშნისას.',
     'terrace.address': 'მისამართი',
@@ -208,12 +208,12 @@ export const strings = {
 
     'square.kicker': 'მოედანი',
     'square.title': 'მოედანი ისტორიით',
-    'square.1983': 'რესპუბლიკის მოედანზე აღიმართება არქიტექტორ ო. ყალანდარიშვილის ბეტონის თაღები — დიდი პროექტის ერთადერთი დასრულებული ნაწილი, რომელიც მალე აღლუმების ტრიბუნად იქცა და ხალხმა „ანდროპოვის ყურები“ შეარქვა.',
+    'square.1983': 'სრულდება რესპუბლიკის მოედანი არქიტექტორ ო. ყალანდარიშვილის ბეტონის თაღებით — დიდი პროექტის ერთადერთი დასრულებული ნაწილით. თაღები აღლუმების ტრიბუნად იქცა და ხალხმა „ანდროპოვის ყურები“ შეარქვა.',
     'square.2005': 'ნაგებობა დაიშალა, მოედანს კი ვარდების რევოლუციის მოედანი ეწოდა.',
     'square.2018': '25 მაისს, საქართველოს დემოკრატიული რესპუბლიკის 100 წლისთავზე, მოედანს პირველი რესპუბლიკის მოედანი ეწოდა.',
-    'square.credit': 'საარქივო ფოტოები: რესპუბლიკა',
+    'square.credit': 'რესპუბლიკის მოედანი 1980-იან წლებში. საარქივო ფოტოები: რესპუბლიკა',
 
-    'reserve.kicker': 'VII — დაჯავშნა',
+    'reserve.kicker': 'დაჯავშნა',
     'reserve.title': 'თქვენი მაგიდა რესპუბლიკაში',
     'reserve.body': 'დაჯავშნეთ ონლაინ ერთ წუთში ან დაურეკეთ რესტორანს.',
     'reserve.book': 'დაჯავშნა EatApp-ით',

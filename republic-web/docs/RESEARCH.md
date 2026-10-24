@@ -103,3 +103,9 @@ silkhospitality.com and the QR menu became reachable. Instagram still answers 40
 | Entertainment | "live music and DJ nights to curated events" (Republic generally); listed concerts are Event Hall, all past | /republic/entertainment/ |
 
 Still unconfirmed, so not on the site: signature dish names (none are marked on the menu), live-evening dates, terrace seasonality.
+
+### Independent check of the square's dates (24 Oct 2026)
+
+- 2018: renamed First Republic Square on 25 May 2018 for the centenary of the Democratic Republic of Georgia — confirmed by [1TV](https://1tv.ge/lang/en/news/rose-square-renamed-first-republic-square/), [JAMnews](https://jam-news.net/tbilisi-goodbye-rose-revolution-square-hello-square-of-the-first-democratic-republic/) and [Wikipedia](https://en.wikipedia.org/wiki/First_Republic_Square).
+- 2005: grandstand demolished on President Saakashvili's order and the square renamed Rose Revolution Square — Wikipedia.
+- 1983 and "Andropov's Ears": from Republic's own History page; JAMnews also records the nickname for the 1980s stand.

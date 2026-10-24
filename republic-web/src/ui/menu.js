@@ -51,7 +51,7 @@ export function renderMenu(lang, data = officialMenu) {
   ui.className = 'menu__ui';
   ui.innerHTML = `
     <div class="tabs" role="tablist" aria-label="${esc(t('menu.tabs'))}">
-      ${cats.map((c, i) => `<button role="tab" id="tab-${c.id}" aria-controls="menu-panel" aria-selected="${i === current}" tabindex="${i === current ? 0 : -1}" data-i="${i}"><span>${esc(c.name[lang])}</span><small>${c.items.length}</small></button>`).join('')}
+      ${cats.map((c, i) => `<button role="tab" id="tab-${c.id}" aria-controls="menu-panel" aria-selected="${i === current}" tabindex="${i === current ? 0 : -1}" data-i="${i}"><span>${esc(c.name[lang])}</span></button>`).join('')}
       <span class="tabs__ink" aria-hidden="true"></span>
     </div>
     <div class="menu__panel" id="menu-panel" role="tabpanel" aria-labelledby="tab-${cats[current].id}" tabindex="0"></div>`;
@@ -114,7 +114,6 @@ function renderFeatured(lang, data) {
   box.insertAdjacentHTML('beforeend', `<p class="featured__label kicker" aria-hidden="true">${esc(t('menu.featured'))}</p>` + items.map(([cat, it], i) => {
     const c = data.categories.find((x) => x.id === cat);
     return `<article class="feat" style="--i:${i}" data-reveal data-a="${(it.a || []).join(',')}">
-      <span class="feat__no" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span>
       <p class="feat__cat">${esc(c.name[lang])}</p>
       <h4 class="feat__name">${esc(it.name[lang])}</h4>
       <p class="feat__alt" lang="${other(lang)}">${esc(it.name[other(lang)])}</p>
