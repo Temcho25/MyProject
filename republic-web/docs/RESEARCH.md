@@ -78,3 +78,28 @@ C = conflicting → not published; needs the restaurant's answer.
 5. Is there an online booking platform to link?
 6. Live evenings: days, times, programme for upcoming weeks.
 7. Logo files (SVG) and the photography / video library with usage rights.
+
+---
+
+## Update — second research pass (24 Oct 2026, wider network access)
+
+silkhospitality.com and the QR menu became reachable. Instagram still answers 401 without a login, and its image CDN, Facebook, EatApp, Linktree, TripAdvisor and Wolt stayed blocked. Facts now **confirmed on official pages** and used on the site:
+
+| Fact | Value | Source |
+|---|---|---|
+| Name / positioning | Republic Georgian Restaurant — "Modern Georgian flavors and signature dishes curated exclusively for Republic Terrace by Brand Chef Irakli Asatiani"; "rich traditions of Georgian cuisine meet unique dishes crafted exclusively for Republic" | silkhospitality.com/radisson-blu-tbilisi/restaurants-bars/republic-georgian-restaurant/ |
+| Status | Open: the old `republic-restaurant` URL (where "closed for renovations" appeared) now redirects to this page, which lists hours, menus and booking | same |
+| Location | 3rd floor of the Republic building; four-level building; across from the Radisson Blu Iveria; open-air rooftop terrace with panoramic views | restaurant page; silkhospitality.com/republic/ |
+| Address | 6, First Republic Square, 0108 Tbilisi (formerly 6 Rose Revolution Square) | /republic/ footer and contact page |
+| Phone | +995 591 08 71 72 | /republic/ |
+| Hours | Mon–Thu 12:00–01:00 (kitchen & bar to 00:00); Fri 12:00–06:00 (to 05:00); Sat 11:00–06:00 (to 05:00); Sun 11:00–01:00 (to 00:00) | restaurant page |
+| Booking | https://eatapp.co/reserve/republic-roof-top-7a34d6 | QR menu page |
+| Delivery | https://linktr.ee/RepublicRestaurant ("Order Delivery") | restaurant page |
+| Menus | Food (QR → PDF), Cocktails PDF, Drinks PDF | restaurant page |
+| Map | Google Maps place "Republic Restaurant", 41.7036675, 44.7916982 | QR menu page |
+| Social | instagram.com/republic.tbilisi, facebook.com/RepublicRestaurantGeorgia | /republic/ |
+| Interiors | "interior designed by contemporary Georgian architects" | /republic/about/ |
+| Square history | 1983 Kalandarishvili arches ("Andropov's Ears"), 2005 dismantled → Rose Revolution Square, 2018 → First Republic Square | /republic/about/history/ |
+| Entertainment | "live music and DJ nights to curated events" (Republic generally); listed concerts are Event Hall, all past | /republic/entertainment/ |
+
+Still unconfirmed, so not on the site: signature dish names (none are marked on the menu), live-evening dates, terrace seasonality.

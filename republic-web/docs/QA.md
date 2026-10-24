@@ -43,3 +43,15 @@ Bundle: JS 16 KB gz, CSS 13 KB gz, no animation library. Fonts load per script v
 - **Screen readers** — semantics and ARIA were tested programmatically, not with VoiceOver/NVDA.
 - **The official menu URL** opens the operator's QR asset; its content could not be opened from the sandbox.
 - **Sound** — the site has none by design (see `DIRECTION.md`); nothing to listen to.
+
+## Iteration 3 — real content (after the owner's review: "there's nothing on the site")
+
+The first build shipped placeholders because no official source was reachable. With silkhospitality.com open, the site was rebuilt around real material: official photos in every slot, the real emblem (animated rings), the full 57-dish menu with allergen filter, official hours, EatApp booking, the square's history. Fixes found in review:
+
+| Where | Observation | Fix | Re-check |
+|---|---|---|---|
+| Building track | Cards covered the heading | Lower, shorter cards; heading on a fading band | Screens r3 ✔ |
+| Late, mobile | Clock overflowed the right edge | Single column on phones, smaller clock | QA overflow 360/390 ✔ |
+| Logo trace | R came out inverted | Inverted bitmap threshold; compared with original | Screens ✔ |
+
+`npm run qa` on the production build: **80 / 80 pass** (adds: 7 official categories, starters match the PDF, allergen filter, every Book button → EatApp, official hours shown, ≥13 official photos rendered, structured data with hours/menu/booking).

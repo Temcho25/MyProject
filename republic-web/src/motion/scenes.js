@@ -32,6 +32,13 @@ function rule() {
   scene(el, (p) => el.style.setProperty('--p', easeOut(range(p, 0.1, 0.6)).toFixed(4)), { tau: 140 });
 }
 
+/* 02b Intro photograph — the frame stays, the picture drifts inside it (depth without distortion). */
+function introPhoto() {
+  const el = $('[data-scene="intro-photo"]');
+  if (!el || !motionOn()) return;
+  scene(el, (p) => el.style.setProperty('--p', p.toFixed(4)), { tau: 140 });
+}
+
 /* 03 Kitchen — frames rise like a lit curtain; the previous one recedes. */
 function kitchen() {
   const el = $('[data-scene="kitchen"]');
@@ -60,6 +67,8 @@ function room() {
   const ghost = $('.room__ghost', el);
   const trail = $('.room__trail', el);
   const idx = $('[data-room-index]', el);
+  const total = $('[data-room-total]', el);
+  if (total) total.textContent = String(cards.length).padStart(2, '0');
   let dist = 0, pinned = false, sc = null;
 
   const setIndex = (i) => { idx.textContent = String(i + 1).padStart(2, '0'); };
@@ -166,6 +175,23 @@ function evenings() {
   new IntersectionObserver(([e]) => e.isIntersecting && dispatchEvent(new Event('scroll')), { rootMargin: '20%' }).observe(el);
 }
 
+/* 06b The clock — scrolling through "Late" runs the night from noon to six. */
+function clock() {
+  const el = $('[data-scene="evenings"]');
+  const out = $('[data-clock] .clock__t');
+  if (!el || !out) return;
+  if (!motionOn()) { out.textContent = '06:00'; return; }
+  let last = '';
+  scene(el, (p) => {
+    const k = easeInOut(range(p, 0.12, 0.62));
+    const mins = Math.round((12 * 60 + k * 18 * 60) / 5) * 5; // 12:00 → 06:00 next morning
+    const h = Math.floor(mins / 60) % 24, m = mins % 60;
+    const txt = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    if (txt !== last) { out.textContent = txt; last = txt; }
+    el.style.setProperty('--night', k.toFixed(4));
+  }, { tau: 90 });
+}
+
 /* 07 Terrace — the plate drifts behind; the title opens its width as you arrive. */
 function terrace() {
   const el = $('[data-scene="terrace"]');
@@ -255,5 +281,5 @@ function magnets() {
 }
 
 export function initScenes() {
-  hero(); rule(); kitchen(); room(); evenings(); terrace(); closing(); chrome(); magnets();
+  hero(); rule(); introPhoto(); kitchen(); room(); evenings(); clock(); terrace(); closing(); chrome(); magnets();
 }

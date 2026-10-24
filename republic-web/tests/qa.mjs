@@ -34,7 +34,7 @@ for (const [w, h] of [[360, 740], [390, 844], [768, 1024], [1440, 900], [1920, 1
     }
     check(`${w}px ${lang}: no horizontal page scroll`, maxOverflow <= 0, `overflow ${maxOverflow}px`);
     const heroCta = await page.evaluate(() => { scrollTo({ top: 0, behavior: 'instant' }); return [...document.querySelectorAll('.hero__ctas a')].map((a) => a.getAttribute('href')); });
-    check(`${w}px ${lang}: hero has reserve + menu CTAs`, heroCta.includes('#reserve') && heroCta.includes('#menu'), heroCta.join(' '));
+    check(`${w}px ${lang}: hero has booking + menu CTAs`, heroCta.some((h) => h.startsWith('https://eatapp.co/reserve/')) && heroCta.includes('#menu'), heroCta.join(' '));
     const fitsTitle = await page.evaluate(() => { const t = document.querySelector('.hero__title'); return [...t.querySelectorAll('.w')].every((w) => w.getBoundingClientRect().right <= innerWidth + 1); });
     check(`${w}px ${lang}: hero title fits the viewport`, fitsTitle);
     const lang2 = await page.evaluate(() => document.documentElement.lang);
@@ -56,23 +56,25 @@ for (const [w, h] of [[360, 740], [390, 844], [768, 1024], [1440, 900], [1920, 1
     menu: document.querySelector('[data-menu-link]').href,
     google: document.querySelector('[data-maps="google"]').href,
     apple: document.querySelector('[data-maps="apple"]').href,
-    mail: document.querySelector('[data-email-link]').href,
+    book: [...document.querySelectorAll('[data-book-link], [data-booking-link]')].map((a) => a.href),
   }));
   check('phone links are tel:+995591087172', ext.tel.length >= 3 && ext.tel.every((t) => t === 'tel:+995591087172'), ext.tel.length + ' links');
   check('Instagram link', ext.ig === 'https://www.instagram.com/republic.tbilisi/', ext.ig);
   check('official menu link set', ext.menu.startsWith('https://qr.silkhospitality.com/'), ext.menu);
-  check('maps links', ext.google.startsWith('https://www.google.com/maps/search/') && ext.apple.startsWith('https://maps.apple.com/'));
-  check('email link', ext.mail === 'mailto:reservations@republic.ge');
+  check('every Book button opens the official EatApp page', ext.book.length >= 5 && ext.book.every((h) => h === 'https://eatapp.co/reserve/republic-roof-top-7a34d6'), ext.book.length + ' links');
+  check('maps links', ext.google.startsWith('https://www.google.com/maps/place/Republic+Restaurant') && ext.apple.startsWith('https://maps.apple.com/'));
   await page.click('.nav__links a[href="#menu"]');
   await page.waitForTimeout(1400);
   const menuTop = await page.evaluate(() => document.querySelector('#menu').getBoundingClientRect().top);
   check('nav link scrolls to Menu', Math.abs(menuTop) < 40, `top ${menuTop.toFixed(0)}`);
-  const hidden = await page.evaluate(() => getComputedStyle(document.querySelector('[data-booking-link]')).display);
-  check('booking-platform button hidden while no bookingUrl', hidden === 'none', hidden);
+  const hrs = await page.evaluate(() => document.querySelector('#reserve [data-hours]').textContent);
+  check('official opening hours shown', /12:00–01:00/.test(hrs) && /11:00–06:00/.test(hrs) && /05:00/.test(hrs), hrs.slice(0, 80));
+  const imgs = await page.evaluate(() => [...document.querySelectorAll('.slot--photo img')].length);
+  check('official photographs rendered in every slot', imgs >= 13, imgs + ' photos');
   const events = await page.evaluate(() => document.querySelector('[data-events]').hidden);
   check('no unverified events displayed', events === true);
   const ld = await page.evaluate(() => JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent));
-  check('structured data has no hours/menu', !ld.openingHours && !ld.openingHoursSpecification && !ld.hasMenu && ld.telephone === '+995591087172');
+  check('structured data carries official hours, menu and booking', ld.openingHoursSpecification?.length === 4 && ld.hasMenu && ld.acceptsReservations?.includes('eatapp') && ld.telephone === '+995591087172');
   await ctx.close();
 }
 
@@ -117,57 +119,24 @@ for (const [w, h] of [[360, 740], [390, 844], [768, 1024], [1440, 900], [1920, 1
   await ctx.close();
 }
 
-// 5. Menu: empty state now; full UI with a test fixture (dev hook).
+// 5. Menu: official data, tabs, keyboard, allergen filter.
 {
   const { ctx, page } = await open(1440, 900);
-  check('menu shows honest empty state (no invented dishes)', await page.evaluate(() => !document.querySelector('[data-menu-empty]').hidden && !document.querySelector('.dish')));
-  const hasHook = await page.evaluate(() => !!window.__qa);
-  if (hasHook) {
-    await page.evaluate((f) => window.__qa.renderMenu(f), fixture);
-    await page.waitForTimeout(200);
-    check('menu renders tabs from data', (await page.locator('[role="tab"]').count()) === 3);
-    await page.focus('[role="tab"][aria-selected="true"]');
-    await page.keyboard.press('ArrowRight');
-    await page.waitForTimeout(600);
-    const sel = await page.evaluate(() => ({ t: document.querySelector('[role="tab"][aria-selected="true"]').textContent, items: [...document.querySelectorAll('.dish__name')].map((n) => n.textContent) }));
-    check('arrow key switches category and list', sel.t === 'Test category B' && sel.items[0] === 'Test dish three', JSON.stringify(sel));
-    await page.click('.dish__toggle');
-    await page.waitForTimeout(600);
-    check('dish details expand', await page.evaluate(() => document.querySelector('.dish__toggle').getAttribute('aria-expanded') === 'true' && document.querySelector('.dish__more').getBoundingClientRect().height > 10));
-    check('price shows GEL', await page.evaluate(() => document.querySelector('.dish__price').textContent.includes('GEL')));
-  }
-  await ctx.close();
-}
-
-// 6. Reservation form: validation, then mailto request (no fake confirmation).
-{
-  const { ctx, page } = await open(1440, 900);
-  await page.evaluate(() => document.querySelector('#reserve').scrollIntoView());
-  await page.click('[data-reserve-form] button[type="submit"]');
-  const inv = await page.evaluate(() => [...document.querySelectorAll('[data-reserve-form] [aria-invalid="true"]')].map((e) => e.name));
-  check('empty submit flags required fields', ['date', 'time', 'name', 'phone'].every((n) => inv.includes(n)), inv.join(','));
-  check('focus moves to first invalid field', await page.evaluate(() => document.activeElement.name === 'date'));
-  check('error summary announced', await page.evaluate(() => !document.querySelector('[data-form-summary]').hidden && document.querySelector('[data-form-summary]').getAttribute('role') === 'alert'));
-  await page.fill('#r-date', '2020-01-01');
-  await page.fill('#r-time', '20:00');
-  await page.fill('#r-name', 'Test Guest');
-  await page.fill('#r-phone', '12');
-  await page.fill('#r-email', 'bad@');
-  await page.click('[data-reserve-form] button[type="submit"]');
-  const errs = await page.evaluate(() => ({ date: document.querySelector('#r-date-err').textContent, phone: document.querySelector('#r-phone-err').textContent, email: document.querySelector('#r-email-err').textContent }));
-  check('past date, short phone, bad email rejected', errs.date && errs.phone && errs.email, JSON.stringify(errs));
-  const d = new Date(Date.now() + 3 * 864e5).toISOString().slice(0, 10);
-  await page.fill('#r-date', d);
-  await page.fill('#r-phone', '+995 555 00 00 00');
-  await page.fill('#r-email', '');
-  await page.click('[data-step="1"]');
-  await page.click('label.chip:has(input[value="terrace"])');
-  await page.click('[data-reserve-form] button[type="submit"]');
-  await page.waitForTimeout(400);
-  const res = await page.evaluate(() => ({ mailto: document.documentElement.dataset.mailto || '', done: !document.querySelector('[data-reserve-done]').hidden, text: document.querySelector('[data-reserve-text]').textContent }));
-  check('valid request opens mailto to reservations@republic.ge', res.mailto.startsWith('mailto:reservations@republic.ge?subject='), res.mailto.slice(0, 60));
-  check('request text has guests 3 and terrace', /Guests: 3/.test(res.text) && /Terrace/.test(res.text), res.text.replace(/\n/g, ' / '));
-  check('done panel says not confirmed until restaurant replies', res.done && (await page.evaluate(() => /only when the restaurant replies/.test(document.querySelector('[data-reserve-done]').textContent))));
+  await page.evaluate(() => document.querySelector('#menu').scrollIntoView());
+  await page.waitForTimeout(500);
+  check('menu renders 7 official categories', (await page.locator('[role="tab"]').count()) === 7);
+  const first = await page.evaluate(() => [...document.querySelectorAll('.dish__name')].map((n) => n.firstChild.textContent.trim()));
+  check('starters list matches the official menu', first.length === 10 && first[0] === 'Ekala with walnuts & tkemali', first.slice(0, 2).join(' | '));
+  await page.focus('[role="tab"][aria-selected="true"]');
+  await page.keyboard.press('ArrowRight');
+  await page.waitForTimeout(600);
+  const sel = await page.evaluate(() => ({ t: document.querySelector('[role="tab"][aria-selected="true"] span').textContent, items: [...document.querySelectorAll('.dish__name')].map((n) => n.firstChild.textContent.trim()) }));
+  check('arrow key switches category and list', sel.t === 'Soups' && sel.items[0] === 'Chicken soup chikhirtma', JSON.stringify(sel).slice(0, 120));
+  check('prices shown in lari', await page.evaluate(() => document.querySelector('.dish__price').textContent.includes('₾')));
+  await page.click('.chip-a[data-n="1"]');
+  const dim = await page.evaluate(() => ({ dimmed: document.querySelectorAll('.dish.is-avoided').length, total: document.querySelectorAll('.dish').length }));
+  check('allergen filter dims dishes containing gluten', dim.dimmed > 0 && dim.dimmed < dim.total, JSON.stringify(dim));
+  check('featured dishes come from the menu', (await page.locator('.feat').count()) === 4);
   await ctx.close();
 }
 

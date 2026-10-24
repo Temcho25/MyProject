@@ -47,11 +47,11 @@ function picture(slot, g, el, lang) {
   const sizes = el.dataset.sizes || '100vw';
   const set = (ext) => g.widths.map((w) => `/img/${slot.file}-${w}.${ext} ${w}w`).join(', ');
   const pic = document.createElement('picture');
-  pic.innerHTML = `<source type="image/avif" srcset="${set('avif')}" sizes="${sizes}"><source type="image/webp" srcset="${set('webp')}" sizes="${sizes}">`;
+  pic.innerHTML = `<source type="image/avif" srcset="${set('avif')}" sizes="${sizes}">`;
   const img = document.createElement('img');
   img.srcset = set('jpg');
   img.sizes = sizes;
-  img.src = `/img/${slot.file}-${g.widths[Math.min(2, g.widths.length - 1)]}.jpg`;
+  img.src = `/img/${slot.file}-${g.widths[Math.min(1, g.widths.length - 1)]}.jpg`;
   img.width = g.w; img.height = g.h;
   img.alt = slot.alt[lang] || slot.alt.en;
   img.decoding = 'async';

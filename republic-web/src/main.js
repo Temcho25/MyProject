@@ -3,15 +3,16 @@ import '@fontsource-variable/noto-sans-georgian';
 import '@fontsource-variable/cormorant-garamond';
 import '@fontsource-variable/cormorant-garamond/wght-italic.css';
 import './styles/main.css';
+import logoSvg from '../assets-src/brand/logo.svg?raw';
+import wordmarkSvg from '../assets-src/brand/wordmark.svg?raw';
 
 import { site } from './content/site.js';
 import { initEngine, measure, reducedMotion } from './motion/engine.js';
 import { splitAll, observeReveals, relineAll } from './motion/text.js';
 import { initScenes } from './motion/scenes.js';
-import { applyLang, initialLang, lang } from './ui/lang.js';
-import { renderSlots, officialLogo } from './ui/slots.js';
+import { applyLang, initialLang, lang, t } from './ui/lang.js';
+import { renderSlots } from './ui/slots.js';
 import { renderMenu } from './ui/menu.js';
-import { initReserve } from './ui/reserve.js';
 import { initDrawer } from './ui/drawer.js';
 
 const html = document.documentElement;
@@ -23,28 +24,48 @@ else {
   hi.classList.add('intro__head');
 }
 
+/* The official emblem, rebuilt as live SVG so its rings can move. */
+const logoPath = logoSvg.match(/ d="([^"]+)"/)[1];
+const rings = [299, 269, 239, 209];
+const emblem = () => `<svg viewBox="62.5 56 616 616" focusable="false"><g class="emblem__rings">${rings
+  .map((r, i) => `<circle class="emblem__ring" style="--i:${i}" cx="370.5" cy="364" r="${r}" pathLength="1"/>`).join('')}</g><path class="emblem__r" d="${logoPath}"/></svg>`;
+document.querySelectorAll('[data-emblem]').forEach((el) => (el.innerHTML = emblem()));
+document.querySelectorAll('[data-wordmark]').forEach((el) => { el.innerHTML = wordmarkSvg; el.querySelector('svg').setAttribute('aria-hidden', 'true'); });
+
+// Small ring marks on chapter labels — the emblem, quoted. Re-added after each
+// language switch, because translation replaces the label's text.
+const addKrings = () => document.querySelectorAll('.kicker').forEach((k) => {
+  if (k.querySelector('.kring')) return;
+  k.insertAdjacentHTML('afterbegin', '<svg class="kring" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.5" pathLength="1"/><circle cx="10" cy="10" r="5" pathLength="1"/></svg>');
+});
+
+function hoursHTML() {
+  return `<dl class="hours">${site.hours.rows.map((r) => `<div><dt>${r.days[lang]}</dt><dd><span>${r.open}–${r.close}</span><small>${t('reserve.kitchen').replace('{t}', r.last)}</small></dd></div>`).join('')}</dl>`;
+}
+
 function facts() {
-  const street = site.address.street[lang], city = site.address.city[lang];
+  const a = site.address;
   const country = lang === 'ka' ? 'საქართველო' : 'Georgia';
-  document.querySelectorAll('[data-address]').forEach((a) => (a.innerHTML = `${street}<br>${city} ${site.address.postalCode}, ${country}`));
-  document.querySelectorAll('[data-phone-link]').forEach((a) => (a.href = `tel:${site.phone.tel}`));
-  document.querySelectorAll('[data-phone-display]').forEach((a) => (a.textContent = site.phone.display));
-  document.querySelectorAll('[data-email-link]').forEach((a) => { a.href = `mailto:${site.email.value}`; a.textContent = site.email.value; });
-  document.querySelectorAll('[data-instagram-link]').forEach((a) => (a.href = site.social.instagram.url));
-  document.querySelectorAll('[data-facebook-link]').forEach((a) => (a.href = site.social.facebook.url));
+  document.querySelectorAll('[data-address]').forEach((el) => (el.innerHTML = `${a.building[lang]}<br>${a.street[lang]}<br>${a.city[lang]} ${a.postalCode}, ${country}`));
+  document.querySelectorAll('[data-phone-link]').forEach((el) => (el.href = `tel:${site.phone.tel}`));
+  document.querySelectorAll('[data-phone-display]').forEach((el) => (el.textContent = site.phone.display));
+  document.querySelectorAll('[data-instagram-link]').forEach((el) => (el.href = site.social.instagram.url));
+  document.querySelectorAll('[data-facebook-link]').forEach((el) => (el.href = site.social.facebook.url));
+  document.querySelectorAll('[data-delivery-link]').forEach((el) => (el.href = site.deliveryUrl));
+  document.querySelectorAll('[data-menu-link]').forEach((el) => (el.href = site.menuUrl));
   document.querySelector('[data-maps="google"]').href = site.maps.google;
   document.querySelector('[data-maps="apple"]').href = site.maps.apple;
   document.querySelectorAll('[data-year]').forEach((y) => (y.textContent = new Date().getFullYear()));
+  document.querySelectorAll('[data-hours]').forEach((el) => (el.innerHTML = hoursHTML()));
 
-  // Hours: published only once confirmed.
-  const hours = document.querySelector('[data-hours]');
-  if (site.hours.confirmed && site.hours.rows.length) {
-    hours.innerHTML = `<dl class="hours">${site.hours.rows.map((r) => `<div><dt>${r.days[lang]}</dt><dd>${r.open}–${r.close}</dd></div>`).join('')}</dl>`;
-  }
+  // Every "Book" goes straight to the restaurant's own booking page.
+  document.querySelectorAll('[data-book-link], [data-booking-link]').forEach((el) => {
+    el.href = site.bookingUrl; el.target = '_blank'; el.rel = 'noopener';
+  });
 
   // Events: never show a date that has passed.
   const todayISO = new Date().toISOString().slice(0, 10);
-  const upcoming = site.events.filter((e) => e.date >= todayISO).sort((a, b) => a.date.localeCompare(b.date));
+  const upcoming = site.events.filter((e) => e.date >= todayISO).sort((x, y) => x.date.localeCompare(y.date));
   const box = document.querySelector('[data-events]');
   box.hidden = !upcoming.length;
   if (upcoming.length) {
@@ -52,24 +73,20 @@ function facts() {
     box.querySelector('[data-events-list]').innerHTML = upcoming.map((e) =>
       `<li><time datetime="${e.date}T${e.time}">${fmt.format(new Date(`${e.date}T12:00`))} · ${e.time}</time><span>${e.title[lang] || e.title.en}</span></li>`).join('');
   }
-
-  // Official logo replaces the typographic wordmark when supplied.
-  const logo = officialLogo();
-  if (logo) document.querySelectorAll('[data-wordmark]').forEach((w) => (w.innerHTML = `<img src="${logo}" alt="Republic" height="40">`));
 }
 
 function setLang(next, persist) {
   applyLang(next, { persist });
+  addKrings();
   splitAll();
   facts();
   renderSlots(next);
   renderMenu(next);
   if (persist) {
-    // Already-visible copy should not replay its entrance after a language switch.
+    // Copy already on screen should not replay its entrance after a language switch.
     document.querySelectorAll('[data-split]').forEach((n) => {
       if (n.closest('[data-hero-intro]')) return;
-      const r = n.getBoundingClientRect();
-      if (r.top < innerHeight) n.classList.add('is-in', 'no-anim');
+      if (n.getBoundingClientRect().top < innerHeight) n.classList.add('is-in', 'no-anim');
     });
     requestAnimationFrame(() => requestAnimationFrame(() => document.querySelectorAll('.no-anim').forEach((n) => n.classList.remove('no-anim'))));
   }
@@ -81,19 +98,13 @@ setLang(initialLang(), false);
 document.querySelectorAll('[data-lang-toggle]').forEach((b) =>
   b.addEventListener('click', () => setLang(lang === 'ka' ? 'en' : 'ka', true)));
 
-initReserve();
 initDrawer();
 initEngine();
 initScenes();
 
-// Fonts change line breaks: regroup split lines once they arrive.
-document.fonts?.ready.then(() => {
-  relineAll();
-  html.classList.add('fonts-ready');
-  measure();
-});
-// QA hook (development builds only): render the menu from a test fixture.
+document.fonts?.ready.then(() => { relineAll(); html.classList.add('fonts-ready'); measure(); });
+
+// QA hook (development builds only).
 if (import.meta.env.DEV) window.__qa = { renderMenu: (data) => renderMenu(lang, data) };
 
-// Hero entrance starts at once; it never waits for more than a moment.
 requestAnimationFrame(() => html.classList.add('is-ready'));

@@ -1,53 +1,38 @@
 # Asset manifest
 
-**Status: no official asset is in the site yet.** The build sandbox could not reach Instagram, Facebook, silkhospitality.com, restaurant.republic.ge or any image CDN (see `RESEARCH.md`), so nothing could be downloaded, inspected or rights-checked. Every image position renders an abstract "light study" (CSS gradients, clearly not a photograph) with a small "Official photograph pending" label. Turn the labels off with `showAssetLabels: false` in `src/content/site.js` once photos are in.
+All photography, the emblem and the menu come from Republic's own channels on silkhospitality.com (the operator's site for the venue), fetched 24 Oct 2026. Originals are downloaded by `npm run originals` into `assets-src/originals/` (git-ignored, never modified); `npm run images` writes AVIF + JPEG derivatives at 640/1080/1600/2400 px into `public/img/` (never upscaled).
 
-## How to add the real photography (≈10 minutes)
+**Rights:** these are the restaurant's published marketing images, used here for a concept site. Written permission from Republic / Silk Hospitality is still needed before any public launch.
 
-1. Put original, untouched files in `assets-src/originals/` named after the slot (`hero.jpg`, `kitchen-3.jpg`, …). Any of jpg/png/webp/tif/heic.
-2. Put the official logo as `assets-src/brand/logo.svg`.
-3. Run `npm run images`. It writes AVIF/WebP/JPEG derivatives at 480–2560 px into `public/img/`, never upscales, never touches the originals, and warns about files too small for full-bleed use.
-4. `npm run build`.
+| Slot | Source (silkhospitality.com/media/…) | Original | Used in | Notes |
+|---|---|---|---|---|
+| `hero` | zdrcuzp0/republic-terrace-3.jpg | 3840×2560 | Hero, phase-two window | Rooftop terrace, Radisson Blu Iveria behind |
+| `intro` | szyhepfs/republic-restaurant.jpg | 4000×6000 | Intro | Dining room, Republic emblem on the window |
+| `seq-1` | imuluzce/republic-restaurant-4.jpg | 6000×4000 | Noon to six, frame 1 | Glazed room, afternoon |
+| `seq-2` | xmsfvhgi/republic-restaurant-3.jpg | 4000×6000 | Noon to six, frame 2 | Evening service, candle |
+| `seq-3` | zjdpkd4d/republic-gallery-7.jpg | 1200×801 | Noon to six, frame 3 | Dessert being served; from the Republic gallery — dish not named because the venue/dish is not captioned. Low resolution: max 1200 px |
+| `terrace` | t3mdcgmr/resp-rest-new-4.jpg | 8192×5464 | Terrace | Terrace with planters, city view |
+| `room-1` | atmbdc2t/republic.jpg | 3000×4500 | The building | Building on the square, TV tower above |
+| `room-2` | dsilkshi/republic-gallery-1.jpg | 1920×1280 | The building | Facade |
+| `room-3` | lyzblr04/republic-history-3.jpg | 1280×720 | The building | "Restaurant & Terrace" sign at night |
+| `evenings` | gvnnx5xz/respu-coming-soon.jpeg | 1600×1200 → crop 1600×520 | Late | Night interior. **Derived:** cropped above the overlaid "Coming soon" text; no other change |
+| `square-1..3` | aeppqoz4/republic-history-2.jpg, 2vnke5fl/republic-history-1.jpg, ixneq1q2/republic-history.jpg | ≤1344 px | The square | Archive photos from Republic's History page; small, used at card size only |
 
-Slots update automatically (responsive `srcset`, intrinsic size to prevent layout shift, lazy loading below the fold, high fetch priority for the hero). The typographic wordmark is replaced by `logo.svg` everywhere. Add `og:image` in `index.html` from the hero derivative.
+Not used, on purpose: Republic 24 and Event Hall photos (different venues), concert posters (past Event Hall events), catering photos, other Silk venues' images, and georgia.travel images (another restaurant).
 
-## Slots
+## Brand
 
-| Slot / file | Category | Section | Aspect | What the slot needs | Min width |
-|---|---|---|---|---|---|
-| `hero` | Hero | 01 Hero → window | 16:9 (4:5 crop on phones) | Widest evening shot of dining room or terrace | 2560 |
-| `kitchen-1` | Kitchen | 03 Kitchen frame 1 | 3:2 | Kitchen at work: hands, fire, preparation | 1600 |
-| `kitchen-2` | Kitchen | 03 Kitchen frame 2 | 3:2 | A dish being finished or plated | 1600 |
-| `kitchen-3` | Food | 03 Kitchen frame 3 | 3:2 | A signature dish as served (name it — a dish may only be named on the site if the photo is that dish) | 1600 |
-| `room-1` | Interiors | 05 The room | 4:5 | Dining room, evening, wide | 1200 |
-| `room-2` | Interiors | 05 The room | 1:1 | Glassware or table detail | 1000 |
-| `room-3` | Interiors | 05 The room | 3:2 | Atmosphere with guests (consent required) | 1600 |
-| `room-4` | Interiors | 05 The room | 4:5 | Bar, drinks or wine service | 1200 |
-| `room-5` | Food | 05 The room | 1:1 | A second dish | 1000 |
-| `evenings` | Live events | 06 Evenings | 4:5 | A live evening: piano, vocalist, room listening | 1200 |
-| `terrace` | Terrace & location | 07 Terrace | 21:9 (4:5 on phones) | Terrace with city view, dusk/night | 2560 |
-| `closing` | Interiors | 09 Closing | 3:4 | Late-evening table, candle or low light | 1000 |
-| `logo.svg` | Branding | Nav, closing | vector | Official Republic emblem/wordmark | — |
+| File | How it was made |
+|---|---|
+| `assets-src/brand/logo.svg` | From the official `republic-logo.jpg` (756×726): the four red rings re-drawn as exact circles from measured radii (299/269/239/209, stroke 9, colour #DF5446); the "R" vector-traced (potrace). Side-by-side check matched the original. |
+| `assets-src/brand/wordmark.svg` | Traced from the official `republic-logo-2.png` (313 px wide). Clean at nav size only; ask the restaurant for the vector wordmark before using it large. |
 
-Source descriptions and alt text (EN/KA) live in `src/content/assets.js`.
+## Menu
 
-## Inventory of candidate sources (not yet accessed)
+`src/content/menu.js` is a transcription of `Republic_Menu_Food_and_Drinks.pdf` served by the restaurant's QR menu (57 dishes, prices in GEL incl. 18% VAT, allergen codes as printed). Cocktail and drinks menus link to the official PDFs.
 
-| Source | Expected content | Access from sandbox | Rights |
-|---|---|---|---|
-| instagram.com/republic.tbilisi | Food, interiors, live-evening promos, Reels | Blocked | Restaurant-owned; confirm photographer credits |
-| facebook.com/RepublicRestaurantGeorgia | Albums, event posters | Blocked | Confirm page is current |
-| silkhospitality.com (Republic pages) | Professional interior/terrace photography, possibly logo | Blocked | Operator-owned; ask Silk Hospitality marketing |
-| restaurant.republic.ge | Legacy site photography | Blocked | May show an earlier concept — check before use |
-| qr.silkhospitality.com menu asset | Menu PDF/images | Blocked | Use for menu text, not imagery |
+## Missing — needs the restaurant
 
-No stock, AI-generated or third-party photographs were used, and none should be — the brief and this build rely on authentic Republic photography only.
-
-## Other assets
-
-| Asset | Source | Licence |
-|---|---|---|
-| Noto Serif Georgian (variable, wght + wdth) | npm `@fontsource-variable/noto-serif-georgian@5.3.0` | SIL OFL 1.1 |
-| Noto Sans Georgian (variable) | npm `@fontsource-variable/noto-sans-georgian@5.3.0` | SIL OFL 1.1 |
-| Cormorant Garamond (variable, roman + italic) | npm `@fontsource-variable/cormorant-garamond@5.3.0` | SIL OFL 1.1 |
-| `public/favicon.svg` | Made for this build: a plain serif "R" | Provisional — replace with the official mark |
+- Kitchen and named-dish photography (Instagram has it, but it requires a login and its CDN was blocked).
+- Vector wordmark.
+- Video footage, if any.
