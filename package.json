@@ -1,0 +1,11 @@
+{
+  "name": "republic-tbilisi",
+  "private": true,
+  "description": "Repository root: the website lives in republic-web/. This lets hosting build from the root.",
+  "scripts": {
+    "build": "cd republic-web && npm ci && npm run build"
+  },
+  "engines": {
+    "node": "22.x"
+  }
+}
