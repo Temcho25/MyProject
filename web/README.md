@@ -1,0 +1,44 @@
+# Orientiri Lisi — website concept
+
+A bilingual (Georgian / English) landing experience for Orientiri Lisi, the gated community of
+24 private-house plots near Lisi Lake, Tbilisi. Research notes, verified facts, the creative
+concept and the motion storyboard are in [DESIGN.md](DESIGN.md).
+
+## Run
+
+```bash
+cd web
+npm install
+npm run dev       # http://localhost:5173  (Georgian at /, English at /en/)
+npm run build     # static site in dist/
+npm run preview   # serve the build
+npm run check     # content checks (both languages complete, plot data valid)
+```
+
+Stack: Vite + plain HTML/CSS/JS. Pages are rendered at build time from `src/template.js`, so all
+content and drawings are in the HTML (fast first paint, works without JavaScript). Fonts are
+self-hosted (Noto Serif Georgian, Noto Sans Georgian, Manrope). No animation library is used:
+`src/motion.js` is a ~100-line scroll engine (one rAF loop, IntersectionObserver gating,
+`position: sticky` pins, native scrolling).
+
+## Before going live
+
+| What | Where | Why |
+|---|---|---|
+| **Plot data** | `src/content/plots.js` | No current official plot numbers, areas or statuses could be accessed. The plan is an indicative diagram; every plot shows "from 1,000 m²" and "confirmed by the sales team". Replace the `plan` geometry with the official one and fill `data` (`area`, `status`). `npm run check` validates it. |
+| **Official photography** | `src/content/media.js`, `public/media/` | The official renders could not be downloaded. Hero, closing and gallery slots are ready; drawings are shown until photos are added. |
+| **Form backend** | `.env` → `VITE_INQUIRY_ENDPOINT` | Without it, the form validates and hands off to the visitor's email app (it never shows a fake "sent" message). |
+| **Contacts** | `src/content/site.js` | Taken from the official site via the brief; re-confirm before launch. |
+| **Infrastructure timing** | `src/content/copy.js` (`infra.status`, FAQ) | Currently "completion scheduled for the end of 2026 (per the developer)". Update as works progress. |
+| **Canonical domain** | `src/content/site.js` → `url` | Used for canonical, hreflang and Open Graph URLs. |
+
+## Structure
+
+```
+src/content/   copy (ka/en), facts, plot data, photo slots
+src/lib/       topography generator, SVG drawings (location, site plan, street section, plates)
+src/template.js  page markup
+src/motion.js    scroll engine
+src/main.js      scenes and interactions
+src/styles/main.css
+```
