@@ -1,0 +1,8 @@
+{
+  "name": "orientiri-lisi",
+  "private": true,
+  "description": "Repository root: the website lives in web/. These scripts let hosting build from the root.",
+  "scripts": {
+    "build": "cd web && npm ci && npm run build"
+  }
+}
