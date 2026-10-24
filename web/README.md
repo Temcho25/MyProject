@@ -30,7 +30,15 @@ self-hosted (Noto Serif Georgian, Noto Sans Georgian, Manrope). No animation lib
 | **Form backend** | `.env` → `VITE_INQUIRY_ENDPOINT` | Without it, the form validates and hands off to the visitor's email app (it never shows a fake "sent" message). |
 | **Contacts** | `src/content/site.js` | Taken from the official site via the brief; re-confirm before launch. |
 | **Infrastructure timing** | `src/content/copy.js` (`infra.status`, FAQ) | Currently "completion scheduled for the end of 2026 (per the developer)". Update as works progress. |
+| **Search indexing** | `index.html`, `en/index.html`, `vercel.json`, `public/robots.txt` | The concept preview is hidden from search engines (noindex). Remove these before the real launch. |
 | **Canonical domain** | `src/content/site.js` → `url` | Used for canonical, hreflang and Open Graph URLs. |
+
+## Preview deploy (Vercel)
+
+```bash
+cd web
+npx vercel --prod   # project name: orientiri-concept
+```
 
 ## Structure
 
