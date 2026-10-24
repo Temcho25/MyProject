@@ -1,0 +1,23 @@
+{
+  "name": "republic-tbilisi-website",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A Night at Republic — website for Republic Georgian Restaurant, First Republic Square, Tbilisi",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173",
+    "images": "node scripts/build-images.mjs",
+    "qa": "node tests/qa.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/cormorant-garamond": "5.3.0",
+    "@fontsource-variable/noto-sans-georgian": "5.3.0",
+    "@fontsource-variable/noto-serif-georgian": "5.3.0"
+  },
+  "devDependencies": {
+    "sharp": "0.35.5",
+    "vite": "8.3.5"
+  }
+}
