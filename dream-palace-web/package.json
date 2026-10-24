@@ -2,12 +2,15 @@
   "name": "dream-palace-web",
   "version": "1.0.0",
   "private": true,
-  "description": "Dream Palace — Living Architecture website (static, no build step).",
+  "description": "Dream Palace \u2014 Living Architecture website (static, no build step).",
   "type": "module",
   "scripts": {
     "start": "node scripts/serve.mjs 4173",
     "check": "node scripts/check.mjs",
-    "test": "node tests/e2e.mjs"
+    "test": "node tests/e2e.mjs",
+    "standalone": "node scripts/standalone.mjs"
   },
-  "engines": { "node": ">=18" }
+  "engines": {
+    "node": ">=18"
+  }
 }

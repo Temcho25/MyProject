@@ -15,6 +15,7 @@ modules and SVG.
 npm start          # http://localhost:4173  (node scripts/serve.mjs)
 npm run check      # static checks: syntax, translations complete, mixed-script typos, asset paths, secrets
 npm test           # Playwright end-to-end checks (needs `playwright` + Chromium installed)
+npm run standalone # dist/dream-palace.html — one self-contained file (fonts, CSS, JS inlined) to open or send without a server
 ```
 
 Deploy by uploading the folder to any static host. Nothing has to be compiled.
