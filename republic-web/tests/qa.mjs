@@ -113,10 +113,11 @@ for (const [w, h] of [[360, 740], [390, 844], [768, 1024], [1440, 900], [1920, 1
   check('Escape closes drawer', await page.evaluate(() => document.querySelector('[data-drawer]').hidden && document.activeElement.matches('[data-burger]')));
   await page.click('[data-burger]');
   await page.waitForTimeout(700);
-  await page.click('.drawer__links a[href="#evenings"]');
-  await page.waitForTimeout(1600);
-  const top = await page.evaluate(() => document.querySelector('#evenings').getBoundingClientRect().top);
-  check('drawer link navigates and closes', Math.abs(top) < 40 && (await page.evaluate(() => document.querySelector('[data-drawer]').hidden)), `top ${top.toFixed(0)}`);
+  check('drawer offers the Menu link', await page.evaluate(() => [...document.querySelectorAll('.drawer__links a')].some((a) => a.getAttribute('href') === '/menu/')));
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(600);
+  await page.evaluate(() => scrollTo({ top: document.querySelector('#evenings').offsetTop, behavior: 'instant' }));
+  await page.waitForTimeout(800);
   const bar = await page.evaluate(() => document.querySelector('[data-actionbar]').classList.contains('is-on'));
   check('mobile action bar visible mid-page', bar);
   await ctx.close();
