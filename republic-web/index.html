@@ -58,13 +58,13 @@
 
   <!-- ─────────── Navigation ─────────── -->
   <header class="nav" data-nav>
-    <a class="nav__brand" href="#top" aria-label="Republic — home">
+    <a class="nav__brand" href="#top" data-i18n-attr="aria-label:brand.home" aria-label="Republic — home">
       <span class="emblem emblem--nav" data-emblem aria-hidden="true"></span>
       <span class="wordmark" data-wordmark>Republic</span>
     </a>
     <nav class="nav__links" data-i18n-attr="aria-label:nav.label" aria-label="Main">
       <a href="#kitchen" data-i18n="nav.kitchen">Evening</a>
-      <a href="#menu" data-i18n="nav.menu">Menu</a>
+      <a href="/menu/" data-i18n="nav.menu">Menu</a>
       <a href="#room" data-i18n="nav.room">Building</a>
       <a href="#evenings" data-i18n="nav.evenings">Late</a>
       <a href="#visit" data-i18n="nav.visit">Terrace</a>
@@ -83,7 +83,7 @@
   <div class="drawer" id="drawer" data-drawer hidden>
     <nav class="drawer__links" data-i18n-attr="aria-label:nav.label" aria-label="Main">
       <a href="#kitchen" style="--i:0"><span data-i18n="nav.kitchen">Evening</span></a>
-      <a href="#menu" style="--i:1"><span data-i18n="nav.menu">Menu</span></a>
+      <a href="/menu/" style="--i:1"><span data-i18n="nav.menu">Menu</span></a>
       <a href="#room" style="--i:2"><span data-i18n="nav.room">Building</span></a>
       <a href="#evenings" style="--i:3"><span data-i18n="nav.evenings">Late</span></a>
       <a href="#visit" style="--i:4"><span data-i18n="nav.visit">Terrace</span></a>
@@ -113,7 +113,7 @@
           <p class="hero__lede" data-i18n="hero.lede" data-reveal style="--d:6">Modern Georgian flavours and signature dishes by Brand Chef Irakli Asatiani — on the rooftop of the Republic building, across from the Radisson Blu Iveria.</p>
           <div class="hero__ctas" data-reveal style="--d:7">
             <a class="btn btn--red btn--magnet" href="#reserve" data-book-link><span data-i18n="hero.reserve">Book a table</span></a>
-            <a class="btn btn--ghost" href="#menu"><span data-i18n="hero.menu">See the menu</span></a>
+            <a class="btn btn--ghost" href="/menu/"><span data-i18n="hero.menu">See the menu</span></a>
           </div>
         </div>
 
@@ -176,34 +176,23 @@
       </div>
     </section>
 
-    <!-- ─────────── 04 Menu ─────────── -->
-    <section class="menu" id="menu" data-tone="ivory" aria-labelledby="menu-title">
-      <header class="menu__head">
-        <p class="kicker" data-reveal data-i18n="menu.kicker">III — The menu</p>
-        <h2 class="display display--l" id="menu-title" data-split data-i18n="menu.title">Tonight’s table</h2>
-        <p class="menu__lede" data-reveal style="--d:2" data-i18n="menu.lede">The food menu as served at Republic. Prices in lari, including 18% VAT; small numbers mark allergens.</p>
-      </header>
-
-      <div class="featured" data-featured aria-labelledby="featured-title">
-        <h3 class="sr-only" id="featured-title" data-i18n="menu.featured">From the menu</h3>
-      </div>
-
-      <div class="menu__body" data-menu>
-        <div class="menu__empty" data-menu-empty hidden>
-          <h3 class="display display--s" data-i18n="menu.empty.title">Our current menu and prices</h3>
-          <p data-i18n="menu.empty.body">See the current menu and prices on our official menu page.</p>
-          <a class="btn btn--dark" data-menu-link href="#" target="_blank" rel="noopener"><span data-i18n="menu.open">Open the full menu</span><span class="btn__arrow" aria-hidden="true">↗</span></a>
+    <!-- ─────────── 04 Menu: an invitation; the menu itself lives on /menu/ ─────────── -->
+    <section class="menu-teaser" id="menu" data-tone="ivory" aria-labelledby="menu-title">
+      <div class="menu-teaser__grid">
+        <div class="menu-teaser__text">
+          <p class="kicker" data-reveal data-i18n="menu.kicker">The menu</p>
+          <h2 class="display display--l" id="menu-title" data-split data-i18n="menu.title">Tonight’s table</h2>
+          <p class="menu-teaser__lede" data-reveal style="--d:2" data-i18n="menu.teaser">Khinkali, khachapuri from the oven, grilled meats and fish, Georgian desserts — 57 dishes in seven chapters, prices in lari.</p>
+          <div class="menu-teaser__ctas" data-reveal style="--d:3">
+            <a class="btn btn--dark" href="/menu/"><span data-i18n="menu.see">Open the menu</span><span class="btn__arrow" aria-hidden="true">→</span></a>
+            <a class="btn btn--line" data-pdf="cocktails" href="#" target="_blank" rel="noopener"><span data-i18n="menu.cocktails">Cocktails</span><span class="btn__arrow" aria-hidden="true">↗</span></a>
+            <a class="btn btn--line" data-pdf="drinks" href="#" target="_blank" rel="noopener"><span data-i18n="menu.drinks">Drinks</span><span class="btn__arrow" aria-hidden="true">↗</span></a>
+          </div>
         </div>
-      </div>
-
-      <div class="menu__foot">
-        <div class="legend" data-legend></div>
-        <div class="menu__links">
-          <a class="btn btn--line" data-pdf="cocktails" href="#" target="_blank" rel="noopener"><span data-i18n="menu.cocktails">Cocktails</span><span class="btn__arrow" aria-hidden="true">↗</span></a>
-          <a class="btn btn--line" data-pdf="drinks" href="#" target="_blank" rel="noopener"><span data-i18n="menu.drinks">Drinks</span><span class="btn__arrow" aria-hidden="true">↗</span></a>
-          <a class="btn btn--line" data-menu-link href="#" target="_blank" rel="noopener"><span data-i18n="menu.qr">Menu as served</span><span class="btn__arrow" aria-hidden="true">↗</span></a>
-          <a class="btn btn--line" data-delivery-link href="#" target="_blank" rel="noopener"><span data-i18n="menu.delivery">Order delivery</span><span class="btn__arrow" aria-hidden="true">↗</span></a>
-        </div>
+        <nav class="menu-teaser__card" data-reveal style="--d:2" data-i18n-attr="aria-label:menu.chapters" aria-label="Menu chapters">
+          <span class="emblem emblem--card" data-emblem aria-hidden="true"></span>
+          <ul class="chapters-list" data-menu-chapters></ul>
+        </nav>
       </div>
     </section>
 
@@ -366,7 +355,7 @@
   <!-- Mobile action bar -->
   <div class="actionbar" data-actionbar aria-hidden="true">
     <a class="btn btn--red" href="#reserve" data-book-link tabindex="-1"><span data-i18n="nav.reserve">Book</span></a>
-    <a class="btn btn--ghost" href="tel:+995591087172" data-phone-link tabindex="-1" aria-label="Call +995 591 08 71 72"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6.6 3.5h2.6l1.4 4-2 1.3a11.5 11.5 0 0 0 6.6 6.6l1.3-2 4 1.4v2.6a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2Z"/></svg></a>
+    <a class="btn btn--ghost" href="tel:+995591087172" data-phone-link tabindex="-1" data-i18n-attr="aria-label:call.label" aria-label="Call +995 591 08 71 72"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6.6 3.5h2.6l1.4 4-2 1.3a11.5 11.5 0 0 0 6.6 6.6l1.3-2 4 1.4v2.6a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2Z"/></svg></a>
   </div>
 </body>
 </html>

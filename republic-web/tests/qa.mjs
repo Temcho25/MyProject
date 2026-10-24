@@ -34,7 +34,7 @@ for (const [w, h] of [[360, 740], [390, 844], [768, 1024], [1440, 900], [1920, 1
     }
     check(`${w}px ${lang}: no horizontal page scroll`, maxOverflow <= 0, `overflow ${maxOverflow}px`);
     const heroCta = await page.evaluate(() => { scrollTo({ top: 0, behavior: 'instant' }); return [...document.querySelectorAll('.hero__ctas a')].map((a) => a.getAttribute('href')); });
-    check(`${w}px ${lang}: hero has booking + menu CTAs`, heroCta.some((h) => h.startsWith('https://eatapp.co/reserve/')) && heroCta.includes('#menu'), heroCta.join(' '));
+    check(`${w}px ${lang}: hero has booking + menu CTAs`, heroCta.some((h) => h.startsWith('https://eatapp.co/reserve/')) && heroCta.includes('/menu/'), heroCta.join(' '));
     const fitsTitle = await page.evaluate(() => { const t = document.querySelector('.hero__title'); return [...t.querySelectorAll('.w')].every((w) => w.getBoundingClientRect().right <= innerWidth + 1); });
     check(`${w}px ${lang}: hero title fits the viewport`, fitsTitle);
     const lang2 = await page.evaluate(() => document.documentElement.lang);
@@ -53,20 +53,22 @@ for (const [w, h] of [[360, 740], [390, 844], [768, 1024], [1440, 900], [1920, 1
   const ext = await page.evaluate(() => ({
     tel: [...document.querySelectorAll('a[href^="tel:"]')].map((a) => a.href),
     ig: document.querySelector('[data-instagram-link]').href,
-    menu: document.querySelector('[data-menu-link]').href,
+    menu: document.querySelector('[data-pdf="cocktails"]').href,
     google: document.querySelector('[data-maps="google"]').href,
     apple: document.querySelector('[data-maps="apple"]').href,
     book: [...document.querySelectorAll('[data-book-link], [data-booking-link]')].map((a) => a.href),
   }));
   check('phone links are tel:+995591087172', ext.tel.length >= 3 && ext.tel.every((t) => t === 'tel:+995591087172'), ext.tel.length + ' links');
   check('Instagram link', ext.ig === 'https://www.instagram.com/republic.tbilisi/', ext.ig);
-  check('official menu link set', ext.menu.startsWith('https://qr.silkhospitality.com/'), ext.menu);
+  check('official cocktails menu link set', ext.menu.startsWith('https://silkhospitality.com/media/'), ext.menu);
   check('every Book button opens the official EatApp page', ext.book.length >= 5 && ext.book.every((h) => h === 'https://eatapp.co/reserve/republic-roof-top-7a34d6'), ext.book.length + ' links');
   check('maps links', ext.google.startsWith('https://www.google.com/maps/place/Republic+Restaurant') && ext.apple.startsWith('https://maps.apple.com/'));
-  await page.click('.nav__links a[href="#menu"]');
-  await page.waitForTimeout(1400);
-  const menuTop = await page.evaluate(() => document.querySelector('#menu').getBoundingClientRect().top);
-  check('nav link scrolls to Menu', Math.abs(menuTop) < 40, `top ${menuTop.toFixed(0)}`);
+  const teaser = await page.evaluate(() => ({ links: [...document.querySelectorAll('[data-menu-chapters] a')].map((a) => a.getAttribute('href')), dishes: document.querySelectorAll('.dish').length }));
+  check('home shows a menu teaser, not the menu', teaser.links.length === 7 && teaser.links[0] === '/menu/#starters' && teaser.dishes === 0, teaser.links.join(' '));
+  await Promise.all([page.waitForURL('**/menu/'), page.click('.nav__links a[href="/menu/"]')]);
+  check('nav Menu link opens the menu page', await page.evaluate(() => !!document.querySelector('[data-menu-page] .course')));
+  await page.goBack({ waitUntil: 'networkidle' });
+  await page.waitForTimeout(500);
   const hrs = await page.evaluate(() => document.querySelector('#reserve [data-hours]').textContent);
   check('official opening hours shown', /12:00–01:00/.test(hrs) && /11:00–06:00/.test(hrs) && /05:00/.test(hrs), hrs.slice(0, 80));
   const imgs = await page.evaluate(() => [...document.querySelectorAll('.slot--photo img')].length);
@@ -120,24 +122,40 @@ for (const [w, h] of [[360, 740], [390, 844], [768, 1024], [1440, 900], [1920, 1
   await ctx.close();
 }
 
-// 5. Menu: official data, tabs, keyboard, allergen filter.
+// 5. Menu page: official data, chapters, scroll-spy, allergen filter, both languages, all widths.
+for (const [w, h] of [[360, 740], [390, 844], [768, 1024], [1440, 900], [1920, 1080]]) {
+  for (const lang of ['en', 'ka']) {
+    const { ctx, page, errors } = await open(w, h, { query: `menu/?lang=${lang}` });
+    const total = await page.evaluate(() => document.documentElement.scrollHeight);
+    let over = 0;
+    for (let y = 0; y < total; y += h * 0.8) { await page.evaluate((y) => scrollTo({ top: y, behavior: 'instant' }), y); await page.waitForTimeout(40); over = Math.max(over, await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)); }
+    check(`menu ${w}px ${lang}: no horizontal scroll`, over <= 0, `overflow ${over}px`);
+    const n = await page.evaluate(() => document.querySelectorAll('.dish').length);
+    check(`menu ${w}px ${lang}: 57 dishes in 7 chapters`, n === 57 && (await page.locator('.course').count()) === 7, n + ' dishes');
+    check(`menu ${w}px ${lang}: no errors`, !errors.length, errors.join(' | '));
+    await ctx.close();
+  }
+}
 {
-  const { ctx, page } = await open(1440, 900);
-  await page.evaluate(() => document.querySelector('#menu').scrollIntoView());
-  await page.waitForTimeout(500);
-  check('menu renders 7 official categories', (await page.locator('[role="tab"]').count()) === 7);
-  const first = await page.evaluate(() => [...document.querySelectorAll('.dish__name')].map((n) => n.firstChild.textContent.trim()));
-  check('starters list matches the official menu', first.length === 10 && first[0] === 'Ekala with walnuts & tkemali', first.slice(0, 2).join(' | '));
-  await page.focus('[role="tab"][aria-selected="true"]');
-  await page.keyboard.press('ArrowRight');
-  await page.waitForTimeout(600);
-  const sel = await page.evaluate(() => ({ t: document.querySelector('[role="tab"][aria-selected="true"] span').textContent, items: [...document.querySelectorAll('.dish__name')].map((n) => n.firstChild.textContent.trim()) }));
-  check('arrow key switches category and list', sel.t === 'Soups' && sel.items[0] === 'Chicken soup chikhirtma', JSON.stringify(sel).slice(0, 120));
+  const { ctx, page } = await open(1440, 900, { query: 'menu/?lang=en' });
+  const first = await page.evaluate(() => [...document.querySelectorAll('#starters .dish__name')].map((n) => n.firstChild.textContent.trim()));
+  check('starters match the official menu', first.length === 10 && first[0] === 'Ekala with walnuts & tkemali', first.slice(0, 2).join(' | '));
   check('prices shown in lari', await page.evaluate(() => document.querySelector('.dish__price').textContent.includes('₾')));
+  await page.click('.chapters a[href="#mains"]');
+  await page.waitForTimeout(1400);
+  const cur = await page.evaluate(() => document.querySelector('.chapters a[aria-current]')?.getAttribute('href'));
+  check('chapter link jumps and highlights the chapter', cur === '#mains', cur);
   await page.click('.chip-a[data-n="1"]');
-  const dim = await page.evaluate(() => ({ dimmed: document.querySelectorAll('.dish.is-avoided').length, total: document.querySelectorAll('.dish').length }));
-  check('allergen filter dims dishes containing gluten', dim.dimmed > 0 && dim.dimmed < dim.total, JSON.stringify(dim));
-  check('featured dishes come from the menu', (await page.locator('.feat').count()) === 4);
+  const dim = await page.evaluate(() => ({ dimmed: document.querySelectorAll('.dish.is-avoided').length, total: document.querySelectorAll('.dish').length, msg: document.querySelector('[data-filter-state]').textContent }));
+  check('allergen filter dims dishes containing gluten', dim.dimmed > 0 && dim.dimmed < dim.total && /dimmed/.test(dim.msg), JSON.stringify(dim));
+  await page.mouse.wheel(0, -400); // scrolling up brings the hidden nav back
+  await page.waitForTimeout(800);
+  await page.click('.nav [data-lang-toggle]');
+  await page.waitForTimeout(400);
+  const ka = await page.evaluate(() => ({ t: document.title, h: document.querySelector('#h-starters').textContent, kept: document.querySelectorAll('.dish.is-avoided').length }));
+  check('menu switches to Georgian and keeps the filter', ka.h === 'სტარტერი' && ka.t.startsWith('მენიუ') && ka.kept === dim.dimmed, JSON.stringify(ka));
+  const book = await page.evaluate(() => [...document.querySelectorAll('[data-book-link]')].every((a) => a.href.startsWith('https://eatapp.co/reserve/')));
+  check('menu page Book buttons open EatApp', book);
   await ctx.close();
 }
 

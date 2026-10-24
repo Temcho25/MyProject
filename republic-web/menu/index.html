@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Menu — Republic Georgian Restaurant, Tbilisi</title>
+  <meta name="description" content="The food menu of Republic Georgian Restaurant on First Republic Square, Tbilisi: starters, soups, baked dishes, khinkali, mains, sides and desserts, with prices and allergens." />
+  <meta name="theme-color" content="#f5f0e8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <meta property="og:title" content="Menu — Republic Georgian Restaurant, Tbilisi" />
+  <meta property="og:image" content="/img/seq-3-1080.jpg" />
+  <script>document.documentElement.classList.replace('no-js', 'js');</script>
+  <script type="module" src="/src/menu-page.js"></script>
+</head>
+<body class="page-menu">
+  <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+
+  <header class="nav" data-nav data-on="light">
+    <a class="nav__brand" href="/" data-i18n-attr="aria-label:menu.back" aria-label="Back to the restaurant">
+      <span class="emblem emblem--nav" data-emblem aria-hidden="true"></span>
+      <span class="wordmark" data-wordmark>Republic</span>
+    </a>
+    <nav class="nav__links" data-i18n-attr="aria-label:nav.label" aria-label="Main">
+      <a href="/#kitchen" data-i18n="nav.kitchen">Evening</a>
+      <a href="/menu/" aria-current="page" data-i18n="nav.menu">Menu</a>
+      <a href="/#room" data-i18n="nav.room">Building</a>
+      <a href="/#evenings" data-i18n="nav.evenings">Late nights</a>
+      <a href="/#visit" data-i18n="nav.visit">Terrace</a>
+    </nav>
+    <div class="nav__actions">
+      <button class="lang" type="button" data-lang-toggle data-i18n-attr="aria-label:lang.label" aria-label="Switch to Georgian"><span data-i18n="lang.switch">ქართული</span></button>
+      <a class="btn btn--small btn--red" href="#" data-book-link data-i18n="nav.reserve">Book</a>
+      <button class="burger" type="button" aria-expanded="false" aria-controls="drawer" data-burger data-i18n-attr="aria-label:nav.open" aria-label="Open navigation"><span></span><span></span></button>
+    </div>
+  </header>
+
+  <div class="drawer" id="drawer" data-drawer hidden>
+    <nav class="drawer__links" data-i18n-attr="aria-label:nav.label" aria-label="Main">
+      <a href="/" style="--i:0"><span data-i18n="menu.home">Republic</span></a>
+      <a href="/#kitchen" style="--i:1"><span data-i18n="nav.kitchen">Evening</span></a>
+      <a href="/menu/" style="--i:2" aria-current="page"><span data-i18n="nav.menu">Menu</span></a>
+      <a href="/#room" style="--i:3"><span data-i18n="nav.room">Building</span></a>
+      <a href="/#evenings" style="--i:4"><span data-i18n="nav.evenings">Late nights</span></a>
+      <a href="/#visit" style="--i:5"><span data-i18n="nav.visit">Terrace</span></a>
+    </nav>
+    <div class="drawer__foot">
+      <a href="tel:+995591087172" data-phone-link>+995 591 08 71 72</a>
+      <button class="lang" type="button" data-lang-toggle><span data-i18n="lang.switch">ქართული</span></button>
+    </div>
+  </div>
+
+  <main id="main" class="mp">
+    <header class="mp__head">
+      <span class="emblem emblem--page" data-emblem aria-hidden="true"></span>
+      <p class="mp__sub" data-i18n="menu.page.sub">Republic Georgian Restaurant</p>
+      <h1 class="mp__title" data-split data-i18n="menu.page.title">Menu</h1>
+      <p class="mp__lede" data-reveal style="--d:3" data-i18n="menu.page.lede">The food menu as served at Republic, curated by Brand Chef Irakli Asatiani. Prices in lari, including 18% VAT.</p>
+      <div class="mp__links" data-reveal style="--d:4">
+        <a class="btn btn--line" data-pdf="cocktails" href="#" target="_blank" rel="noopener"><span data-i18n="menu.cocktails">Cocktails</span><span class="btn__arrow" aria-hidden="true">↗</span></a>
+        <a class="btn btn--line" data-pdf="drinks" href="#" target="_blank" rel="noopener"><span data-i18n="menu.drinks">Drinks</span><span class="btn__arrow" aria-hidden="true">↗</span></a>
+        <a class="btn btn--line" data-delivery-link href="#" target="_blank" rel="noopener"><span data-i18n="menu.delivery">Order delivery</span><span class="btn__arrow" aria-hidden="true">↗</span></a>
+      </div>
+    </header>
+
+    <nav class="chapters" data-chapters data-i18n-attr="aria-label:menu.chapters" aria-label="Menu chapters"></nav>
+
+    <div class="mp__wrap">
+      <div class="mp__card" data-menu-page></div>
+      <aside class="mp__aside">
+        <div class="legend" data-legend></div>
+        <p class="legend__note" data-i18n="menu.ask">Please ask the team about ingredients or any food allergies you have.</p>
+      </aside>
+    </div>
+
+    <section class="mp__book" aria-labelledby="mp-book">
+      <h2 class="display display--m" id="mp-book" data-split data-i18n="menu.book.title">Hungry already?</h2>
+      <div class="mp__book-ctas">
+        <a class="btn btn--red" href="#" data-book-link><span data-i18n="hero.reserve">Book a table</span></a>
+        <a class="btn btn--line" href="tel:+995591087172" data-phone-link><span data-phone-display>+995 591 08 71 72</span></a>
+      </div>
+      <div class="mp__hours" data-hours></div>
+    </section>
+  </main>
+
+  <footer class="mp__foot">
+    <a href="/" class="mp__back"><span aria-hidden="true">←</span> <span data-i18n="menu.back">Back to the restaurant</span></a>
+    <address data-address>Republic building, 3rd floor<br />6 First Republic Square<br />Tbilisi 0108, Georgia</address>
+    <span class="closing__concept" data-i18n="footer.concept">Website concept · Photography and menu © Republic / Silk Hospitality</span>
+  </footer>
+</body>
+</html>

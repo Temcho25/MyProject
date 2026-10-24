@@ -11,12 +11,12 @@ export function initialLang() {
   return (navigator.languages || [navigator.language]).some((l) => /^ka\b/i.test(l)) ? 'ka' : 'en';
 }
 
-export function applyLang(next, { persist = false } = {}) {
+export function applyLang(next, { persist = false, metaTitle = 'meta.title', metaDesc = 'meta.description' } = {}) {
   lang = next;
   const html = document.documentElement;
   html.lang = lang;
-  document.title = t('meta.title');
-  document.querySelector('meta[name="description"]')?.setAttribute('content', t('meta.description'));
+  document.title = t(metaTitle);
+  document.querySelector('meta[name="description"]')?.setAttribute('content', t(metaDesc));
   document.querySelectorAll('[data-i18n]').forEach((el) => {
     el.textContent = t(el.dataset.i18n); // split headings are re-split afterwards
   });

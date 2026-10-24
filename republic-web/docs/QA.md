@@ -55,3 +55,11 @@ The first build shipped placeholders because no official source was reachable. W
 | Logo trace | R came out inverted | Inverted bitmap threshold; compared with original | Screens ✔ |
 
 `npm run qa` on the production build: **80 / 80 pass** (adds: 7 official categories, starters match the PDF, allergen filter, every Book button → EatApp, official hours shown, ≥13 official photos rendered, structured data with hours/menu/booking).
+
+## Iteration 4 — menu on its own page, language pass
+
+- Menu moved to `/menu/` (owner feedback: a full menu on the home page looked unprofessional). Home keeps a teaser with chapter links.
+- Language proofreading: hero no longer says the restaurant is "on the rooftop" (it is on the 3rd floor, with a rooftop terrace); Georgian hours wording, 1983–2018 tenses and several labels corrected; screen-reader labels translated.
+- Automated scan: no untranslated text in Georgian mode and no stray Georgian in English mode on either page (brand word "Republic" excepted).
+- Found by tests: the large "Book on EatApp" button lost its link during the refactor — fixed.
+- `npm run qa` on the production build: **111 / 111 pass** (menu page at 5 widths × 2 languages, 57 dishes, chapter scroll-spy, allergen filter kept across language switch).

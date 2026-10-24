@@ -1,140 +1,116 @@
-// Interactive menu built from the official menu data (content/menu.js):
-// featured dishes, an ARIA tablist of categories with staggered list
-// transitions, allergen marks, and an allergen filter that dims dishes.
-import { menu as officialMenu, allergens, featured } from '../content/menu.js';
-import { site } from '../content/site.js';
+// Menu rendering from the official data (content/menu.js).
+// - renderMenuTeaser: the home page's short invitation with chapter links.
+// - renderMenuPage: the dedicated /menu/ page — every chapter in order, a
+//   sticky chapter bar with scroll-spy, allergen marks and an allergen filter.
+import { menu, allergens } from '../content/menu.js';
 import { t } from './lang.js';
 
 const esc = (s = '') => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const other = (lang) => (lang === 'ka' ? 'en' : 'ka');
-const price = (p) => (typeof p === 'number' ? `<span class="dish__price">${p}<small> ₾</small></span>` : '');
-let current = 0;
+const MENU_URL = '/menu/';
 const avoid = new Set();
 
-function allergenMarks(a, lang) {
-  if (!a?.length) return '';
-  const names = a.map((n) => allergens[n]?.[lang]).filter(Boolean).join(', ');
-  return `<span class="dish__allergens" aria-label="${esc(t('menu.contains'))}: ${esc(names)}" title="${esc(names)}">${a.join(' · ')}</span>`;
+/* ───────── Home page teaser ───────── */
+export function renderMenuTeaser(lang) {
+  const box = document.querySelector('[data-menu-chapters]');
+  if (!box) return;
+  box.innerHTML = menu.categories.map((c, i) =>
+    `<li style="--i:${i}"><a href="${MENU_URL}#${c.id}"><span class="chap__name">${esc(c.name[lang])}</span><span class="chap__alt" lang="${other(lang)}">${esc(c.name[other(lang)])}</span></a></li>`).join('');
+  document.querySelectorAll('[data-pdf]').forEach((a) => (a.href = menu.pdfs[a.dataset.pdf]));
 }
 
-function dishHTML(it, i, lang) {
-  const note = it.note ? `<span class="dish__note">${esc(it.note[lang] || it.note.en)}</span>` : '';
-  return `<li class="dish" style="--i:${i}" data-a="${(it.a || []).join(',')}">
-    <div class="dish__row">
-      <span class="dish__name">${esc(it.name[lang])}${allergenMarks(it.a, lang)}</span>
-      <span class="dish__leader" aria-hidden="true"></span>${price(it.price)}
-    </div>
+/* ───────── Menu page ───────── */
+function marks(a, lang) {
+  if (!a?.length) return '';
+  const names = a.map((n) => allergens[n]?.[lang]).filter(Boolean).join(', ');
+  return `<span class="dish__allergens" title="${esc(names)}"><span class="sr-only">${esc(t('menu.contains'))}: ${esc(names)}</span><span aria-hidden="true">${a.join(' · ')}</span></span>`;
+}
+
+function dish(it, lang) {
+  const note = it.note ? `<span class="dish__note">${esc(it.note[lang])}</span>` : '';
+  const price = typeof it.price === 'number' ? `<span class="dish__price">${it.price}<small> ₾</small></span>` : '';
+  return `<li class="dish" data-a="${(it.a || []).join(',')}">
+    <div class="dish__row"><span class="dish__name">${esc(it.name[lang])}${marks(it.a, lang)}</span><span class="dish__leader" aria-hidden="true"></span>${price}</div>
     <span class="dish__alt" lang="${other(lang)}">${esc(it.name[other(lang)])}</span>${note}
   </li>`;
 }
 
-function applyAvoid(root) {
-  root.querySelectorAll('.dish, .feat').forEach((d) => {
+function applyAvoid() {
+  document.querySelectorAll('.dish').forEach((d) => {
     const a = (d.dataset.a || '').split(',').filter(Boolean).map(Number);
     d.classList.toggle('is-avoided', a.some((n) => avoid.has(n)));
   });
+  const st = document.querySelector('[data-filter-state]');
+  if (st) st.textContent = avoid.size ? t('menu.filter.on').replace('{n}', document.querySelectorAll('.dish.is-avoided').length) : '';
 }
 
-export function renderMenu(lang, data = officialMenu) {
-  const root = document.querySelector('[data-menu]');
-  const empty = root.querySelector('[data-menu-empty]');
-  document.querySelectorAll('[data-pdf]').forEach((a) => (a.href = data.pdfs?.[a.dataset.pdf] || site.menuUrl));
-  root.querySelector('.menu__ui')?.remove();
-  const cats = (data.categories || []).filter((c) => c.items?.length);
-  renderFeatured(lang, data);
-  renderLegend(lang, root);
-  if (!cats.length) { empty.hidden = false; return; }
-  empty.hidden = true;
-  current = Math.min(current, cats.length - 1);
+export function renderMenuPage(lang) {
+  const chapters = document.querySelector('[data-chapters]');
+  const body = document.querySelector('[data-menu-page]');
+  const legend = document.querySelector('[data-legend]');
+  if (!body) return;
 
-  const ui = document.createElement('div');
-  ui.className = 'menu__ui';
-  ui.innerHTML = `
-    <div class="tabs" role="tablist" aria-label="${esc(t('menu.tabs'))}">
-      ${cats.map((c, i) => `<button role="tab" id="tab-${c.id}" aria-controls="menu-panel" aria-selected="${i === current}" tabindex="${i === current ? 0 : -1}" data-i="${i}"><span>${esc(c.name[lang])}</span></button>`).join('')}
-      <span class="tabs__ink" aria-hidden="true"></span>
-    </div>
-    <div class="menu__panel" id="menu-panel" role="tabpanel" aria-labelledby="tab-${cats[current].id}" tabindex="0"></div>`;
-  root.prepend(ui);
+  chapters.innerHTML = menu.categories.map((c) =>
+    `<a href="#${c.id}" data-chap="${c.id}">${esc(c.name[lang])}</a>`).join('') + '<span class="chapters__ink" aria-hidden="true"></span>';
 
-  const tabs = [...ui.querySelectorAll('[role="tab"]')];
-  const ink = ui.querySelector('.tabs__ink');
-  const panel = ui.querySelector('.menu__panel');
-  const moveInk = () => {
-    const b = tabs[current];
-    ink.style.transform = `translateX(${b.offsetLeft}px)`;
-    ink.style.width = `${b.offsetWidth}px`;
-    const strip = b.parentElement;
-    const target = b.offsetLeft - (strip.clientWidth - b.offsetWidth) / 2;
-    strip.scrollTo({ left: target, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
-  };
-  const fill = (animate) => {
-    const c = cats[current];
-    const swap = () => {
-      panel.innerHTML = `<ul class="dishes">${c.items.map((it, i) => dishHTML(it, i, lang)).join('')}</ul>`;
-      panel.setAttribute('aria-labelledby', `tab-${c.id}`);
-      applyAvoid(panel);
-      requestAnimationFrame(() => panel.classList.remove('is-leaving'));
-    };
-    if (animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      panel.style.minHeight = panel.offsetHeight + 'px';
-      panel.classList.add('is-leaving');
-      setTimeout(() => { swap(); requestAnimationFrame(() => (panel.style.minHeight = '')); }, 240);
-    } else swap();
-  };
-  const select = (i, focus) => {
-    if (i === current) return;
-    tabs[current].setAttribute('aria-selected', 'false'); tabs[current].tabIndex = -1;
-    current = i;
-    tabs[i].setAttribute('aria-selected', 'true'); tabs[i].tabIndex = 0;
-    if (focus) tabs[i].focus({ preventScroll: true });
-    moveInk(); fill(true);
-  };
-  tabs.forEach((b) => b.addEventListener('click', () => select(Number(b.dataset.i))));
-  ui.querySelector('.tabs').addEventListener('keydown', (e) => {
-    const map = { ArrowRight: 1, ArrowLeft: -1, Home: -Infinity, End: Infinity };
-    if (!(e.key in map)) return;
-    e.preventDefault();
-    const n = map[e.key];
-    select(n === -Infinity ? 0 : n === Infinity ? tabs.length - 1 : (current + n + tabs.length) % tabs.length, true);
-  });
-  fill(false);
-  requestAnimationFrame(moveInk);
-  document.fonts?.ready.then(moveInk);
-  addEventListener('resize', moveInk);
-}
+  body.innerHTML = menu.categories.map((c) => `
+    <section class="course" id="${c.id}" aria-labelledby="h-${c.id}">
+      <header class="course__head">
+        <h2 class="course__title" id="h-${c.id}">${esc(c.name[lang])}</h2>
+        <p class="course__alt" lang="${other(lang)}">${esc(c.name[other(lang)])}</p>
+      </header>
+      <ul class="dishes">${c.items.map((it) => dish(it, lang)).join('')}</ul>
+    </section>`).join('');
 
-function renderFeatured(lang, data) {
-  const box = document.querySelector('[data-featured]');
-  box.querySelectorAll('.feat, .featured__label').forEach((n) => n.remove());
-  const find = ([cat, en]) => data.categories?.find((c) => c.id === cat)?.items.find((i) => i.name.en === en);
-  const items = featured.map((f) => [f[0], find(f)]).filter(([, it]) => it);
-  if (!items.length) { box.hidden = true; return; }
-  box.hidden = false;
-  box.insertAdjacentHTML('beforeend', `<p class="featured__label kicker" aria-hidden="true">${esc(t('menu.featured'))}</p>` + items.map(([cat, it], i) => {
-    const c = data.categories.find((x) => x.id === cat);
-    return `<article class="feat" style="--i:${i}" data-reveal data-a="${(it.a || []).join(',')}">
-      <p class="feat__cat">${esc(c.name[lang])}</p>
-      <h4 class="feat__name">${esc(it.name[lang])}</h4>
-      <p class="feat__alt" lang="${other(lang)}">${esc(it.name[other(lang)])}</p>
-      ${it.note ? `<p class="feat__note">${esc(it.note[lang])}</p>` : ''}
-      <p class="feat__price">${it.price}<small> ₾</small>${allergenMarks(it.a, lang)}</p>
-    </article>`;
-  }).join(''));
-}
-
-function renderLegend(lang, root) {
-  const box = document.querySelector('[data-legend]');
-  box.innerHTML = `<p class="legend__title">${esc(t('menu.allergens'))}</p>
+  legend.innerHTML = `
+    <p class="legend__title">${esc(t('menu.allergens'))}</p>
     <div class="legend__chips" role="group" aria-label="${esc(t('menu.allergens'))}">
       ${Object.entries(allergens).map(([n, a]) => `<button type="button" class="chip-a" aria-pressed="${avoid.has(+n)}" data-n="${n}"><b>${n}</b>${esc(a[lang])}</button>`).join('')}
     </div>
-    <p class="legend__hint">${esc(t('menu.filter'))}</p>
-    <p class="legend__note">${esc(t('menu.vat'))} ${esc(t('menu.ask'))}</p>`;
-  box.querySelectorAll('.chip-a').forEach((b) => b.addEventListener('click', () => {
+    <p class="legend__hint">${esc(t('menu.filter'))} <span class="legend__state" data-filter-state aria-live="polite"></span></p>`;
+  legend.querySelectorAll('.chip-a').forEach((b) => b.addEventListener('click', () => {
     const n = Number(b.dataset.n);
     avoid.has(n) ? avoid.delete(n) : avoid.add(n);
     b.setAttribute('aria-pressed', String(avoid.has(n)));
-    applyAvoid(document.querySelector('#menu'));
+    applyAvoid();
   }));
+  applyAvoid();
+  document.querySelectorAll('[data-pdf]').forEach((a) => (a.href = menu.pdfs[a.dataset.pdf]));
+  spy();
+}
+
+/* Chapter bar: highlights the chapter in view and slides an ink line under it. */
+let spyOn = false;
+let refresh = () => {};
+function spy() {
+  const bar = document.querySelector('[data-chapters]');
+  const links = [...bar.querySelectorAll('a')];
+  const ink = bar.querySelector('.chapters__ink');
+  let active = '';
+  const set = (id) => {
+    if (id === active) return;
+    active = id;
+    links.forEach((a) => (a.dataset.chap === id ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')));
+    const a = links.find((l) => l.dataset.chap === id);
+    if (!a) return;
+    ink.style.transform = `translateX(${a.offsetLeft}px)`;
+    ink.style.width = `${a.offsetWidth}px`;
+    bar.scrollTo({ left: a.offsetLeft - (bar.clientWidth - a.offsetWidth) / 2, behavior: 'smooth' });
+  };
+  refresh = () => {
+    const y = innerHeight * 0.3;
+    let id = menu.categories[0].id;
+    for (const c of menu.categories) {
+      const el = document.getElementById(c.id);
+      if (el && el.getBoundingClientRect().top <= y) id = c.id;
+    }
+    set(id);
+  };
+  if (!spyOn) {
+    spyOn = true;
+    addEventListener('scroll', () => requestAnimationFrame(() => refresh()), { passive: true });
+    addEventListener('resize', () => refresh());
+    document.fonts?.ready.then(() => refresh());
+  }
+  refresh();
 }

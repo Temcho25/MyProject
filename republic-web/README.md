@@ -26,10 +26,12 @@ The build could not reach the restaurant's own channels (see `docs/RESEARCH.md`)
 
 | Path | What |
 |---|---|
-| `index.html` | Semantic page, English fallback copy, structured data (verified facts only) |
+| `index.html` | Home page: story, menu teaser, building, late nights, terrace, booking |
+| `menu/index.html` | Menu page: all 57 dishes by chapter, sticky chapter bar, allergen filter |
 | `src/content/` | Facts (`site.js`), copy (`i18n.js`), image slots (`assets.js`), menu |
 | `src/motion/engine.js` | One rAF loop: cached offsets, damped scroll progress, sleeps when settled |
 | `src/motion/scenes.js` | The storyboard: hero window, kitchen curtain, room track, staff lines, terrace width, candle glow |
 | `src/motion/text.js` | Word masks grouped into rendered lines for editorial reveals |
-| `src/ui/` | Language, image slots, menu tabs, reservation request, drawer |
+| `src/shell.js` | Shared shell for both pages: emblem, language, contacts, hours, drawer |
+| `src/ui/` | Language, image slots, menu (teaser + page), drawer |
 | `docs/` | Research log, creative direction & storyboard, asset manifest, QA log |
