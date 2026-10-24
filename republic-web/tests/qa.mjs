@@ -70,7 +70,8 @@ for (const [w, h] of [[360, 740], [390, 844], [768, 1024], [1440, 900], [1920, 1
   const hrs = await page.evaluate(() => document.querySelector('#reserve [data-hours]').textContent);
   check('official opening hours shown', /12:00–01:00/.test(hrs) && /11:00–06:00/.test(hrs) && /05:00/.test(hrs), hrs.slice(0, 80));
   const imgs = await page.evaluate(() => [...document.querySelectorAll('.slot--photo img')].length);
-  check('official photographs rendered in every slot', imgs >= 13, imgs + ' photos');
+  const studies = await page.evaluate(() => document.querySelectorAll('.slot--study').length);
+  check('official photographs rendered in every slot', imgs >= 12 && studies === 0, imgs + ' photos, ' + studies + ' placeholders');
   const events = await page.evaluate(() => document.querySelector('[data-events]').hidden);
   check('no unverified events displayed', events === true);
   const ld = await page.evaluate(() => JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent));
