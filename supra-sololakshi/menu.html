@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="ka">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>მენიუ — სუფრა სოლოლაკში</title>
+<meta name="description" content="სუფრა სოლოლაკშის ციფრული მენიუ — ქართული კერძები, ძიება და კატეგორიები თქვენს ტელეფონში.">
+<meta name="theme-color" content="#F4F0E7">
+<meta property="og:type" content="website">
+<meta property="og:title" content="მენიუ — სუფრა სოლოლაკში">
+<meta property="og:description" content="ქართული სამზარეულოს მენიუ. ამაღლების ქუჩა 30, სოლოლაკი, თბილისი.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-50 -50 100 100'%3E%3Ccircle r='48' fill='%23F4F0E7'/%3E%3Cg fill='%23243F69'%3E%3Cpath d='M0-9C8-15 10-29 0-40-10-29-8-15 0-9Z'/%3E%3Cpath transform='rotate(90)' d='M0-9C8-15 10-29 0-40-10-29-8-15 0-9Z'/%3E%3Cpath transform='rotate(180)' d='M0-9C8-15 10-29 0-40-10-29-8-15 0-9Z'/%3E%3Cpath transform='rotate(270)' d='M0-9C8-15 10-29 0-40-10-29-8-15 0-9Z'/%3E%3Ccircle r='6'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Manrope:wght@400;500;600;700&family=Noto+Sans+Georgian:wght@400;500;600&family=Noto+Serif+Georgian:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+(function(d){var r=d.documentElement;r.classList.add('js');
+try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)r.classList.add('rm');}catch(e){}
+try{var q=new URLSearchParams(location.search).get('lang'),s=localStorage.getItem('supra.lang');if((q||s)==='en')r.lang='en';}catch(e){}})(document);
+</script>
+<style>
+:root{
+  --ivory:#F4F0E7; --ivory-2:#ECE6D8; --ink:#111C2C; --blue:#243F69; --wine:#702A3B; --brass:#B69A66; --stone:#D8D0C2; --white:#FFFFFF;
+  --ink-70:rgba(17,28,44,.74); --ink-55:rgba(17,28,44,.68); --line:rgba(36,63,105,.18);
+  --display:"Noto Serif Georgian",Sylfaen,Georgia,serif;
+  --sans:"Manrope","Noto Sans Georgian",system-ui,-apple-system,"Segoe UI",Sylfaen,sans-serif;
+  --g:clamp(16px,4.5vw,40px);
+  --head-h:60px; --chips-h:56px;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+html:lang(en){--display:"Cormorant Garamond","Noto Serif Georgian",Georgia,serif}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+html.rm{scroll-behavior:auto}
+body{margin:0;background:var(--ivory);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;overflow-x:clip;-webkit-font-smoothing:antialiased;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+h1,h2,h3,p{margin:0}
+a{color:inherit}
+button,input{font:inherit;color:inherit}
+svg{display:block}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+:focus-visible{outline:2px solid var(--wine);outline-offset:2px}
+.wrap{max-width:760px;margin:0 auto;padding:0 var(--g)}
+
+/* Header */
+.head{position:sticky;top:0;z-index:30;background:rgba(244,240,231,.96);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);padding-top:env(safe-area-inset-top)}
+.head .wrap{height:var(--head-h);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;min-height:44px}
+.brand svg{width:30px;height:30px;color:var(--blue)}
+.brand b{font-family:var(--display);font-size:19px;font-weight:600;color:var(--blue);line-height:1}
+.brand small{display:block;font-size:11px;color:var(--ink-70);font-weight:600;margin-top:3px;letter-spacing:.04em}
+html:lang(en) .brand small{letter-spacing:.24em;text-transform:uppercase;font-size:9.5px}
+.head-r{display:flex;align-items:center;gap:8px}
+.lang{display:inline-flex;border:1px solid var(--line);padding:2px}
+.lang button{border:0;background:transparent;min-width:40px;min-height:36px;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--ink-70)}
+.lang button[aria-pressed="true"]{background:var(--blue);color:var(--ivory)}
+.home{display:inline-grid;place-items:center;width:42px;height:42px;border:1px solid var(--line);text-decoration:none}
+.home svg{width:18px;height:18px}
+
+/* Intro */
+.intro{padding-top:18px;padding-bottom:10px}
+.intro-top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.eyebrow{font-size:12.5px;font-weight:600;color:var(--blue);display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:22px;height:1px;background:currentColor}
+html:lang(en) .eyebrow{letter-spacing:.16em;text-transform:uppercase;font-size:11px}
+h1{font-family:var(--display);font-weight:500;font-size:clamp(34px,9vw,52px);line-height:1.05;margin-top:6px}
+.intro-meta{font-size:12.5px;color:var(--ink-70);text-align:right;line-height:1.4;font-variant-numeric:tabular-nums}
+.notice{margin-top:14px;display:flex;gap:10px;align-items:flex-start;background:rgba(112,42,59,.07);border-left:2px solid var(--wine);padding:10px 12px;font-size:13px;color:var(--ink)}
+.notice svg{width:16px;height:16px;color:var(--wine);flex:none;margin-top:2px}
+.notice a{font-weight:600;color:var(--wine)}
+
+/* Search */
+.search{position:relative;margin-top:14px}
+.search input{width:100%;height:50px;border:1px solid var(--line);background:var(--white);padding:0 48px 0 44px;font-size:16px;border-radius:0;-webkit-appearance:none;appearance:none;transition:border-color .2s}
+.search input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(36,63,105,.12)}
+.search input::-webkit-search-cancel-button{display:none}
+.search .ic{position:absolute;left:14px;top:50%;width:18px;height:18px;transform:translateY(-50%);color:var(--ink-55);pointer-events:none}
+.search .clr{position:absolute;right:4px;top:4px;width:42px;height:42px;border:0;background:transparent;cursor:pointer;display:grid;place-items:center;color:var(--ink-70)}
+.search .clr[hidden]{display:none}
+.search .clr svg{width:14px;height:14px}
+.count{font-size:12.5px;color:var(--ink-55);margin-top:8px;min-height:18px}
+
+/* Category chips */
+.chips{position:sticky;top:calc(var(--head-h) + env(safe-area-inset-top));z-index:25;background:rgba(244,240,231,.96);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.chips .wrap{padding:0}
+.chip-row{position:relative;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:8px var(--g);scroll-padding:0 var(--g);-webkit-overflow-scrolling:touch}
+.chip-row::-webkit-scrollbar{display:none}
+.chip{position:relative;z-index:1;flex:none;min-height:40px;padding:0 14px;border:0;background:transparent;cursor:pointer;font-size:14px;font-weight:600;color:var(--ink-70);white-space:nowrap;transition:color .25s}
+.chip[aria-current="true"]{color:var(--ivory)}
+.chip:disabled{opacity:.35;cursor:default}
+.chip-ind{position:absolute;z-index:0;top:8px;left:0;height:40px;width:0;background:var(--blue);transition:transform .45s var(--ease),width .45s var(--ease);pointer-events:none}
+html.rm .chip-ind{transition:none}
+
+/* Sections */
+.cat{scroll-margin-top:calc(var(--head-h) + var(--chips-h) + env(safe-area-inset-top) + 8px);padding:26px 0 8px}
+.cat[hidden]{display:none}
+.cat-h{display:flex;align-items:baseline;gap:12px;padding-bottom:10px;border-bottom:1px solid var(--ink)}
+.cat-n{font-family:var(--display);font-size:13px;color:#7A6231;font-weight:600;font-variant-numeric:tabular-nums}
+.cat h2{font-family:var(--display);font-weight:500;font-size:clamp(24px,6.4vw,32px);line-height:1.15}
+.cat-alt{margin-left:auto;font-size:12px;color:var(--ink-55);font-weight:600;letter-spacing:.06em;text-align:right}
+html:lang(ka) .cat-alt{letter-spacing:.14em;text-transform:uppercase;font-size:10.5px}
+.orn{height:14px;margin:8px 0 2px;color:var(--blue);opacity:.55}
+.orn svg{width:100%;height:100%}
+.items{list-style:none;margin:0;padding:0}
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line)}
+.item[hidden]{display:none}
+.item .nm{font-family:var(--display);font-size:18.5px;line-height:1.3;font-weight:500}
+html:lang(en) .item .nm{font-size:21px}
+.item .alt{grid-column:1;font-size:13px;color:var(--ink-55);line-height:1.35}
+.item .pr{grid-row:1;grid-column:2;font-variant-numeric:tabular-nums;font-weight:700;font-size:16px;white-space:nowrap;color:var(--blue)}
+.item .pr.tbc{color:var(--ink-55);font-weight:500}
+.item .desc{grid-column:1 / -1;font-size:13.5px;color:var(--ink-70)}
+.item .pic{grid-column:1 / -1;margin-top:8px;aspect-ratio:16/9;background:var(--stone);overflow:hidden}
+.item .pic img{width:100%;height:100%;object-fit:cover;display:block}
+mark{background:rgba(182,154,102,.35);color:inherit;padding:0 1px}
+.empty{padding:40px 0;text-align:center;color:var(--ink-70)}
+.empty[hidden]{display:none}
+.empty svg{width:56px;height:56px;margin:0 auto 14px;color:var(--blue);opacity:.5}
+.empty button{margin-top:12px;border:1px solid var(--ink);background:transparent;min-height:44px;padding:0 18px;cursor:pointer;font-weight:600}
+.js:not(.rm) .cat.enter .item{animation:itemIn .5s var(--ease) both;animation-delay:calc(var(--i,0) * 25ms)}
+@keyframes itemIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* Footer */
+.foot{margin-top:40px;background:var(--ink);color:rgba(244,240,231,.8);padding:30px 0 34px}
+.foot .band{height:20px;color:var(--brass);opacity:.6;margin-bottom:22px}
+.foot .band svg{width:100%;height:100%}
+.foot p{font-size:14px}
+.foot ul{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:4px}
+.foot a{display:inline-flex;min-height:36px;align-items:center;text-decoration:none;color:var(--ivory)}
+.foot a:hover{text-decoration:underline}
+.foot small{display:block;margin-top:18px;font-size:12px;color:rgba(244,240,231,.55)}
+
+/* Bottom action bar */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:40;padding:10px var(--g) calc(10px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:8px;pointer-events:none}
+.bar > *{pointer-events:auto}
+.call{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 22px;background:var(--blue);color:var(--ivory);text-decoration:none;font-weight:600;font-size:15px;box-shadow:0 10px 30px -12px rgba(17,28,44,.55);flex:1;max-width:420px}
+.call svg{width:18px;height:18px}
+.top{width:52px;height:52px;border:1px solid var(--line);background:var(--ivory);cursor:pointer;display:grid;place-items:center;box-shadow:0 10px 30px -14px rgba(17,28,44,.45);transition:opacity .3s,transform .4s var(--ease)}
+.top svg{width:18px;height:18px}
+.top[data-show="false"]{opacity:0;transform:translateY(12px);pointer-events:none}
+@media (min-width:760px){ .item .nm{font-size:20px} .call{flex:none} }
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <path id="pt" d="M0,-9 C8,-15 10,-29 0,-41 C-10,-29 -8,-15 0,-9Z"/>
+  <symbol id="rosette" viewBox="-50 -50 100 100"><circle r="47.5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle r="40" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="0 10.472"/><g fill="currentColor"><use href="#pt"/><use href="#pt" transform="rotate(45)"/><use href="#pt" transform="rotate(90)"/><use href="#pt" transform="rotate(135)"/><use href="#pt" transform="rotate(180)"/><use href="#pt" transform="rotate(225)"/><use href="#pt" transform="rotate(270)"/><use href="#pt" transform="rotate(315)"/></g><circle r="6.5" fill="currentColor"/></symbol>
+  <symbol id="vine" viewBox="0 0 64 22" preserveAspectRatio="none"><g fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"><path d="M0 11 C10 2 22 2 32 11 S54 20 64 11"/><path d="M16 5.2 c1-3.6 6-4 6.4-.6 .3 2.4-3 3-3.6 1"/><path d="M48 16.8 c-1 3.6-6 4-6.4.6 -.3-2.4 3-3 3.6-1"/></g><g fill="currentColor"><circle cx="7" cy="16.5" r="1.2"/><circle cx="39" cy="5.5" r="1.2"/></g></symbol>
+  <pattern id="vp" width="64" height="14" patternUnits="userSpaceOnUse"><use href="#vine" width="64" height="14"/></pattern>
+</defs></svg>
+
+<header class="head">
+  <div class="wrap">
+    <a class="brand" href="index.html" data-i18n-attr="aria-label:brand.aria" aria-label="სუფრა სოლოლაკში — მთავარი გვერდი">
+      <svg aria-hidden="true"><use href="#rosette"/></svg>
+      <span><b data-i18n="brand.main">სუფრა</b><small data-i18n="brand.sub">სოლოლაკში</small></span>
+    </a>
+    <div class="head-r">
+      <div class="lang" role="group" data-i18n-attr="aria-label:lang" aria-label="ენა">
+        <button type="button" data-lang="ka" aria-pressed="true" lang="ka">ქა</button>
+        <button type="button" data-lang="en" aria-pressed="false" lang="en">EN</button>
+      </div>
+      <a class="home" href="index.html" data-i18n-attr="aria-label:home;title:home" aria-label="მთავარი გვერდი" title="მთავარი გვერდი"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2 8.5L9 2.5l7 6M4 7v8.5h4V11h2v4.5h4V7" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap intro">
+    <div class="intro-top">
+      <div>
+        <p class="eyebrow" data-i18n="eyebrow">ციფრული მენიუ</p>
+        <h1 data-i18n="title">მენიუ</h1>
+      </div>
+      <p class="intro-meta"><span data-i18n="addr">ამაღლების ქ. 30</span><br><span data-cfg="hours.display">11:00 – 00:00</span></p>
+    </div>
+    <p class="notice" id="demo-notice" role="note">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 4.5v4.5M8 11v.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span><span data-i18n="demo">საჩვენებელი მენიუ: კერძები და ფასები ოფიციალურ მენიუსთან შესადარებელია.</span> <a href="https://linktr.ee/Supra.Sololakshi" target="_blank" rel="noopener" data-cfg-href="officialMenuUrl" data-i18n="official">ოფიციალური მენიუ ↗</a></span>
+    </p>
+    <div class="search" role="search">
+      <label class="sr" for="q" data-i18n="searchLabel">კერძის ძიება</label>
+      <svg class="ic" viewBox="0 0 18 18" aria-hidden="true"><circle cx="8" cy="8" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 12l4 4" stroke="currentColor" stroke-width="1.5"/></svg>
+      <input id="q" type="search" autocomplete="off" enterkeyhint="search" data-i18n-attr="placeholder:searchPh" placeholder="მოძებნეთ კერძი — მაგ. ხინკალი">
+      <button class="clr" type="button" hidden data-i18n-attr="aria-label:clear" aria-label="ძიების გასუფთავება"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.5"/></svg></button>
+    </div>
+    <p class="count" id="count" aria-live="polite"></p>
+  </div>
+
+  <nav class="chips" data-i18n-attr="aria-label:catNav" aria-label="მენიუს კატეგორიები">
+    <div class="wrap"><div class="chip-row" id="chips"><span class="chip-ind" id="chip-ind" aria-hidden="true"></span></div></div>
+  </nav>
+
+  <div class="wrap" id="menu">
+    <noscript>
+      <p style="padding:24px 0">მენიუს სანახავად ჩართეთ JavaScript ან გახსენით <a href="https://linktr.ee/Supra.Sololakshi">ოფიციალური მენიუ</a>. ჯავშანი: <a href="tel:+995511558729">+995 511 55 87 29</a>.<br>To view this menu please enable JavaScript, or open the <a href="https://linktr.ee/Supra.Sololakshi">official menu</a>.</p>
+    </noscript>
+  </div>
+  <div class="wrap">
+    <div class="empty" id="empty" hidden>
+      <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#rosette"/></svg>
+      <p data-i18n="empty">ასეთი კერძი ვერ მოიძებნა.</p>
+      <button type="button" id="empty-clear" data-i18n="clearBtn">ძიების გასუფთავება</button>
+    </div>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="band" aria-hidden="true"><svg><rect width="100%" height="100%" fill="url(#vp)"/></svg></div>
+  <div class="wrap">
+    <p><strong data-i18n="brand.full">სუფრა სოლოლაკში</strong> · <span data-i18n="addrFull">ამაღლების ქ. 30, სოლოლაკი, თბილისი</span></p>
+    <ul>
+      <li><a href="index.html" data-i18n="l.site">რესტორნის ვებგვერდი →</a></li>
+      <li><a href="index.html#visit" data-i18n="l.visit">მისამართი და საათები →</a></li>
+      <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Supra%20Sololakshi%2C%2030%20Amaghleba%20St%2C%20Tbilisi" target="_blank" rel="noopener" data-cfg-href="mapsUrl" data-i18n="l.maps">მარშრუტი Google Maps-ზე ↗</a></li>
+      <li><a href="qr.html" data-i18n="l.qr">QR მენიუ მაგიდისთვის →</a></li>
+    </ul>
+    <small data-i18n="foot.demo">კონცეფცია — ციფრული მენიუს საჩვენებელი ვერსია.</small>
+  </div>
+</footer>
+
+<div class="bar">
+  <a class="call" href="tel:+995511558729" data-tel="reservations">
+    <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M4.5 2h3l1.2 3.6-1.9 1.3a9 9 0 004.3 4.3l1.3-1.9L16 10.5v3A1.5 1.5 0 0114.5 15 12.5 12.5 0 013 3.5 1.5 1.5 0 014.5 2z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+    <span data-i18n="call">ჯავშანი · დარეკვა</span>
+  </a>
+  <button class="top" type="button" data-show="false" data-i18n-attr="aria-label:toTop" aria-label="ზემოთ დაბრუნება"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M9 15V3M4 8l5-5 5 5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+</div>
+
+<script>
+(function(){
+'use strict';
+/* =====================================================================
+   MENU_CONFIG — restaurant facts (keep in sync with index.html / qr.html)
+   ===================================================================== */
+var MENU_CONFIG = {
+  phones: { reservations: { tel: '+995511558729', display: '+995 511 55 87 29' } }, // Linktree reservation number (confirm)
+  hours: { display: '11:00 – 00:00' },                                             // confirm
+  officialMenuUrl: 'https://linktr.ee/Supra.Sololakshi',
+  mapsUrl: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Supra Sololakshi, 30 Amaghleba St, Tbilisi'),
+  currency: '₾',
+  /* IMPORTANT: verified=false shows the demo notice.
+     The official menu (linked from linktr.ee/Supra.Sololakshi) could not be accessed while this demo was built.
+     Dish names below are standard Georgian dishes used as DEMONSTRATION DATA ONLY.
+     Prices are intentionally null — replace with the official menu before going live, then set verified:true. */
+  verified: false
+};
+
+/* MENU — categories and items. Each item: { ka, en, price (number|null), desc?: {ka,en}, photo?: url }.
+   Category ids "khinkali", "khachapuri", "mtsvadi" are linked from the homepage. */
+var MENU = [
+  { id: 'cold', ka: 'ცივი კერძები და სალათები', en: 'Cold dishes & salads', items: [
+    { ka: 'ფხალის ასორტი', en: 'Pkhali assortment', price: null },
+    { ka: 'ბადრიჯანი ნიგვზით', en: 'Aubergine rolls with walnut', price: null },
+    { ka: 'ქართული სალათი ნიგვზით', en: 'Georgian salad with walnuts', price: null },
+    { ka: 'ქართული ყველის ასორტი', en: 'Georgian cheese platter', price: null },
+    { ka: 'მჟავეულის ასორტი', en: 'Pickled vegetables', price: null }
+  ]},
+  { id: 'khinkali', ka: 'ხინკალი', en: 'Khinkali', items: [
+    { ka: 'ხინკალი ქალაქური', en: 'Khinkali, city style', price: null },
+    { ka: 'ხინკალი მთიულური', en: 'Khinkali, mountain style', price: null },
+    { ka: 'ხინკალი სოკოთი', en: 'Khinkali with mushrooms', price: null },
+    { ka: 'ხინკალი კარტოფილით', en: 'Khinkali with potato', price: null },
+    { ka: 'ხინკალი ყველით', en: 'Khinkali with cheese', price: null }
+  ]},
+  { id: 'khachapuri', ka: 'ხაჭაპური და ცომეული', en: 'Khachapuri & breads', items: [
+    { ka: 'იმერული ხაჭაპური', en: 'Imeruli khachapuri', price: null },
+    { ka: 'მეგრული ხაჭაპური', en: 'Megruli khachapuri', price: null },
+    { ka: 'აჭარული ხაჭაპური', en: 'Adjaruli khachapuri', price: null },
+    { ka: 'ლობიანი', en: 'Lobiani (bean bread)', price: null },
+    { ka: 'თონის პური', en: 'Tonis puri (clay-oven bread)', price: null }
+  ]},
+  { id: 'hot', ka: 'ცხელი კერძები', en: 'Hot dishes', items: [
+    { ka: 'ოჯახური', en: 'Ojakhuri', price: null },
+    { ka: 'ჩაქაფული', en: 'Chakapuli', price: null },
+    { ka: 'შქმერული', en: 'Shkmeruli', price: null },
+    { ka: 'ჩაშუშული', en: 'Chashushuli', price: null },
+    { ka: 'ლობიო ქოთანში', en: 'Lobio in a clay pot', price: null },
+    { ka: 'კუპატი', en: 'Kupati', price: null }
+  ]},
+  { id: 'mtsvadi', ka: 'მწვადი', en: 'Mtsvadi · grill', items: [
+    { ka: 'ღორის მწვადი', en: 'Pork mtsvadi', price: null },
+    { ka: 'ხბოს მწვადი', en: 'Veal mtsvadi', price: null },
+    { ka: 'ქათმის მწვადი', en: 'Chicken mtsvadi', price: null },
+    { ka: 'ქაბაბი', en: 'Kebab', price: null }
+  ]},
+  { id: 'sides', ka: 'გარნირი', en: 'Sides', items: [
+    { ka: 'შემწვარი კარტოფილი', en: 'Fried potatoes', price: null },
+    { ka: 'მჭადი', en: 'Mchadi (cornbread)', price: null },
+    { ka: 'სულგუნი', en: 'Sulguni cheese', price: null }
+  ]},
+  { id: 'desserts', ka: 'დესერტი', en: 'Desserts', items: [
+    { ka: 'ჩურჩხელა', en: 'Churchkhela', price: null },
+    { ka: 'პელამუში', en: 'Pelamushi', price: null }
+  ]},
+  { id: 'drinks', ka: 'სასმელები', en: 'Drinks', items: [
+    { ka: 'ქართული ღვინო — ჭიქით', en: 'Georgian wine — by the glass', price: null },
+    { ka: 'ჭაჭა', en: 'Chacha', price: null },
+    { ka: 'ქართული ლიმონათი', en: 'Georgian lemonade', price: null },
+    { ka: 'მინერალური წყალი', en: 'Mineral water', price: null }
+  ]}
+];
+
+var I18N = {
+  ka: {
+    'meta.title':'მენიუ — სუფრა სოლოლაკში','brand.main':'სუფრა','brand.sub':'სოლოლაკში','brand.full':'სუფრა სოლოლაკში','brand.aria':'სუფრა სოლოლაკში — მთავარი გვერდი',
+    'lang':'ენა','home':'მთავარი გვერდი','eyebrow':'ციფრული მენიუ','title':'მენიუ','addr':'ამაღლების ქ. 30','addrFull':'ამაღლების ქ. 30, სოლოლაკი, თბილისი',
+    'demo':'საჩვენებელი მენიუ: კერძები და ფასები ოფიციალურ მენიუსთან შესადარებელია.','official':'ოფიციალური მენიუ ↗',
+    'searchLabel':'კერძის ძიება','searchPh':'მოძებნეთ კერძი — მაგ. ხინკალი','clear':'ძიების გასუფთავება','clearBtn':'ძიების გასუფთავება',
+    'catNav':'მენიუს კატეგორიები','empty':'ასეთი კერძი ვერ მოიძებნა.','count.all':'{n} კერძი · {c} კატეგორია','count.q':'ნაპოვნია: {n}',
+    'tbc':'ფასი დასაზუსტებელია','call':'ჯავშანი · დარეკვა','toTop':'ზემოთ დაბრუნება',
+    'l.site':'რესტორნის ვებგვერდი →','l.visit':'მისამართი და საათები →','l.maps':'მარშრუტი Google Maps-ზე ↗','l.qr':'QR მენიუ მაგიდისთვის →',
+    'foot.demo':'კონცეფცია — ციფრული მენიუს საჩვენებელი ვერსია.'
+  },
+  en: {
+    'meta.title':'Menu — Supra Sololakshi','brand.main':'Supra','brand.sub':'Sololakshi','brand.full':'Supra Sololakshi','brand.aria':'Supra Sololakshi — home page',
+    'lang':'Language','home':'Home page','eyebrow':'Digital menu','title':'Menu','addr':'30 Amaghleba St','addrFull':'30 Amaghleba St, Sololaki, Tbilisi',
+    'demo':'Demonstration menu: dishes and prices must be checked against the official menu.','official':'Official menu ↗',
+    'searchLabel':'Search dishes','searchPh':'Search a dish — e.g. khinkali','clear':'Clear search','clearBtn':'Clear search',
+    'catNav':'Menu categories','empty':'No dishes match your search.','count.all':'{n} dishes · {c} categories','count.q':'{n} found',
+    'tbc':'Price to be confirmed','call':'Reserve · call','toTop':'Back to top',
+    'l.site':'Restaurant website →','l.visit':'Address & hours →','l.maps':'Directions in Google Maps ↗','l.qr':'QR table menu →',
+    'foot.demo':'Concept — digital menu demonstration.'
+  }
+};
+
+var root = document.documentElement, RM = root.classList.contains('rm');
+var lang = root.lang === 'en' ? 'en' : 'ka', query = '';
+function $(s, c){ return (c || document).querySelector(s); }
+function $$(s, c){ return Array.prototype.slice.call((c || document).querySelectorAll(s)); }
+function get(o, p){ return p.split('.').reduce(function(a, k){ return a == null ? a : a[k]; }, o); }
+function esc(t){ return String(t).replace(/[&<>"]/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; }); }
+function norm(t){ return String(t).toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').trim(); }
+function hl(text, q){
+  if (!q) return esc(text);
+  var i = norm(text).indexOf(q);
+  if (i < 0 || norm(text).length !== text.length) return esc(text);
+  return esc(text.slice(0, i)) + '<mark>' + esc(text.slice(i, i + q.length)) + '</mark>' + esc(text.slice(i + q.length));
+}
+function fmtPrice(p){
+  if (typeof p !== 'number') return null;
+  return (p % 1 ? p.toFixed(2) : String(p)) + ' ' + MENU_CONFIG.currency;
+}
+
+/* ---------- Render ---------- */
+var menuEl = $('#menu'), chipsEl = $('#chips'), ind = $('#chip-ind');
+function render(){
+  var d = I18N[lang], other = lang === 'en' ? 'ka' : 'en', html = '', chips = '';
+  MENU.forEach(function(cat, ci){
+    var n = String(ci + 1).padStart(2, '0');
+    chips += '<button class="chip" type="button" data-cat="' + cat.id + '">' + esc(cat[lang]) + '</button>';
+    html += '<section class="cat" id="' + cat.id + '" aria-labelledby="h-' + cat.id + '">' +
+      '<div class="cat-h"><span class="cat-n" aria-hidden="true">' + n + '</span><h2 id="h-' + cat.id + '">' + esc(cat[lang]) + '</h2>' +
+      '<span class="cat-alt" lang="' + other + '">' + esc(cat[other]) + '</span></div>' +
+      '<div class="orn" aria-hidden="true"><svg><rect width="100%" height="100%" fill="url(#vp)"/></svg></div><ul class="items">';
+    cat.items.forEach(function(it, ii){
+      var pr = fmtPrice(it.price);
+      html += '<li class="item" style="--i:' + ii + '" data-k="' + esc(norm(it.ka + ' ' + it.en + ' ' + cat.ka + ' ' + cat.en)) + '">' +
+        '<span class="nm" data-t="' + esc(it[lang]) + '">' + esc(it[lang]) + '</span>' +
+        (pr ? '<span class="pr">' + pr + '</span>' : '<span class="pr tbc" title="' + esc(d.tbc) + '"><span aria-hidden="true">— ' + MENU_CONFIG.currency + '</span><span class="sr">' + esc(d.tbc) + '</span></span>') +
+        '<span class="alt" lang="' + other + '" data-t="' + esc(it[other]) + '">' + esc(it[other]) + '</span>' +
+        (it.desc && it.desc[lang] ? '<span class="desc">' + esc(it.desc[lang]) + '</span>' : '') +
+        (it.photo ? '<span class="pic"><img src="' + esc(it.photo) + '" alt="' + esc(it[lang]) + '" loading="lazy" decoding="async" width="800" height="450" onerror="this.parentNode.remove()"></span>' : '') +
+        '</li>';
+    });
+    html += '</ul></section>';
+  });
+  var ns = $('noscript', menuEl);
+  menuEl.innerHTML = html; if (ns) menuEl.appendChild(ns);
+  $$('.chip', chipsEl).forEach(function(c){ c.remove(); });
+  chipsEl.insertAdjacentHTML('beforeend', chips);
+  $$('.chip', chipsEl).forEach(function(c){ c.addEventListener('click', function(){ go(c.getAttribute('data-cat')); }); });
+  filter();
+  observe();
+}
+
+/* ---------- Search ---------- */
+var qEl = $('#q'), clr = $('.clr'), countEl = $('#count'), empty = $('#empty');
+function filter(){
+  var q = norm(query), total = 0, cats = 0, d = I18N[lang];
+  $$('.cat', menuEl).forEach(function(sec){
+    var shown = 0;
+    $$('.item', sec).forEach(function(li){
+      var ok = !q || li.getAttribute('data-k').indexOf(q) > -1;
+      li.hidden = !ok; if (ok) shown++;
+      $$('[data-t]', li).forEach(function(s){ s.innerHTML = hl(s.getAttribute('data-t'), q); });
+    });
+    sec.hidden = shown === 0; total += shown; if (shown) cats++;
+    var chip = $('.chip[data-cat="' + sec.id + '"]', chipsEl); if (chip) chip.disabled = shown === 0;
+  });
+  empty.hidden = total > 0;
+  clr.hidden = !query;
+  countEl.textContent = q ? d['count.q'].replace('{n}', total) : d['count.all'].replace('{n}', total).replace('{c}', cats);
+  var cur = current && document.getElementById(current);
+  if (cur && cur.hidden) { var first = $('.cat:not([hidden])', menuEl); if (first) setCurrent(first.id, false); }
+  requestAnimationFrame(function(){ moveInd(false); });
+}
+var fT = 0;
+qEl.addEventListener('input', function(){ query = qEl.value; clearTimeout(fT); fT = setTimeout(filter, 60); });
+qEl.addEventListener('keydown', function(e){ if (e.key === 'Escape') { qEl.value = ''; query = ''; filter(); } if (e.key === 'Enter') { qEl.blur(); } });
+function clearSearch(){ qEl.value = ''; query = ''; filter(); qEl.focus(); }
+clr.addEventListener('click', clearSearch);
+$('#empty-clear').addEventListener('click', clearSearch);
+
+/* ---------- Category navigation + scrollspy ---------- */
+var current = null, lock = 0;
+function setCurrent(id, scrollChip){
+  current = id;
+  $$('.chip', chipsEl).forEach(function(c){ c.setAttribute('aria-current', String(c.getAttribute('data-cat') === id)); });
+  moveInd(scrollChip);
+}
+function moveInd(scrollChip){
+  var c = $('.chip[aria-current="true"]', chipsEl);
+  if (!c) { ind.style.width = '0px'; return; }
+  ind.style.width = c.offsetWidth + 'px';
+  ind.style.transform = 'translateX(' + c.offsetLeft + 'px)';
+  if (scrollChip !== false) {
+    var target = c.offsetLeft - (chipsEl.clientWidth - c.offsetWidth) / 2;
+    chipsEl.scrollTo({ left: Math.max(0, target), behavior: RM ? 'auto' : 'smooth' });
+  }
+}
+function go(id){
+  var sec = document.getElementById(id); if (!sec || sec.hidden) return;
+  setCurrent(id);
+  lock = Date.now() + 900;
+  sec.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' });
+  history.replaceState(null, '', '#' + id);
+  var h = $('h2', sec); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
+}
+var spy = null, seen = null;
+function observe(){
+  if (spy) spy.disconnect(); if (seen) seen.disconnect();
+  if (!('IntersectionObserver' in window)) return;
+  var vis = {};
+  spy = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ vis[e.target.id] = e.isIntersecting ? e.boundingClientRect.top : null; });
+    if (Date.now() < lock) return;
+    var best = null, bestTop = Infinity;
+    Object.keys(vis).forEach(function(k){ if (vis[k] != null && vis[k] < bestTop) { best = k; bestTop = vis[k]; } });
+    if (best && best !== current) setCurrent(best);
+  }, { rootMargin: '-' + (130) + 'px 0px -55% 0px' });
+  $$('.cat', menuEl).forEach(function(s){ spy.observe(s); });
+  if (!RM) {
+    seen = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('enter'); seen.unobserve(e.target); } });
+    }, { rootMargin: '0px 0px -10% 0px' });
+    $$('.cat', menuEl).forEach(function(s, i){ if (i > 1) seen.observe(s); });
+  }
+}
+
+/* ---------- Language ---------- */
+function setLang(l, persist){
+  lang = l === 'en' ? 'en' : 'ka'; root.lang = lang;
+  var d = I18N[lang]; document.title = d['meta.title'];
+  $$('[data-i18n]').forEach(function(el){ var v = d[el.getAttribute('data-i18n')]; if (v != null) el.textContent = v; });
+  $$('[data-i18n-attr]').forEach(function(el){ el.getAttribute('data-i18n-attr').split(';').forEach(function(p){ p = p.split(':'); if (d[p[1]] != null) el.setAttribute(p[0], d[p[1]]); }); });
+  $$('[data-lang]').forEach(function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-lang') === lang)); });
+  if (persist) { try { localStorage.setItem('supra.lang', lang); } catch (e) {} }
+  var keep = current; render(); if (keep) setCurrent(keep, false);
+}
+$$('[data-lang]').forEach(function(b){ b.addEventListener('click', function(){ setLang(b.getAttribute('data-lang'), true); }); });
+
+/* ---------- Config bindings, back-to-top ---------- */
+$$('[data-tel]').forEach(function(a){ var p = MENU_CONFIG.phones[a.getAttribute('data-tel')]; if (p) a.href = 'tel:' + p.tel; });
+$$('[data-cfg]').forEach(function(el){ var v = get(MENU_CONFIG, el.getAttribute('data-cfg')); if (typeof v === 'string') el.textContent = v; });
+$$('[data-cfg-href]').forEach(function(a){ var v = get(MENU_CONFIG, a.getAttribute('data-cfg-href')); if (v) a.href = v; });
+if (MENU_CONFIG.verified) $('#demo-notice').hidden = true;
+var topBtn = $('.top');
+topBtn.addEventListener('click', function(){ window.scrollTo({ top: 0, behavior: RM ? 'auto' : 'smooth' }); qEl.focus({ preventScroll: true }); });
+var ticking = false;
+addEventListener('scroll', function(){ if (ticking) return; ticking = true; requestAnimationFrame(function(){ ticking = false; topBtn.setAttribute('data-show', String(scrollY > 600)); }); }, { passive: true });
+addEventListener('resize', function(){ moveInd(false); });
+
+setLang(lang, false);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ moveInd(false); });
+// Deep link from the homepage plates (menu.html#khinkali)
+var h = decodeURIComponent(location.hash.slice(1));
+if (h && document.getElementById(h)) { requestAnimationFrame(function(){ var sec = document.getElementById(h); setCurrent(h); sec.scrollIntoView({ block: 'start' }); }); }
+else { setCurrent(MENU[0].id, false); }
+})();
+</script>
+</body>
+</html>
