@@ -71,6 +71,18 @@ function pinModel() {
   return g;
 }
 
+/* Compile every shader and upload every texture up front (while the page is idle), so nothing stalls
+   the first time the towers, park or selector appear mid-scroll — that stall is what felt like a pause on phones. */
+async function warmUp(renderer, scene, camera, extra = []) {
+  const hidden = [];
+  for (const o of extra) scene.add(o);
+  scene.traverse(o => { if (!o.visible) { hidden.push(o); o.visible = true; } });
+  scene.traverse(o => { if (!o.material) return; for (const m of [].concat(o.material)) for (const k of ["map", "emissiveMap"]) if (m[k]) renderer.initTexture(m[k]); });
+  try { if (renderer.compileAsync) await renderer.compileAsync(scene, camera); else renderer.compile(scene, camera); } catch (e) {}
+  hidden.forEach(o => { o.visible = false; });
+  for (const o of extra) scene.remove(o);
+}
+
 /* Painted soft shadow (a radial gradient on the ground) for devices without real-time shadows. */
 let shadowTex = null;
 function softShadow(x, z, r) {
@@ -113,6 +125,8 @@ function initHero() {
     renderer.setSize(W, H, false); camera.aspect = W / H; camera.updateProjectionMatrix();
   }
   resize(); addEventListener("resize", resize);
+  camera.position.set(200, 260, 260); camera.lookAt(0, 30, 0);
+  warmUp(renderer, scene, camera);
 
   const v = new THREE.Vector3(), target = new THREE.Vector3();
   let lastKey = "", last = performance.now(), visible = true;
@@ -202,7 +216,10 @@ function initSelector() {
     tower.userData.block = id; scene.add(tower); grow = reduce ? 1 : 0;
   }
   addEventListener("coord:sel", e => { state = { ...state, ...e.detail }; setBlock(state.block); bandTo = floorY(state.floor); dirty = true; });
+  BLOCKS.forEach(b => { if (!cache[b.id]) cache[b.id] = buildTower(b.floors, { lowPoly: touch, noShadow: !SHADOWS }); });
   setBlock(state.block); bandY = bandTo = floorY(state.floor);
+  camera.position.set(0, 60, 160); camera.lookAt(0, 40, 0);
+  warmUp(renderer, scene, camera, BLOCKS.map(b => cache[b.id]).filter(t => t !== tower));
 
   // drag to rotate (horizontal), vertical swipes still scroll the page on phones
   let rot = -30, vel = .05, drag = false, lx = 0, dirty = true;
@@ -242,8 +259,13 @@ function initSelector() {
 function boot() {
   try { initHero(); } catch (e) { console.error(e); document.documentElement.classList.add("no-webgl"); }
   const sel = document.getElementById("sel3d");
-  if (sel) new IntersectionObserver(([e], o) => { if (!e.isIntersecting) return; o.disconnect();
-    try { initSelector(); dispatchEvent(new CustomEvent("coord:selready")); } catch (err) { console.error(err); } }, { rootMargin: "600px" }).observe(sel);
+  if (sel) {
+    let done = false;
+    const go = () => { if (done) return; done = true; try { initSelector(); dispatchEvent(new CustomEvent("coord:selready")); } catch (err) { console.error(err); } };
+    // build while idle a few seconds after load; if the visitor gets there first, build it then
+    setTimeout(() => (window.requestIdleCallback ? requestIdleCallback(go, { timeout: 4000 }) : go()), 2500);
+    new IntersectionObserver(([e], o) => { if (e.isIntersecting) { o.disconnect(); go(); } }, { rootMargin: "900px" }).observe(sel);
+  }
 }
 // let the page paint first
 if (document.readyState === "complete") (window.requestIdleCallback ? requestIdleCallback(boot, { timeout: 600 }) : setTimeout(boot, 50));

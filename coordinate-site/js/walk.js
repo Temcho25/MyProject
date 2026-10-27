@@ -145,11 +145,14 @@ addEventListener('coord:walk', e => {
 let engine = null, booting = null, visible = false;
 function boot() {
   if (!booting) booting = Promise.all([import('three'), import('three/addons/environments/RoomEnvironment.js')])
-    .then(([THREE, env]) => { engine = createEngine(THREE, env.RoomEnvironment); engine.load(current); engine.setVisible(visible); })
+    .then(([THREE, env]) => { engine = createEngine(THREE, env.RoomEnvironment); engine.load(current); engine.setVisible(visible);
+      let n = 0; const tryWarm = () => { if (!engine.warm() && ++n < 40) setTimeout(tryWarm, 250); }; setTimeout(tryWarm, 300); })
     .catch(err => { console.error(err); $('#walkLoad').classList.add('err'); });
   return booting;
 }
-new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) boot(); }), { rootMargin: '800px 0px' }).observe(ROOT);
+new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) boot(); }), { rootMargin: '1500px 0px' }).observe(ROOT);
+// otherwise prepare it during idle time a few seconds after load, so scrolling never pauses on it
+addEventListener('load', () => setTimeout(() => (window.requestIdleCallback ? requestIdleCallback(boot, { timeout: 5000 }) : boot()), 6000));
 new IntersectionObserver(es => es.forEach(e => { visible = e.isIntersecting; if (engine) engine.setVisible(visible); })).observe(view);
 
 /* =====================================================================
@@ -548,5 +551,7 @@ function createEngine(THREE, RoomEnvironment) {
   function setVisible(v) { visible = v; if (v) kick(); else if (raf) { cancelAnimationFrame(raf); raf = 0; } }
 
   if (/[?&]walkdebug/.test(location.search)) window.__walk = { THREE, scene, camera, renderer, group, doll, player, kick, get M() { return M; } };
-  return { load: id => { load(id); }, setMode, zoom, resize, setVisible };
+  // render once while off screen so shaders/textures are ready before the visitor scrolls here
+  const warm = () => { if (!M) return false; renderer.render(scene, camera); return true; };
+  return { load: id => { load(id); }, setMode, zoom, resize, setVisible, warm };
 }
