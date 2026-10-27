@@ -1,0 +1,1126 @@
+<!doctype html>
+<html lang="ka">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Roof Development — Tbilisi</title>
+<meta name="description" content="Roof Development — real estate developer in Tbilisi. Full construction cycle from design to handover.">
+<meta name="theme-color" content="#0a0d13">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;700;900&family=Manrope:wght@400;500;700&family=Noto+Sans+Georgian:wght@300;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0a0d13; --ink-2:#111622; --ink-3:#1a2131; --line:rgba(255,255,255,.09);
+  --paper:#f3efe6; --paper-2:#e6e0d2; --text:#eef0f4; --muted:#8a93a6;
+  --gold:#f5bf1b; --gold-2:#ffd75a; --gold-deep:#b98a00;
+  --display:"Unbounded","Noto Sans Georgian",system-ui,sans-serif;
+  --body:"Manrope","Noto Sans Georgian",system-ui,sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1); --ease-io:cubic-bezier(.7,0,.2,1);
+  --pad:clamp(16px,4vw,56px);
+}
+:lang(ka){ --display:"Noto Sans Georgian","Unbounded",system-ui,sans-serif; }
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--ink);color:var(--text);font-family:var(--body);font-size:16px;line-height:1.55;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+img,svg,canvas{display:block}
+::selection{background:var(--gold);color:var(--ink)}
+.wrap{padding-inline:var(--pad)}
+.eyebrow{font-family:var(--body);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:12px}
+.eyebrow::before{content:"";width:28px;height:2px;background:var(--gold);flex:none}
+.gold{color:var(--gold)}
+
+/* ---------- preloader ---------- */
+#loader{position:fixed;inset:0;z-index:100;background:var(--ink);display:grid;place-items:center;transition:clip-path 1.1s var(--ease-io)}
+#loader.done{clip-path:inset(0 0 100% 0)}
+#loader .mark{width:min(34vw,170px)}
+#loader .count{position:absolute;bottom:var(--pad);right:var(--pad);font-family:"Unbounded",sans-serif;font-weight:300;font-size:clamp(40px,9vw,120px);color:var(--ink-3);font-variant-numeric:tabular-nums;line-height:1}
+#loader .bar{position:absolute;left:0;bottom:0;height:3px;background:var(--gold);width:0}
+.mark .roof{stroke-dasharray:80;stroke-dashoffset:80}
+.mark .check{stroke-dasharray:110;stroke-dashoffset:110}
+
+/* ---------- nav ---------- */
+header{position:fixed;inset:0 0 auto 0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:18px var(--pad);transition:transform .6s var(--ease),background .4s}
+header.hide{transform:translateY(-110%)}
+header.solid{background:rgba(10,13,19,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.brand{display:flex;align-items:center;gap:10px;font-family:"Unbounded",sans-serif;font-weight:500;font-size:13px;line-height:1.05;letter-spacing:.02em}
+.brand svg{width:38px;height:38px}
+nav.links{display:flex;gap:28px;font-size:13px;letter-spacing:.06em}
+nav.links a{position:relative;opacity:.8;transition:opacity .3s}
+nav.links a::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:right;transition:transform .5s var(--ease)}
+nav.links a:hover{opacity:1}nav.links a:hover::after{transform:scaleX(1);transform-origin:left}
+.tools{display:flex;align-items:center;gap:10px}
+.lang{display:flex;border:1px solid var(--line);border-radius:99px;padding:3px}
+.lang button{font-size:11px;letter-spacing:.08em;padding:6px 10px;border-radius:99px;opacity:.6;transition:.3s}
+.lang button.on{background:var(--gold);color:var(--ink);opacity:1;font-weight:700}
+.snd{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center}
+.snd i{display:flex;gap:2px;align-items:flex-end;height:12px}
+.snd i b{width:2px;background:var(--text);height:3px;transition:height .3s}
+.snd.on i b{animation:eq 1s ease-in-out infinite}
+.snd.on i b:nth-child(2){animation-delay:-.3s}.snd.on i b:nth-child(3){animation-delay:-.6s}
+@keyframes eq{0%,100%{height:3px}50%{height:12px}}
+.menu-btn{display:none;width:38px;height:38px;border:1px solid var(--line);border-radius:50%;place-items:center}
+.menu-btn span{width:14px;height:1.5px;background:var(--text);display:block;box-shadow:0 5px 0 var(--text),0 -5px 0 var(--text)}
+@media (max-width:900px){nav.links{display:none}.menu-btn{display:grid}}
+#mnav{position:fixed;inset:0;z-index:49;background:var(--ink-2);display:flex;flex-direction:column;justify-content:center;gap:6px;padding:var(--pad);clip-path:circle(0 at calc(100% - 40px) 38px);transition:clip-path .8s var(--ease-io)}
+#mnav.open{clip-path:circle(150% at calc(100% - 40px) 38px)}
+#mnav a{font-family:var(--display);font-weight:700;font-size:clamp(28px,8vw,44px);line-height:1.25}
+
+/* ---------- hero ---------- */
+#hero{position:relative;height:250vh}
+#hero .stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+#hero canvas{position:absolute;inset:0;width:100%;height:100%}
+#bg{filter:blur(1.6px) saturate(.9)}
+#hero .vignette{position:absolute;inset:0;background:radial-gradient(120% 90% at 60% 40%,transparent 40%,rgba(5,7,11,.85) 100%);pointer-events:none}
+.hero-copy{position:absolute;left:var(--pad);bottom:clamp(90px,14vh,150px);max-width:min(860px,92vw);z-index:3;pointer-events:none}
+.hero-copy .eyebrow{margin-bottom:22px}
+.h-title{font-family:var(--display);font-weight:900;font-size:clamp(38px,7.4vw,118px);line-height:.98;letter-spacing:-.02em;text-transform:uppercase}
+:lang(ka) .h-title{text-transform:none;letter-spacing:0;font-size:clamp(34px,6.2vw,98px);line-height:1.08}
+.h-title .ln{display:block;overflow:hidden;padding-bottom:.06em}
+.h-title .ln>span{display:inline-block;transform:translateY(110%);will-change:transform}
+.h-title .outline{color:transparent;-webkit-text-stroke:1.5px var(--gold)}
+.hero-sub{margin-top:24px;max-width:470px;color:#c4cad6;font-size:clamp(14px,1.3vw,17px);opacity:0;transform:translateY(20px)}
+.hero-meta{position:absolute;right:var(--pad);bottom:clamp(90px,14vh,150px);z-index:3;text-align:right;font-family:"Unbounded",sans-serif}
+.hero-meta .big{font-size:clamp(46px,7vw,110px);font-weight:300;line-height:1;font-variant-numeric:tabular-nums;color:var(--gold)}
+.hero-meta .lbl{font-family:var(--body);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+@media (min-width:901px){.hero-copy{max-width:min(54vw,860px)}.h-title{font-size:clamp(38px,6.1vw,104px)}:lang(ka) .h-title{font-size:clamp(34px,5.4vw,90px)}}
+@media (max-width:700px){.hero-caption{top:30%}.hero-meta{top:96px;bottom:auto}.hero-meta .big{font-size:42px}}
+.scroll-cue{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:10px;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+.scroll-cue i{width:1px;height:44px;background:linear-gradient(var(--gold),transparent);animation:cue 2s var(--ease) infinite;transform-origin:top}
+@keyframes cue{0%{transform:scaleY(0)}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+.hero-caption{position:absolute;left:var(--pad);top:50%;z-index:3;transform:translate(0,-50%);text-align:left;font-family:var(--display);font-weight:900;font-size:clamp(32px,6vw,92px);line-height:1;opacity:0;pointer-events:none;white-space:nowrap}
+.hero-caption small{display:block;font-family:var(--body);font-weight:500;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+
+/* ---------- generic section ---------- */
+section{position:relative}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:clamp(36px,6vw,80px)}
+.sec-title{font-family:var(--display);font-weight:700;font-size:clamp(30px,5vw,72px);line-height:1.02;letter-spacing:-.015em}
+:lang(ka) .sec-title{letter-spacing:0;line-height:1.15}
+.sec-num{font-family:"Unbounded",sans-serif;font-size:12px;color:var(--muted);letter-spacing:.2em}
+.split .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em;margin-bottom:-.08em}
+.split .w>span{display:inline-block;transform:translateY(105%) rotate(4deg);transform-origin:left bottom;transition:transform 1.1s var(--ease)}
+.split.in .w>span{transform:none}
+.fade{opacity:0;transform:translateY(30px);transition:opacity 1s var(--ease),transform 1.2s var(--ease)}
+.fade.in{opacity:1;transform:none}
+
+/* ---------- about ---------- */
+#about{padding:clamp(100px,16vw,200px) 0 clamp(80px,10vw,140px);background:var(--ink)}
+.statement{font-family:var(--display);font-weight:500;font-size:clamp(24px,3.6vw,54px);line-height:1.22;max-width:1200px;letter-spacing:-.01em}
+:lang(ka) .statement{letter-spacing:0;line-height:1.35}
+.statement .sw{opacity:.14;transition:opacity .25s linear}
+.statement .sw.lit{opacity:1}
+.statement .sw.acc.lit{color:var(--gold)}
+.stats{margin-top:clamp(60px,9vw,120px);display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line)}
+.stat{padding:28px 24px 8px 0;border-right:1px solid var(--line)}
+.stat:last-child{border-right:0}
+.stat+.stat{padding-left:24px}
+.stat .n{font-family:"Unbounded",sans-serif;font-weight:300;font-size:clamp(44px,6vw,92px);line-height:1;font-variant-numeric:tabular-nums}
+.stat .n sup{font-size:.35em;color:var(--gold);vertical-align:top;margin-left:4px}
+.stat p{margin-top:14px;color:var(--muted);font-size:14px;max-width:220px}
+@media (max-width:800px){.stats{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:0}.stat:nth-child(3){padding-left:0;border-top:1px solid var(--line)}.stat:nth-child(4){border-top:1px solid var(--line)}}
+.values{margin-top:clamp(60px,8vw,110px);display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,3vw,40px)}
+.value{border:1px solid var(--line);border-radius:22px;padding:clamp(24px,3vw,40px);background:linear-gradient(160deg,var(--ink-2),var(--ink));position:relative;overflow:hidden}
+.value::before{content:"";position:absolute;inset:auto -30% -60% auto;width:70%;aspect-ratio:1;background:radial-gradient(circle,rgba(245,191,27,.18),transparent 65%);transition:transform 1.2s var(--ease)}
+.value:hover::before{transform:translate(-20%,-20%) scale(1.3)}
+.value h3{font-family:var(--display);font-weight:700;font-size:clamp(20px,2vw,28px);margin:18px 0 10px;line-height:1.2}
+.value p{color:#b7bfcd;font-size:15px}
+.value .ic{width:46px;height:46px;border-radius:50%;border:1px solid rgba(245,191,27,.4);display:grid;place-items:center;color:var(--gold);font-family:"Unbounded";font-size:13px}
+@media (max-width:800px){.values{grid-template-columns:1fr}}
+
+/* ---------- process (pinned) ---------- */
+#process{height:340vh;background:var(--paper);color:var(--ink)}
+#process .pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;display:grid;grid-template-columns:1.05fr 1fr;align-items:center;gap:clamp(20px,4vw,60px);padding:90px var(--pad) 40px}
+#process .eyebrow{color:#6f6a5d}
+#process .sec-title{margin:16px 0 34px}
+.steps{position:relative;height:clamp(240px,34vh,320px)}
+.step{position:absolute;inset:0;opacity:0;transform:translateY(40px);transition:opacity .7s var(--ease),transform .9s var(--ease);pointer-events:none}
+.step.on{opacity:1;transform:none;pointer-events:auto}
+.step.past{opacity:0;transform:translateY(-40px)}
+.step .k{font-family:"Unbounded",sans-serif;font-weight:900;font-size:clamp(64px,9vw,140px);line-height:.9;color:transparent;-webkit-text-stroke:1.5px var(--ink)}
+.step h3{font-family:var(--display);font-weight:700;font-size:clamp(22px,2.6vw,38px);margin:14px 0 10px;line-height:1.15}
+.step p{max-width:470px;color:#4a4a46;font-size:15px}
+.step ul{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.step li{font-size:12px;border:1px solid rgba(10,13,19,.2);border-radius:99px;padding:6px 12px}
+.prog{display:flex;gap:10px;margin-top:30px}
+.prog i{height:3px;flex:1;background:rgba(10,13,19,.12);position:relative;overflow:hidden;border-radius:3px}
+.prog i b{position:absolute;inset:0;background:var(--ink);transform:scaleX(0);transform-origin:left}
+.blue{width:100%;height:min(76vh,680px)}
+.blue svg{width:100%;height:100%}
+@media (max-width:900px){#process .pin{grid-template-columns:1fr;grid-template-rows:auto 1fr;padding-top:84px;align-content:start}.blue{height:38vh;order:-1}.steps{height:250px}#process .sec-title{margin:10px 0 18px;font-size:28px}}
+
+/* ---------- projects horizontal ---------- */
+#projects{height:420vh;background:var(--ink)}
+#projects .pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding-top:70px}
+#projects .head{padding:0 var(--pad);display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:clamp(20px,4vh,44px)}
+.track{display:flex;gap:clamp(16px,2.4vw,36px);padding-left:var(--pad);will-change:transform}
+.card{flex:none;width:min(78vw,560px);height:min(62vh,600px);border-radius:26px;background:linear-gradient(170deg,#161c2a 0%,#0d1119 100%);border:1px solid var(--line);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:clamp(20px,2.4vw,34px);transform-origin:center bottom}
+.card .art{position:absolute;inset:0 0 40% 0}
+.card::after{content:"";position:absolute;inset:45% 0 0 0;background:linear-gradient(transparent,#0d1119 38%);pointer-events:none}
+.card>*:not(.art):not(.tag):not(.idx){position:relative;z-index:1}.card .tag,.card .idx{z-index:1}
+.card.end::after{display:none}
+.card .art svg{width:100%;height:100%}
+.card .tag{position:absolute;top:22px;left:24px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;display:flex;gap:8px;align-items:center}
+.card .tag i{width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 0 rgba(245,191,27,.6);animation:ping 2s infinite}
+@keyframes ping{70%{box-shadow:0 0 0 10px rgba(245,191,27,0)}100%{box-shadow:0 0 0 0 rgba(245,191,27,0)}}
+.card .idx{position:absolute;top:18px;right:24px;font-family:"Unbounded";font-size:12px;color:var(--muted)}
+.card h3{font-family:"Unbounded","Noto Sans Georgian",sans-serif;font-weight:700;font-size:clamp(24px,2.8vw,40px);line-height:1.05;position:relative}
+.card h3 em{font-style:normal;color:var(--gold)}
+.card .addr{color:var(--muted);font-size:14px;margin-top:8px;position:relative}
+.card .facts{display:flex;gap:22px;margin-top:20px;padding-top:18px;border-top:1px solid var(--line);position:relative;flex-wrap:wrap}
+.card .facts div{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.card .facts b{display:block;font-family:"Unbounded";font-weight:500;font-size:18px;color:var(--text);letter-spacing:0;text-transform:none;margin-bottom:4px}
+.card .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;position:relative}
+.card .chips span{font-size:11px;border:1px solid var(--line);border-radius:99px;padding:5px 10px;color:#c5ccd9}
+.card.end{background:var(--gold);color:var(--ink);justify-content:center;align-items:flex-start;width:min(70vw,420px)}
+.card.end h3{font-size:clamp(26px,3vw,44px)}
+.card.end p{margin:14px 0 26px;max-width:300px}
+.track-bar{margin:clamp(20px,4vh,40px) var(--pad) 0;height:2px;background:var(--line);position:relative}
+.track-bar b{position:absolute;inset:0;background:var(--gold);transform-origin:left;transform:scaleX(0)}
+
+/* ---------- portfolio ---------- */
+#portfolio{padding:clamp(100px,14vw,180px) 0;background:var(--ink)}
+.rows{border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:110px 1.4fr 1fr 1fr 60px;align-items:center;gap:20px;padding:clamp(18px,2.4vw,30px) 0;border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.row::before{content:"";position:absolute;inset:0;background:var(--gold);transform:scaleY(0);transform-origin:bottom;transition:transform .6s var(--ease);z-index:0}
+.row>*{position:relative;z-index:1;transition:color .4s}
+.row:hover::before{transform:scaleY(1)}
+.row:hover>*{color:var(--ink)!important}
+.row .y{font-family:"Unbounded";font-weight:300;font-size:clamp(20px,2vw,28px);color:var(--gold)}
+.row .nm{font-family:"Unbounded","Noto Sans Georgian";font-weight:500;font-size:clamp(18px,2.2vw,32px)}
+.row .d,.row .f{color:var(--muted);font-size:14px}
+.row .mini{height:44px;justify-self:end}
+.row .mini rect{transition:fill .4s}
+.row:hover .mini rect{fill:var(--ink)}
+@media (max-width:700px){.card{height:min(66vh,560px)}.card .art{inset:30px 0 52% 0}.card::after{inset:40% 0 0 0}}
+@media (max-width:800px){.row{grid-template-columns:64px 1fr 40px;gap:12px}.row .d{grid-column:2}.row .f{display:none}.row .mini{grid-row:1/3;grid-column:3}}
+
+/* ---------- construction marquee ---------- */
+#build{padding:clamp(80px,10vw,140px) 0;background:var(--ink-2);overflow:hidden;border-block:1px solid var(--line)}
+.build-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,80px);align-items:end}
+.build-grid p{color:#b7bfcd;max-width:520px}
+@media (max-width:800px){.build-grid{grid-template-columns:1fr}}
+.marquee{margin-top:clamp(50px,7vw,90px);display:flex;white-space:nowrap;font-family:"Unbounded",sans-serif;font-weight:900;font-size:clamp(44px,8vw,130px);line-height:1;will-change:transform}
+.marquee span{padding-right:.6em}
+.marquee .o{color:transparent;-webkit-text-stroke:1.2px rgba(255,255,255,.35)}
+.marquee .s{color:var(--gold)}
+
+/* ---------- offer ---------- */
+#offer{padding:clamp(100px,14vw,180px) 0;background:var(--paper);color:var(--ink);overflow:hidden}
+.offer-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(30px,5vw,80px);align-items:center}
+.zero{font-family:"Unbounded",sans-serif;font-weight:900;font-size:clamp(150px,26vw,420px);line-height:.8;letter-spacing:-.05em;position:relative;display:inline-block}
+.zero .pc{color:var(--gold);-webkit-text-stroke:0}
+.zero-wrap{transform-origin:left bottom}
+.offer-copy h3{font-family:var(--display);font-weight:700;font-size:clamp(26px,3.2vw,48px);line-height:1.1}
+.offer-copy .eyebrow{color:#6f6a5d;margin-bottom:18px}
+.offer-copy p{margin-top:18px;color:#4a4a46;max-width:480px}
+.price{margin-top:30px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;padding:22px 24px;border-radius:18px;background:var(--ink);color:var(--text)}
+.price b{font-family:"Unbounded";font-weight:500;font-size:clamp(30px,3.6vw,52px);color:var(--gold);font-variant-numeric:tabular-nums}
+.price>span{font-size:14px;color:#c5ccd9}
+.note{font-size:12px;color:#7a766c;margin-top:12px}
+.frame{margin-top:clamp(70px,9vw,120px);display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.frame div{border-top:2px solid var(--ink);padding-top:16px;font-size:14px;color:#3f3e3a}
+.frame div b{display:block;font-family:var(--display);font-size:17px;color:var(--ink);margin-bottom:6px}
+@media (max-width:900px){.offer-grid{grid-template-columns:1fr}.frame{grid-template-columns:1fr 1fr}}
+
+/* ---------- contact ---------- */
+#contact{padding:clamp(100px,14vw,180px) 0 40px;background:var(--ink);overflow:hidden}
+.c-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(40px,6vw,100px)}
+.phones a{display:block;font-family:"Unbounded",sans-serif;font-weight:500;font-size:clamp(24px,3.4vw,52px);line-height:1.25;position:relative;width:fit-content}
+.phones a::after{content:"";position:absolute;left:0;right:0;bottom:2px;height:2px;background:var(--gold);transform:scaleX(0);transform-origin:right;transition:transform .6s var(--ease)}
+.phones a:hover::after{transform:scaleX(1);transform-origin:left}
+.c-info{margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:24px;color:#b7bfcd;font-size:15px}
+.c-info h4{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:8px}
+.c-info a:hover{color:var(--gold)}
+form{background:var(--ink-2);border:1px solid var(--line);border-radius:26px;padding:clamp(24px,3vw,40px);display:flex;flex-direction:column;gap:16px}
+form h3{font-family:var(--display);font-size:24px;margin-bottom:6px}
+.fld{position:relative}
+.fld input,.fld select{width:100%;background:transparent;border:0;border-bottom:1px solid rgba(255,255,255,.18);padding:22px 0 10px;color:var(--text);font:inherit;outline:none;border-radius:0;-webkit-appearance:none;appearance:none}
+.fld select option{background:var(--ink-2)}
+.fld label{position:absolute;left:0;top:22px;color:var(--muted);font-size:14px;pointer-events:none;transition:.35s var(--ease)}
+.fld input:focus+label,.fld input:not(:placeholder-shown)+label,.fld select+label{top:0;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.fld::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--gold);transform:scaleX(0);transition:transform .6s var(--ease);transform-origin:left}
+.fld:focus-within::after{transform:scaleX(1)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;background:var(--gold);color:var(--ink);font-weight:700;border-radius:99px;padding:18px 28px;font-size:15px;position:relative;overflow:hidden;transition:transform .4s var(--ease)}
+.btn::before{content:"";position:absolute;inset:0;background:var(--text);transform:translateY(101%);transition:transform .5s var(--ease);border-radius:inherit}
+.btn:hover::before{transform:none}
+.btn>*{position:relative}
+.btn.dark{background:var(--ink);color:var(--text)}.btn.dark::before{background:#000}
+.btn svg{width:16px;height:16px;transition:transform .4s var(--ease)}
+.btn:hover svg{transform:translateX(4px)}
+@media (max-width:900px){.c-grid{grid-template-columns:1fr}.c-info{grid-template-columns:1fr}}
+.mega{margin-top:clamp(80px,10vw,140px);font-family:"Unbounded",sans-serif;font-weight:900;font-size:clamp(70px,22vw,360px);line-height:.8;letter-spacing:-.04em;display:flex;justify-content:space-between;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.16);user-select:none}
+.mega span{display:inline-block;will-change:transform}
+.foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:40px;padding-top:24px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.foot a:hover{color:var(--gold)}
+
+/* cursor */
+#cur{opacity:0;position:fixed;left:0;top:0;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--gold);z-index:90;pointer-events:none;mix-blend-mode:difference;transition:width .4s var(--ease),height .4s var(--ease),margin .4s var(--ease)}
+#cur.big{width:64px;height:64px;margin:-32px 0 0 -32px}
+@media (hover:none){#cur{display:none}}
+/* grain */
+body::after{content:"";position:fixed;inset:-50%;z-index:80;pointer-events:none;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain 1.2s steps(6) infinite}
+@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-4%)}60%{transform:translate(-4%,-1%)}80%{transform:translate(3%,3%)}}
+.skew{will-change:transform}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+
+<div id="loader" aria-hidden="true">
+  <svg class="mark" viewBox="0 0 100 70" fill="none">
+    <path class="roof" d="M8 34 L30 14 L52 32" stroke="#f5bf1b" stroke-width="11" stroke-linejoin="miter" stroke-linecap="square"/>
+    <path class="check" d="M22 40 L40 58 L92 8" stroke="#eef0f4" stroke-width="11" stroke-linejoin="miter" stroke-linecap="square"/>
+  </svg>
+  <div class="count">0</div>
+  <div class="bar"></div>
+</div>
+
+<div id="cur"></div>
+
+<header id="top">
+  <a href="#hero" class="brand" aria-label="Roof Development">
+    <svg viewBox="0 0 100 70" fill="none"><path d="M8 34 L30 14 L52 32" stroke="#f5bf1b" stroke-width="11"/><path d="M22 40 L40 58 L92 8" stroke="#eef0f4" stroke-width="11"/></svg>
+    <span>Roof<br>Development</span>
+  </a>
+  <nav class="links">
+    <a href="#about" data-i18n="nav.about"></a>
+    <a href="#process" data-i18n="nav.process"></a>
+    <a href="#projects" data-i18n="nav.projects"></a>
+    <a href="#portfolio" data-i18n="nav.portfolio"></a>
+    <a href="#offer" data-i18n="nav.offer"></a>
+    <a href="#contact" data-i18n="nav.contact"></a>
+  </nav>
+  <div class="tools">
+    <div class="lang" role="group" aria-label="Language">
+      <button data-lang="ka">ქარ</button><button data-lang="en">EN</button><button data-lang="ru">RU</button>
+    </div>
+    <button class="snd" id="snd" aria-label="Sound"><i><b></b><b></b><b></b></i></button>
+    <button class="menu-btn" id="menuBtn" aria-label="Menu"><span></span></button>
+  </div>
+</header>
+<div id="mnav">
+  <a href="#about" data-i18n="nav.about"></a><a href="#process" data-i18n="nav.process"></a><a href="#projects" data-i18n="nav.projects"></a><a href="#portfolio" data-i18n="nav.portfolio"></a><a href="#offer" data-i18n="nav.offer"></a><a href="#contact" data-i18n="nav.contact"></a>
+</div>
+
+<main>
+<!-- HERO: the building rises floor by floor, the roof lands last -->
+<section id="hero">
+  <div class="stage">
+    <canvas id="bg"></canvas>
+    <canvas id="fg"></canvas>
+    <div class="vignette"></div>
+    <div class="hero-copy" id="heroCopy">
+      <div class="eyebrow" data-i18n="hero.eyebrow"></div>
+      <h1 class="h-title" id="hTitle"></h1>
+      <p class="hero-sub" id="hSub" data-i18n="hero.sub"></p>
+    </div>
+    <div class="hero-meta" id="heroMeta">
+      <div class="big"><span id="floorNum">00</span></div>
+      <div class="lbl" data-i18n="hero.floor"></div>
+    </div>
+    <div class="hero-caption" id="heroCap"><small data-i18n="hero.capSmall"></small><span data-i18n="hero.cap"></span></div>
+    <div class="scroll-cue" id="cue"><span data-i18n="hero.scroll"></span><i></i></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head"><div class="eyebrow" data-i18n="about.eyebrow"></div><div class="sec-num">01 / 06</div></div>
+    <p class="statement" id="statement" data-i18n-words="about.statement"></p>
+    <div class="stats">
+      <div class="stat fade"><div class="n"><span>2018</span></div><p data-i18n="about.s1"></p></div>
+      <div class="stat fade"><div class="n"><span>2015</span></div><p data-i18n="about.s2"></p></div>
+      <div class="stat fade"><div class="n"><span data-count="5">5</span></div><p data-i18n="about.s3"></p></div>
+      <div class="stat fade"><div class="n"><span data-count="4">4</span></div><p data-i18n="about.s4"></p></div>
+    </div>
+    <div class="values">
+      <div class="value fade"><div class="ic">01</div><h3 data-i18n="about.v1t"></h3><p data-i18n="about.v1"></p></div>
+      <div class="value fade"><div class="ic">02</div><h3 data-i18n="about.v2t"></h3><p data-i18n="about.v2"></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS: one blueprint becomes a finished building -->
+<section id="process">
+  <div class="pin">
+    <div>
+      <div class="eyebrow" data-i18n="proc.eyebrow"></div>
+      <h2 class="sec-title split" data-i18n="proc.title"></h2>
+      <div class="steps">
+        <div class="step"><div class="k">01</div><h3 data-i18n="proc.1t"></h3><p data-i18n="proc.1"></p></div>
+        <div class="step"><div class="k">02</div><h3 data-i18n="proc.2t"></h3><p data-i18n="proc.2"></p><ul data-i18n-list="proc.2l"></ul></div>
+        <div class="step"><div class="k">03</div><h3 data-i18n="proc.3t"></h3><p data-i18n="proc.3"></p><ul data-i18n-list="proc.3l"></ul></div>
+      </div>
+      <div class="prog"><i><b></b></i><i><b></b></i><i><b></b></i></div>
+    </div>
+    <div class="blue"><svg id="bp" viewBox="0 0 400 520" preserveAspectRatio="xMidYMid meet"></svg></div>
+  </div>
+</section>
+
+<!-- CURRENT PROJECTS -->
+<section id="projects">
+  <div class="pin">
+    <div class="head">
+      <div><div class="eyebrow" data-i18n="proj.eyebrow"></div><h2 class="sec-title split" style="margin-top:14px" data-i18n="proj.title"></h2></div>
+      <div class="sec-num">03 / 06</div>
+    </div>
+    <div class="track" id="track"></div>
+    <div class="track-bar"><b id="trackBar"></b></div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="portfolio">
+  <div class="wrap">
+    <div class="sec-head"><div><div class="eyebrow" data-i18n="port.eyebrow"></div><h2 class="sec-title split" style="margin-top:14px" data-i18n="port.title"></h2></div><div class="sec-num">04 / 06</div></div>
+    <div class="rows" id="rows"></div>
+  </div>
+</section>
+
+<!-- ROOF CONSTRUCTION -->
+<section id="build">
+  <div class="wrap build-grid">
+    <div><div class="eyebrow" data-i18n="build.eyebrow"></div><h2 class="sec-title split" style="margin-top:14px" data-i18n="build.title"></h2></div>
+    <p class="fade" data-i18n="build.text"></p>
+  </div>
+  <div class="marquee skew" id="marq"></div>
+</section>
+
+<!-- OFFER -->
+<section id="offer">
+  <div class="wrap">
+    <div class="offer-grid">
+      <div class="zero-wrap" id="zeroWrap"><div class="zero">0<span class="pc">%</span></div></div>
+      <div class="offer-copy">
+        <div class="eyebrow" data-i18n="offer.eyebrow"></div>
+        <h3 class="split" data-i18n="offer.title"></h3>
+        <p class="fade" data-i18n="offer.text"></p>
+        <div class="price fade"><b><span data-count="1030">1030</span> ₾</b><span data-i18n="offer.price"></span></div>
+        <div class="note" data-i18n="offer.note"></div>
+      </div>
+    </div>
+    <div class="frame">
+      <div class="fade"><b data-i18n="offer.f1t"></b><span data-i18n="offer.f1"></span></div>
+      <div class="fade"><b data-i18n="offer.f2t"></b><span data-i18n="offer.f2"></span></div>
+      <div class="fade"><b data-i18n="offer.f3t"></b><span data-i18n="offer.f3"></span></div>
+      <div class="fade"><b data-i18n="offer.f4t"></b><span data-i18n="offer.f4"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="wrap">
+    <div class="sec-head"><div><div class="eyebrow" data-i18n="ct.eyebrow"></div><h2 class="sec-title split" style="margin-top:14px" data-i18n="ct.title"></h2></div><div class="sec-num">06 / 06</div></div>
+    <div class="c-grid">
+      <div>
+        <div class="phones">
+          <a href="tel:+995591544445" class="mag">+995 591 54 44 45</a>
+          <a href="tel:+995591811118" class="mag">+995 591 81 11 18</a>
+          <a href="tel:+995322307007" class="mag">(032) 2 30 70 07</a>
+        </div>
+        <div class="c-info">
+          <div><h4 data-i18n="ct.addrT"></h4><a href="https://maps.google.com/?q=Aphakidze+11+Tbilisi" target="_blank" rel="noopener" data-i18n="ct.addr"></a></div>
+          <div><h4>Email</h4><a href="mailto:info@roofdevelopment.ge">info@roofdevelopment.ge</a></div>
+          <div><h4 data-i18n="ct.social"></h4><a href="https://www.instagram.com/roofdevelopment_/" target="_blank" rel="noopener">Instagram — @roofdevelopment_</a><br><a href="https://www.facebook.com/Roofdevelopmentgeo/" target="_blank" rel="noopener">Facebook — Roof Development</a></div>
+          <div><h4 data-i18n="ct.web"></h4><a href="https://roofdevelopment.ge" target="_blank" rel="noopener">roofdevelopment.ge</a></div>
+        </div>
+      </div>
+      <form id="lead" novalidate>
+        <h3 data-i18n="ct.formT"></h3>
+        <div class="fld"><input id="fName" placeholder=" " autocomplete="name" required><label for="fName" data-i18n="ct.name"></label></div>
+        <div class="fld"><input id="fPhone" placeholder=" " type="tel" autocomplete="tel" required><label for="fPhone" data-i18n="ct.phone"></label></div>
+        <div class="fld"><select id="fProj"></select><label for="fProj" data-i18n="ct.proj"></label></div>
+        <button class="btn mag" type="submit"><span data-i18n="ct.send"></span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 8h13M9 3l5 5-5 5"/></svg></button>
+      </form>
+    </div>
+    <div class="mega" id="mega"><span>R</span><span>O</span><span>O</span><span>F</span></div>
+    <div class="foot"><span>© Roof Development · Tbilisi</span><span data-i18n="ct.foot"></span><a href="#hero" data-i18n="ct.up"></a></div>
+  </div>
+</section>
+</main>
+
+<script>
+/* ==========================================================
+   DATA — facts only from Roof Development's own channels
+   (roofdevelopment.ge, Instagram @roofdevelopment_) and,
+   where marked in SOURCES.md, listing portals.
+   ========================================================== */
+const PROJECTS_CURRENT = [
+  {id:'vazisubani', name:{ka:'Roof ვაზისუბანი',en:'Roof Vazisubani',ru:'Roof Вазисубани'},
+   addr:{ka:'ვაზისუბანი, თემურ ქევხიშვილის I ჩიხი',en:'Vazisubani, Temur Kevkhishvili I Dead End',ru:'Вазисубани, I тупик Темура Кевхишвили'},
+   floors:19, flats:90, due:'Q2 2028',
+   chips:{ka:['ალუმინის კომპოზიტის ფასადი','ალუმინის კარ-ფანჯარა','ხის კომპოზიტი','მინის მოაჯირები'],en:['Aluminium composite facade','Aluminium window systems','Wood composite','Glass railings'],ru:['Фасад из алюминиевого композита','Алюминиевые окна и двери','Древесный композит','Стеклянные ограждения']}},
+  {id:'ponichala', name:{ka:'Roof ფონიჭალა',en:'Roof Ponichala',ru:'Roof Поничала'},
+   addr:{ka:'რუსთავის გზატკეცილი 18/22, კორპუსი 1',en:'Rustavi Highway 18/22, Block 1',ru:'Руставское шоссе 18/22, корпус 1'},
+   floors:12, flats:null, due:'Q2 2028',
+   chips:{ka:['ხედი მტკვარზე','ქალაქის პანორამა','2 ლიფტი'],en:['Mtkvari river view','City panorama','2 elevators'],ru:['Вид на Мтквари','Панорама города','2 лифта']}},
+  {id:'omnia', name:{ka:'Roof ომნია',en:'Roof Omnia',ru:'Roof Omnia'},
+   addr:{ka:'ვაზისუბანი, აჩაბეთის I ჩიხი',en:'Vazisubani, Achabeti I Dead End',ru:'Вазисубани, I тупик Ачабети'},
+   floors:11, flats:null, due:'Q3 2029',
+   chips:{ka:['3 კორპუსი','3-დონიანი მიწისქვეშა პარკინგი','მონოლითური კარკასი'],en:['3 blocks','3-level underground parking','Monolithic frame'],ru:['3 корпуса','3 уровня подземного паркинга','Монолитный каркас']}},
+  {id:'chkondideli', name:{ka:'Roof ჭყონდიდელი',en:'Roof Chkondideli',ru:'Roof Чкондидели'},
+   addr:{ka:'ნაძალადევი, გ. ჭყონდიდელის 34დ',en:'Nadzaladevi, G. Chkondideli St. 34d',ru:'Надзаладеви, ул. Г. Чкондидели 34д'},
+   floors:null, flats:null, due:null,
+   chips:{ka:['ნაძალადევი'],en:['Nadzaladevi'],ru:['Надзаладеви']}},
+];
+const PROJECTS_DONE = [
+  {y:2025,name:'Roof Gagarini',ka:'Roof გაგარინი',d:{ka:'საბურთალო, გაგარინის 10',en:'Saburtalo, Gagarini St. 10',ru:'Сабуртало, ул. Гагарина 10'},floors:12,f:{ka:'12 სართ. · 120 ბინა',en:'12 floors · 120 apartments',ru:'12 этажей · 120 квартир'}},
+  {y:2025,name:'Roof Imedashvili',ka:'Roof იმედაშვილი',d:{ka:'საბურთალო, იმედაშვილის 5',en:'Saburtalo, Imedashvili St. 5',ru:'Сабуртало, ул. Имедашвили 5'},floors:9,f:{ka:'9 სართ. · 90 ბინა',en:'9 floors · 90 apartments',ru:'9 этажей · 90 квартир'}},
+  {y:2023,name:'Roof Sairme',ka:'Roof საირმე',d:{ka:'საბურთალო, საირმის 14',en:'Saburtalo, Sairme St. 14',ru:'Сабуртало, ул. Саирме 14'},floors:7,f:{ka:'7 სართ. · 20 ბინა',en:'7 floors · 20 apartments',ru:'7 этажей · 20 квартир'}},
+  {y:2021,name:'Roof Varketili',ka:'Roof ვარკეთილი',d:{ka:'ვარკეთილი, ზემო პლატო',en:'Varketili, Upper Plateau',ru:'Варкетили, Верхнее плато'},floors:10,f:{ka:'10 სართ. · 64 ბინა',en:'10 floors · 64 apartments',ru:'10 этажей · 64 квартиры'}},
+];
+
+/* ==========================================================
+   COPY (ka / en / ru)
+   ========================================================== */
+const T = {
+ ka:{
+  'nav.about':'ჩვენ შესახებ','nav.process':'ციკლი','nav.projects':'პროექტები','nav.portfolio':'დასრულებული','nav.offer':'შეთავაზება','nav.contact':'კონტაქტი',
+  'hero.eyebrow':'Real Estate Developer · თბილისი',
+  'hero.title':['დიზაინიდან —','<span class="outline">სრულ</span>','ჩაბარებამდე'],
+  'hero.sub':'Roof Development 2018 წლიდან ქმნის თანამედროვე სტანდარტების საცხოვრებელ სივრცეებს ქართულ ბაზარზე.',
+  'hero.floor':'სართული','hero.scroll':'ჩამოსქროლე','hero.capSmall':'Roof ვაზისუბანი','hero.cap':'19 სართული',
+  'about.eyebrow':'ჩვენ შესახებ',
+  'about.statement':'ჩვენ ვმართავთ მშენებლობის *სრულ *ციკლს — დიზაინიდან პროექტის სრულად ჩაბარებამდე. ჩვენი მთავარი ღირებულებაა ქალაქის *სწორი *განვითარების ხელშეწყობა, ხოლო *ხარისხი — პრიორიტეტი ყველა ეტაპზე.',
+  'about.s1':'Roof Development იწყებს საქმიანობას','about.s2':'Roof Construction შემოდის ბაზარზე','about.s3':'დასრულებული და დასახლებული პროექტი','about.s4':'მასშტაბური პროექტი მიმდინარეობს',
+  'about.v1t':'ქალაქის სწორი განვითარება','about.v1':'ჩვენი მთავარი ღირებულებაა ქალაქის სწორი ურბანული განვითარების ხელშეწყობა.',
+  'about.v2t':'ხარისხი ყველა ეტაპზე','about.v2':'ხარისხი უმთავრესი პრიორიტეტია ჩვენი საქმიანობის ყველა ეტაპზე — დიზაინიდან ჩაბარებამდე.',
+  'proc.eyebrow':'02 · სრული ციკლი','proc.title':'ერთი გუნდი. ერთი პასუხისმგებლობა.',
+  'proc.1t':'დიზაინი','proc.1':'პროექტი იწყება არქიტექტურით — თანამედროვე სტილი, ფუნქციური გეგმარება და მოსახერხებელი მდებარეობა.',
+  'proc.2t':'მშენებლობა','proc.2':'მშენებლობას აწარმოებს შვილობილი კომპანია Roof Construction — ქართულ ბაზარზე 2015 წლიდან.','proc.2l':['მონოლითური კარკასი','ხარისხიანი მასალები','საკუთარი სამშენებლო კომპანია'],
+  'proc.3t':'ჩაბარება','proc.3':'ბინები ბარდება თეთრი კარკასით — მზად პერსონალური რემონტისთვის.','proc.3l':['გაზი, წყალი, კანალიზაცია','გათბობა, ელექტროობა','მეტალოპლასტმასის ფანჯრები','ლითონის შესასვლელი კარი'],
+  'proj.eyebrow':'მიმდინარე პროექტები','proj.title':'შენდება ახლა',
+  'proj.floors':'სართული','proj.flats':'ბინა','proj.due':'ჩაბარება','proj.status':'მშენებარე','proj.soon':'ინფორმაცია მალე','proj.endT':'იპოვე შენი ბინა','proj.endP':'გაყიდვების განყოფილება გიპასუხებთ ყველა კითხვაზე.','proj.endB':'დაგვიკავშირდი',
+  'port.eyebrow':'დასრულებული პროექტები','port.title':'უკვე ცხოვრობენ',
+  'build.eyebrow':'05 · Roof Construction','build.title':'2015 წლიდან ვაშენებთ',
+  'build.text':'Roof Construction ქართულ სამშენებლო ბაზარზე 2015 წლიდან მოღვაწეობს. მის დასრულებულ პროექტებს შორისაა Demax ბაგები, Demax ონიაშვილი, Demax დიღომი, Viva ბაგები და Roof საირმე.',
+  'offer.eyebrow':'შეთავაზება','offer.title':'შეიძინე ბინა 0%-იანი შიდა განვადებით',
+  'offer.text':'განვადება დეველოპერისგან — ბანკის გარეშე. დეტალური პირობებისთვის დაუკავშირდით გაყიდვების განყოფილებას.',
+  'offer.price':'თვეში — Roof ვაზისუბანი','offer.note':'* ყოველთვიური გადასახადი „ლარიდან“, Roof Development-ის ოფიციალური Instagram-ის მიხედვით. პირობები შეიძლება შეიცვალოს.',
+  'offer.f1t':'თეთრი კარკასი','offer.f1':'მზად თქვენი პერსონალური რემონტისთვის','offer.f2t':'კომუნიკაციები','offer.f2':'გაზი, წყალი, კანალიზაცია, გათბობა, ელექტროობა','offer.f3t':'ფანჯრები','offer.f3':'მეტალოპლასტმასის / ალუმინის სისტემები','offer.f4t':'კარი','offer.f4':'დაცული ლითონის შესასვლელი კარი',
+  'ct.eyebrow':'კონტაქტი','ct.title':'მოდი, ვისაუბროთ შენს ბინაზე','ct.addrT':'ოფისი','ct.addr':'თბილისი, აფაქიძის 11, სართული 9','ct.social':'სოციალური ქსელები','ct.web':'ვებგვერდი',
+  'ct.formT':'მოითხოვე ზარი','ct.name':'სახელი','ct.phone':'ტელეფონი','ct.proj':'პროექტი','ct.send':'გაგზავნა','ct.foot':'Real Estate Developer','ct.up':'თავში ↑','ct.ok':'გმადლობთ! იხსნება ელფოსტა…'
+ },
+ en:{
+  'nav.about':'About','nav.process':'Full cycle','nav.projects':'Projects','nav.portfolio':'Completed','nav.offer':'Offer','nav.contact':'Contact',
+  'hero.eyebrow':'Real Estate Developer · Tbilisi',
+  'hero.title':['From design','<span class="outline">to full</span>','handover'],
+  'hero.sub':'Since 2018 Roof Development has been creating modern-standard living spaces on the Georgian market.',
+  'hero.floor':'Floor','hero.scroll':'Scroll','hero.capSmall':'Roof Vazisubani','hero.cap':'19 floors',
+  'about.eyebrow':'About us',
+  'about.statement':'We manage the *full *construction *cycle — from design to complete handover of the project. Our main value is supporting the *proper *development of the city, and *quality is the priority at every stage.',
+  'about.s1':'Roof Development starts creating homes','about.s2':'Roof Construction enters the market','about.s3':'completed and occupied projects','about.s4':'large-scale projects underway',
+  'about.v1t':'Proper urban development','about.v1':'Our main value is supporting the proper urban development of the city.',
+  'about.v2t':'Quality at every stage','about.v2':'Quality is the top priority at every stage of our work — from design to handover.',
+  'proc.eyebrow':'02 · Full cycle','proc.title':'One team. One responsibility.',
+  'proc.1t':'Design','proc.1':'Every project starts with architecture — modern style, functional layouts and a convenient location.',
+  'proc.2t':'Construction','proc.2':'Construction is carried out by our sister company Roof Construction — on the Georgian market since 2015.','proc.2l':['Monolithic frame','Quality materials','In-house contractor'],
+  'proc.3t':'Handover','proc.3':'Apartments are handed over in white frame condition — ready for your personal renovation.','proc.3l':['Gas, water, sewage','Heating, electricity','Metal-plastic windows','Metal entrance door'],
+  'proj.eyebrow':'Current projects','proj.title':'Under construction now',
+  'proj.floors':'Floors','proj.flats':'Apartments','proj.due':'Handover','proj.status':'Under construction','proj.soon':'Details soon','proj.endT':'Find your apartment','proj.endP':'Our sales team will answer every question.','proj.endB':'Contact us',
+  'port.eyebrow':'Completed projects','port.title':'People already live here',
+  'build.eyebrow':'05 · Roof Construction','build.title':'Building since 2015',
+  'build.text':'Roof Construction has been active on the Georgian construction market since 2015. Its completed projects include Demax Bagebi, Demax Oniashvili, Demax Digomi, Viva Bagebi and Roof Sairme.',
+  'offer.eyebrow':'Offer','offer.title':'Buy an apartment with a 0% internal installment plan',
+  'offer.text':'Installments directly from the developer — no bank involved. Contact the sales team for the detailed terms.',
+  'offer.price':'per month — Roof Vazisubani','offer.note':'* Monthly payment “from”, as published on Roof Development’s official Instagram. Terms may change.',
+  'offer.f1t':'White frame','offer.f1':'Ready for your personal renovation','offer.f2t':'Utilities','offer.f2':'Gas, water, sewage, heating, electricity','offer.f3t':'Windows','offer.f3':'Metal-plastic / aluminium systems','offer.f4t':'Door','offer.f4':'Secure metal entrance door',
+  'ct.eyebrow':'Contact','ct.title':'Let’s talk about your apartment','ct.addrT':'Office','ct.addr':'Tbilisi, Aphakidze St. 11, 9th floor','ct.social':'Social','ct.web':'Website',
+  'ct.formT':'Request a call','ct.name':'Name','ct.phone':'Phone','ct.proj':'Project','ct.send':'Send','ct.foot':'Real Estate Developer','ct.up':'Back to top ↑','ct.ok':'Thank you! Opening your email…'
+ },
+ ru:{
+  'nav.about':'О компании','nav.process':'Цикл','nav.projects':'Проекты','nav.portfolio':'Сданные','nav.offer':'Предложение','nav.contact':'Контакты',
+  'hero.eyebrow':'Real Estate Developer · Тбилиси',
+  'hero.title':['От дизайна','<span class="outline">до полной</span>','сдачи'],
+  'hero.sub':'С 2018 года Roof Development создаёт жилые пространства современных стандартов на грузинском рынке.',
+  'hero.floor':'Этаж','hero.scroll':'Листайте','hero.capSmall':'Roof Вазисубани','hero.cap':'19 этажей',
+  'about.eyebrow':'О компании',
+  'about.statement':'Мы управляем *полным *циклом строительства — от дизайна до полной сдачи проекта. Наша главная ценность — содействие *правильному *развитию города, а *качество — приоритет на каждом этапе.',
+  'about.s1':'Roof Development начинает работу','about.s2':'Roof Construction выходит на рынок','about.s3':'проектов завершены и заселены','about.s4':'масштабных проекта в работе',
+  'about.v1t':'Правильное развитие города','about.v1':'Наша главная ценность — содействие правильному урбанистическому развитию города.',
+  'about.v2t':'Качество на каждом этапе','about.v2':'Качество — главный приоритет на каждом этапе нашей работы, от дизайна до сдачи.',
+  'proc.eyebrow':'02 · Полный цикл','proc.title':'Одна команда. Одна ответственность.',
+  'proc.1t':'Дизайн','proc.1':'Каждый проект начинается с архитектуры — современный стиль, функциональные планировки и удобное расположение.',
+  'proc.2t':'Строительство','proc.2':'Строительство ведёт дочерняя компания Roof Construction — на грузинском рынке с 2015 года.','proc.2l':['Монолитный каркас','Качественные материалы','Собственный подрядчик'],
+  'proc.3t':'Сдача','proc.3':'Квартиры сдаются в белом каркасе — готовы к вашему ремонту.','proc.3l':['Газ, вода, канализация','Отопление, электричество','Металлопластиковые окна','Металлическая входная дверь'],
+  'proj.eyebrow':'Текущие проекты','proj.title':'Строится сейчас',
+  'proj.floors':'Этажей','proj.flats':'Квартир','proj.due':'Сдача','proj.status':'Строится','proj.soon':'Скоро подробности','proj.endT':'Найдите свою квартиру','proj.endP':'Отдел продаж ответит на все вопросы.','proj.endB':'Связаться',
+  'port.eyebrow':'Завершённые проекты','port.title':'Здесь уже живут',
+  'build.eyebrow':'05 · Roof Construction','build.title':'Строим с 2015 года',
+  'build.text':'Roof Construction работает на грузинском строительном рынке с 2015 года. Среди завершённых проектов — Demax Багеби, Demax Ониашвили, Demax Дигоми, Viva Багеби и Roof Саирме.',
+  'offer.eyebrow':'Предложение','offer.title':'Купите квартиру во внутреннюю рассрочку под 0%',
+  'offer.text':'Рассрочка напрямую от застройщика — без банка. Подробные условия уточняйте в отделе продаж.',
+  'offer.price':'в месяц — Roof Вазисубани','offer.note':'* Ежемесячный платёж «от», по данным официального Instagram Roof Development. Условия могут меняться.',
+  'offer.f1t':'Белый каркас','offer.f1':'Готово к вашему ремонту','offer.f2t':'Коммуникации','offer.f2':'Газ, вода, канализация, отопление, электричество','offer.f3t':'Окна','offer.f3':'Металлопластиковые / алюминиевые системы','offer.f4t':'Дверь','offer.f4':'Металлическая входная дверь',
+  'ct.eyebrow':'Контакты','ct.title':'Поговорим о вашей квартире','ct.addrT':'Офис','ct.addr':'Тбилиси, ул. Апакидзе 11, 9 этаж','ct.social':'Соцсети','ct.web':'Сайт',
+  'ct.formT':'Заказать звонок','ct.name':'Имя','ct.phone':'Телефон','ct.proj':'Проект','ct.send':'Отправить','ct.foot':'Real Estate Developer','ct.up':'Наверх ↑','ct.ok':'Спасибо! Открываем почту…'
+ }
+};
+// fix one typo-prone word in ka copy (sister company = "დობილი")
+let LANG = (()=>{try{return localStorage.getItem('roof.lang')||'ka'}catch(e){return 'ka'}})();
+
+/* ---------- helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const easeOut=t=>1-Math.pow(1-t,3);
+const easeOutBack=t=>{const c=1.5;return 1+(c+1)*Math.pow(t-1,3)+c*Math.pow(t-1,2)};
+const easeIO=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const tr=k=>T[LANG][k]??T.en[k]??k;
+const nm=o=>o[LANG]||o.en;
+
+/* ==========================================================
+   SOUND — synthesized with Web Audio (off until the user taps)
+   ========================================================== */
+const Sound = (()=>{
+  let ctx, master, on=false, pad=[];
+  function init(){
+    ctx = new (window.AudioContext||window.webkitAudioContext)();
+    master = ctx.createGain(); master.gain.value=0; master.connect(ctx.destination);
+    const rev = ctx.createConvolver(); const len=ctx.sampleRate*2.6, buf=ctx.createBuffer(2,len,ctx.sampleRate);
+    for(let c=0;c<2;c++){const d=buf.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.4)}
+    rev.buffer=buf; const wet=ctx.createGain(); wet.gain.value=.5; rev.connect(wet); wet.connect(master);
+    Sound.rev=rev;
+    // warm pad: A minor add9 voicing, slow filter drift
+    const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=900; lp.Q.value=.6; lp.connect(master); lp.connect(rev);
+    const lfo=ctx.createOscillator(); lfo.frequency.value=.05; const lg=ctx.createGain(); lg.gain.value=420; lfo.connect(lg); lg.connect(lp.frequency); lfo.start();
+    [110,164.81,220,246.94,329.63].forEach((f,i)=>{
+      const o=ctx.createOscillator(); o.type=i%2?'triangle':'sawtooth'; o.frequency.value=f; o.detune.value=(i-2)*4;
+      const g=ctx.createGain(); g.gain.value=i===0?.05:.022; o.connect(g); g.connect(lp); o.start(); pad.push(o);
+    });
+    // slow piano-like motif every 4.8s
+    setInterval(()=>{ if(!on) return; const notes=[440,523.25,659.25,587.33,493.88]; const n=notes[(Math.random()*notes.length)|0]; bell(n,.06,2.4) },4800);
+  }
+  function bell(f,vol=.08,dur=1.6){
+    if(!ctx||!on) return; const t=ctx.currentTime;
+    const o=ctx.createOscillator(), o2=ctx.createOscillator(), g=ctx.createGain();
+    o.type='sine'; o.frequency.value=f; o2.type='sine'; o2.frequency.value=f*2.01;
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+.01); g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    o.connect(g); o2.connect(g); g.connect(master); g.connect(Sound.rev); o.start(t); o2.start(t); o.stop(t+dur); o2.stop(t+dur);
+  }
+  function thud(vol=.25){ // concrete slab landing
+    if(!ctx||!on) return; const t=ctx.currentTime;
+    const o=ctx.createOscillator(), g=ctx.createGain(); o.type='sine';
+    o.frequency.setValueAtTime(120,t); o.frequency.exponentialRampToValueAtTime(42,t+.18);
+    g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.0001,t+.3);
+    o.connect(g); g.connect(master); o.start(t); o.stop(t+.32);
+    const nb=ctx.createBuffer(1,ctx.sampleRate*.08,ctx.sampleRate), d=nb.getChannelData(0); for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);
+    const n=ctx.createBufferSource(); n.buffer=nb; const hp=ctx.createBiquadFilter(); hp.type='bandpass'; hp.frequency.value=1800; const ng=ctx.createGain(); ng.gain.value=vol*.35;
+    n.connect(hp); hp.connect(ng); ng.connect(master); n.start(t);
+  }
+  function whoosh(vol=.12){
+    if(!ctx||!on) return; const t=ctx.currentTime, len=.7;
+    const nb=ctx.createBuffer(1,ctx.sampleRate*len,ctx.sampleRate), d=nb.getChannelData(0); for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+    const n=ctx.createBufferSource(); n.buffer=nb; const bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=1.2;
+    bp.frequency.setValueAtTime(300,t); bp.frequency.exponentialRampToValueAtTime(2600,t+len*.6); bp.frequency.exponentialRampToValueAtTime(600,t+len);
+    const g=ctx.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+len*.5); g.gain.linearRampToValueAtTime(0,t+len);
+    n.connect(bp); bp.connect(g); g.connect(master); g.connect(Sound.rev); n.start(t);
+  }
+  function toggle(){
+    if(!ctx) init();
+    on=!on; ctx.resume();
+    master.gain.cancelScheduledValues(ctx.currentTime);
+    master.gain.linearRampToValueAtTime(on?.7:0, ctx.currentTime+1.2);
+    $('#snd').classList.toggle('on',on);
+    if(on) bell(659.25,.09,2.8);
+  }
+  return {toggle,bell,thud,whoosh,get on(){return on}};
+})();
+$('#snd').addEventListener('click',Sound.toggle);
+
+/* ==========================================================
+   I18N
+   ========================================================== */
+function splitWords(el,html){
+  el.innerHTML = html.split(/(\s+)/).map(w=>/^\s+$/.test(w)?w:`<span class="w"><span>${w}</span></span>`).join('');
+}
+function applyLang(){
+  document.documentElement.lang = LANG;
+  $$('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.lang===LANG));
+  $$('[data-i18n]').forEach(el=>{
+    const v=tr(el.dataset.i18n);
+    if(el.classList.contains('split')) splitWords(el,v); else el.textContent=v;
+  });
+  $$('[data-i18n-list]').forEach(el=>{el.innerHTML=tr(el.dataset.i18nList).map(x=>`<li>${x}</li>`).join('')});
+  // statement: scrubbed word-by-word, *word = accent
+  const st=$('#statement');
+  st.innerHTML = tr('about.statement').split(/\s+/).map(w=>{const a=w.startsWith('*');return `<span class="sw${a?' acc':''}">${a?w.slice(1):w}</span>`}).join(' ');
+  // hero title
+  $('#hTitle').innerHTML = tr('hero.title').map(l=>`<span class="ln"><span>${l}</span></span>`).join('');
+  if(heroIntroDone) $$('#hTitle .ln>span').forEach(s=>s.style.transform='none');
+  buildProjects(); buildRows(); buildMarquee(); buildSelect();
+  $$('.split').forEach(s=>io.observe(s));
+}
+$$('.lang button').forEach(b=>b.addEventListener('click',()=>{LANG=b.dataset.lang;try{localStorage.setItem('roof.lang',LANG)}catch(e){};applyLang();Sound.bell(523.25,.05,1.2)}));
+
+/* ==========================================================
+   SVG building generator (used in cards, rows, blueprint)
+   ========================================================== */
+function towerSVG(floors,{w=120,fh=14,cols=5,seed=1,gold=true}={}){
+  const H=floors*fh, pad=30, W=w+pad*2, VH=H+pad+40;
+  let s=`<svg viewBox="0 0 ${W} ${VH}" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">`;
+  s+=`<defs><linearGradient id="gl${seed}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f5bf1b" stop-opacity=".35"/><stop offset="1" stop-color="#f5bf1b" stop-opacity="0"/></linearGradient></defs>`;
+  s+=`<rect x="0" y="${VH-40}" width="${W}" height="40" fill="url(#gl${seed})" opacity=".35"/>`;
+  s+=`<g class="flrs">`;
+  for(let i=0;i<floors;i++){
+    const y=VH-40-(i+1)*fh;
+    s+=`<g class="fl" style="--i:${i}"><rect x="${pad}" y="${y}" width="${w}" height="${fh-1.5}" fill="#1e2638" stroke="rgba(255,255,255,.12)" stroke-width=".6"/>`;
+    for(let c=0;c<cols;c++){
+      const r=Math.sin((i+1)*12.9898+(c+1)*78.233+seed*3.1)*43758.5453; const lit=(r-Math.floor(r))>.55;
+      const cw=w/cols; s+=`<rect class="win${lit?' lit':''}" x="${pad+c*cw+cw*.18}" y="${y+fh*.22}" width="${cw*.64}" height="${fh*.5}" fill="${lit?'#f5bf1b':'#2c364c'}" opacity="${lit?.85:1}"/>`;
+    }
+    s+=`</g>`;
+  }
+  s+=`</g>`;
+  if(gold){ const ty=VH-40-floors*fh; s+=`<path class="rf" d="M${pad-8} ${ty-2} L${pad+w*.32} ${ty-26} L${pad+w*.62} ${ty-6}" fill="none" stroke="#f5bf1b" stroke-width="7"/>`; }
+  return s+`</svg>`;
+}
+
+/* ---------- projects track ---------- */
+function buildProjects(){
+  const t=$('#track');
+  t.innerHTML = PROJECTS_CURRENT.map((p,i)=>`
+    <article class="card" data-proj="${p.id}">
+      <div class="art">${towerSVG(p.floors||14,{seed:i+2,cols:p.floors?5:4})}</div>
+      <div class="tag"><i></i>${tr('proj.status')}</div><div class="idx">0${i+1}</div>
+      <h3>${nm(p.name).replace('Roof ','Roof <em>')}</em></h3>
+      <div class="addr">${nm(p.addr)}</div>
+      <div class="facts">
+        ${p.floors?`<div><b>${p.floors}</b>${tr('proj.floors')}</div>`:''}
+        ${p.flats?`<div><b>${p.flats}</b>${tr('proj.flats')}</div>`:''}
+        ${p.due?`<div><b>${p.due}</b>${tr('proj.due')}</div>`:`<div><b>—</b>${tr('proj.soon')}</div>`}
+      </div>
+      <div class="chips">${nm(p.chips).map(c=>`<span>${c}</span>`).join('')}</div>
+    </article>`).join('') + `
+    <article class="card end"><h3>${tr('proj.endT')}</h3><p>${tr('proj.endP')}</p><a class="btn dark mag" href="#contact"><span>${tr('proj.endB')}</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 8h13M9 3l5 5-5 5"/></svg></a></article>`;
+  // per-card floor stacking (driven in the scroll loop)
+  $$('#track .card .fl').forEach(g=>{g.style.transformBox='fill-box';g.style.transformOrigin='center bottom'});
+}
+function buildRows(){
+  $('#rows').innerHTML = PROJECTS_DONE.map((p,i)=>`
+    <div class="row fade" style="transition-delay:${i*.08}s">
+      <div class="y">${p.y}</div>
+      <div class="nm">${LANG==='ka'?p.ka:p.name}</div>
+      <div class="d">${p.d[LANG]}</div>
+      <div class="f">${p.f[LANG]}</div>
+      <svg class="mini" viewBox="0 0 30 ${p.floors*4+2}" width="30" height="44" preserveAspectRatio="xMidYMax meet">${Array.from({length:p.floors},(_,k)=>`<rect x="3" y="${(p.floors-1-k)*4+2}" width="24" height="3" fill="${k===p.floors-1?'#f5bf1b':'#3a4560'}"/>`).join('')}</svg>
+    </div>`).join('');
+  $$('#rows .row').forEach(r=>io.observe(r));
+}
+function buildMarquee(){
+  const items=['Demax Bagebi','Viva Bagebi','Demax Oniashvili','Roof Sairme','Demax Digomi'];
+  const one=items.map((x,i)=>`<span class="${i%2?'o':''}">${x}</span><span class="s">✦</span>`).join('');
+  $('#marq').innerHTML=`<div style="display:flex">${one}${one}${one}</div>`;
+}
+function buildSelect(){
+  $('#fProj').innerHTML=PROJECTS_CURRENT.map(p=>`<option>${nm(p.name)}</option>`).join('');
+}
+
+/* ==========================================================
+   Reveal observer
+   ========================================================== */
+const io = new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.18,rootMargin:'0px 0px -5% 0px'});
+$$('.fade').forEach(el=>io.observe(el));
+
+/* counters */
+const cio = new IntersectionObserver(es=>es.forEach(e=>{
+  if(!e.isIntersecting) return; cio.unobserve(e.target);
+  const el=e.target, to=+el.dataset.count, from=0, t0=performance.now(), d=1600;
+  (function f(now){const p=clamp((now-t0)/d);el.textContent=Math.round(lerp(from,to,easeOut(p)));if(p<1)requestAnimationFrame(f)})(t0);
+}),{threshold:.6});
+$$('[data-count]').forEach(el=>cio.observe(el));
+
+/* ==========================================================
+   HERO 3D — tower assembles floor by floor; gold roof lands
+   ========================================================== */
+const bg=$('#bg'), fg=$('#fg'), bx=bg.getContext('2d'), fx=fg.getContext('2d');
+let W=0,H=0,DPR=1;
+function resize(){
+  DPR=Math.min(2,devicePixelRatio||1); W=innerWidth; H=innerHeight;
+  [bg,fg].forEach(c=>{c.width=W*DPR;c.height=H*DPR});
+  bx.setTransform(DPR,0,0,DPR,0,0); fx.setTransform(DPR,0,0,DPR,0,0);
+}
+addEventListener('resize',resize); resize();
+
+const FLOORS=19, FH=.62, TW=5.2, TD=3.4;   // Roof Vazisubani: 19 floors
+const PODIUM={w:9,d:6.4,h:FH*1.4};
+function rnd(i){const x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x)}
+// surrounding city: boxes on rings (parallax arises from true perspective)
+const CITY=[]; for(let i=0;i<70;i++){const a=rnd(i)*Math.PI*2, r=26+rnd(i+99)*48; CITY.push({x:Math.cos(a)*r,z:Math.sin(a)*r,w:2+rnd(i+7)*4,d:2+rnd(i+3)*4,h:1.5+Math.pow(rnd(i+5),2)*9})}
+const DUST=[]; for(let i=0;i<70;i++) DUST.push({x:(rnd(i+500)-.5)*30,y:rnd(i+600)*16,z:(rnd(i+700)-.5)*30,s:rnd(i+800)});
+
+const cam={th:0,ph:.28,dist:30,y:5,fov:1};
+let introT0=null, heroP=0, landed=-1, roofLanded=false, heroIntroDone=false, shake=0;
+
+function project(x,y,z){
+  const c=Math.cos(cam.th), s=Math.sin(cam.th);
+  let rx=x*c - z*s, rz=x*s + z*c, ry=y-cam.y;
+  const cp=Math.cos(cam.ph), sp=Math.sin(cam.ph);
+  const y2=ry*cp - rz*sp, z2=ry*sp + rz*cp + cam.dist;
+  const f=(W<700?W*1.75:Math.min(W,H*1.25))*cam.fov;
+  const k=f/Math.max(.1,z2);
+  return [W*(W<700?.5:.68) + rx*k + shake*(Math.random()-.5), H*.52 - y2*k + shake*(Math.random()-.5), z2];
+}
+function quad(ctx,p,fill,stroke){
+  ctx.beginPath(); ctx.moveTo(p[0][0],p[0][1]); for(let i=1;i<4;i++)ctx.lineTo(p[i][0],p[i][1]); ctx.closePath();
+  if(fill){ctx.fillStyle=fill;ctx.fill()} if(stroke){ctx.strokeStyle=stroke;ctx.stroke()}
+}
+const area=p=>{let a=0;for(let i=0;i<p.length;i++){const q=p[(i+1)%p.length];a+=p[i][0]*q[1]-q[0]*p[i][1]}return a/2};
+// draw an axis-aligned box; returns nothing. faces with screen winding facing camera are drawn.
+function box(ctx,cx,y0,cz,w,d,h,opt){
+  const x0=cx-w/2,x1=cx+w/2,z0=cz-d/2,z1=cz+d/2,y1=y0+h;
+  const P=(x,y,z)=>project(x,y,z);
+  const faces=[
+    {pts:[[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0]],n:[0,0,-1],u:w},
+    {pts:[[x1,y0,z0],[x1,y0,z1],[x1,y1,z1],[x1,y1,z0]],n:[1,0,0],u:d},
+    {pts:[[x1,y0,z1],[x0,y0,z1],[x0,y1,z1],[x1,y1,z1]],n:[0,0,1],u:w},
+    {pts:[[x0,y0,z1],[x0,y0,z0],[x0,y1,z0],[x0,y1,z1]],n:[-1,0,0],u:d},
+    {pts:[[x0,y1,z0],[x1,y1,z0],[x1,y1,z1],[x0,y1,z1]],n:[0,1,0],top:true},
+  ];
+  for(const f of faces){
+    const sp=f.pts.map(p=>P(...p));
+    if(area(sp)>=0) continue;           // back-facing
+    if(f.top && !opt.top) continue;
+    const L=f.top?.55:(.32+.5*Math.max(0,f.n[0]*.8-f.n[2]*.6));
+    quad(ctx,sp,opt.color(L,f),opt.edge);
+    if(opt.windows && !f.top) opt.windows(ctx,f,sp);
+  }
+}
+
+function drawSky(t){
+  const g=bx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#05070c'); g.addColorStop(.55,'#0d1424'); g.addColorStop(.78,'#1b2236'); g.addColorStop(1,'#2a2420');
+  bx.fillStyle=g; bx.fillRect(0,0,W,H);
+  // warm horizon glow (city light)
+  const hz=project(0,0,0)[1];
+  const rg=bx.createRadialGradient(W*.55,hz,10,W*.55,hz,Math.max(W,H)*.7);
+  rg.addColorStop(0,'rgba(245,170,40,.22)'); rg.addColorStop(1,'rgba(245,170,40,0)');
+  bx.fillStyle=rg; bx.fillRect(0,0,W,H);
+  // mountain ridges — Tbilisi hills, two parallax layers driven by camera angle
+  [[.0018,.5,'#0f1522',90,.55],[.003,.8,'#141b2b',60,.62]].forEach(([fq,amp,col,hgt,base],li)=>{
+    bx.beginPath(); bx.moveTo(0,H);
+    const off=cam.th*(li?260:160);
+    for(let x=0;x<=W;x+=8){
+      const y=hz-hgt*amp*(.6+.4*Math.sin((x+off)*fq*3.1+li)+.3*Math.sin((x+off)*fq*7.3))-(li?0:30);
+      bx.lineTo(x,y);
+    }
+    bx.lineTo(W,H); bx.closePath(); bx.fillStyle=col; bx.fill();
+  });
+  // distant city boxes
+  const lit=t*.6;
+  const order=CITY.map(b=>({b,z:project(b.x,0,b.z)[2]})).filter(o=>o.z>1).sort((a,b)=>b.z-a.z);
+  bx.lineWidth=.5;
+  for(const {b} of order){
+    box(bx,b.x,0,b.z,b.w,b.d,b.h,{top:true,edge:null,color:(L)=>`rgba(${22+L*20|0},${28+L*24|0},${44+L*30|0},1)`,
+      windows:(ctx,f,sp)=>{ // sparse lit dots
+        for(let k=0;k<4;k++){const r=rnd(b.x*13+b.z+k+(f.n[0]*7));if(r>.55)continue;
+          const u=.2+rnd(k+b.h)*.6, v=.15+rnd(k*3+b.w)*.7;
+          const x=lerp(lerp(sp[0][0],sp[1][0],u),lerp(sp[3][0],sp[2][0],u),v), y=lerp(lerp(sp[0][1],sp[1][1],u),lerp(sp[3][1],sp[2][1],u),v);
+          bx.fillStyle=`rgba(255,${190+r*60|0},90,${.35+.4*Math.sin(lit+r*20)**2})`; bx.fillRect(x,y,1.6,1.6)}
+      }});
+  }
+}
+
+function drawGrid(){
+  fx.lineWidth=1;
+  for(let i=-24;i<=24;i+=2){
+    for(const dir of [0,1]){
+      const a=dir?project(i,0,-24):project(-24,0,i), b=dir?project(i,0,24):project(24,0,i);
+      if(a[2]<1||b[2]<1) continue;
+      const g=fx.createLinearGradient(a[0],a[1],b[0],b[1]);
+      g.addColorStop(0,'rgba(245,191,27,0)'); g.addColorStop(.5,`rgba(245,191,27,${i===0?.25:.08})`); g.addColorStop(1,'rgba(245,191,27,0)');
+      fx.strokeStyle=g; fx.beginPath(); fx.moveTo(a[0],a[1]); fx.lineTo(b[0],b[1]); fx.stroke();
+    }
+  }
+}
+
+function drawCrane(t,built){
+  const mx=4.6, mz=-3.8, top=FLOORS*FH+PODIUM.h+3.2;
+  const P=(x,y,z)=>project(x,y,z);
+  fx.strokeStyle='rgba(245,191,27,.55)'; fx.lineWidth=1.1;
+  const a=P(mx,0,mz), b=P(mx,top,mz);
+  fx.beginPath(); fx.moveTo(a[0],a[1]); fx.lineTo(b[0],b[1]); fx.stroke();
+  // lattice
+  fx.strokeStyle='rgba(245,191,27,.22)';
+  for(let y=0;y<top;y+=1.2){const p=P(mx-.35,y,mz),q=P(mx+.35,y+1.2,mz);fx.beginPath();fx.moveTo(p[0],p[1]);fx.lineTo(q[0],q[1]);fx.stroke()}
+  // jib rotating toward the current floor
+  const ang=-.6+Math.sin(t*.25)*.5+built*.9;
+  const j1=P(mx+Math.cos(ang)*11,top,mz+Math.sin(ang)*11), j0=P(mx-Math.cos(ang)*3.5,top,mz-Math.sin(ang)*3.5);
+  fx.strokeStyle='rgba(245,191,27,.6)'; fx.lineWidth=1.3;
+  fx.beginPath(); fx.moveTo(j0[0],j0[1]); fx.lineTo(j1[0],j1[1]); fx.stroke();
+  const apex=P(mx,top+1.6,mz); fx.lineWidth=.7;
+  fx.beginPath(); fx.moveTo(j0[0],j0[1]); fx.lineTo(apex[0],apex[1]); fx.lineTo(j1[0],j1[1]); fx.stroke();
+  // hook line + warning light
+  const hx=mx+Math.cos(ang)*7, hz=mz+Math.sin(ang)*7, hy=Math.max(built*FLOORS*FH+PODIUM.h+1.2,2);
+  const h0=P(hx,top,hz), h1=P(hx,hy,hz); fx.beginPath(); fx.moveTo(h0[0],h0[1]); fx.lineTo(h1[0],h1[1]); fx.stroke();
+  const blink=(Math.sin(t*4)>.6); if(blink){fx.fillStyle='#ff4a3d';fx.beginPath();fx.arc(apex[0],apex[1],2.4,0,7);fx.fill()}
+}
+
+function floorState(i,t){ // 0..1 landing progress for floor i
+  const start=.25+i*.13; return clamp((t-start)/.55);
+}
+
+let lastFloorShown=-1;
+function drawTower(t){
+  const towerY0=PODIUM.h;
+  // podium
+  box(fx,0,0,0,PODIUM.w,PODIUM.d,PODIUM.h,{top:true,edge:'rgba(255,255,255,.08)',color:(L)=>`rgb(${30+L*40|0},${34+L*44|0},${48+L*50|0})`,
+    windows:(ctx,f,sp)=>{ // glazed lobby band
+      const p=[0,1,2,3].map(k=>sp[k]); const y0=.15,y1=.8;
+      const pt=(u,v)=>[lerp(lerp(p[0][0],p[1][0],u),lerp(p[3][0],p[2][0],u),v),lerp(lerp(p[0][1],p[1][1],u),lerp(p[3][1],p[2][1],u),v)];
+      quad(ctx,[pt(.05,y0),pt(.95,y0),pt(.95,y1),pt(.05,y1)],'rgba(245,191,27,.28)');
+    }});
+  // floors: order by camera height so overlapping is right
+  const idx=[...Array(FLOORS).keys()];
+  const camAbove = cam.ph>0;
+  if(!camAbove) idx.reverse();
+  let built=0;
+  for(const i of idx){
+    const p=floorState(i,t); if(p<=0) continue;
+    if(p>=1) built++;
+    const e=easeOutBack(p);
+    const drop=(1-e)*6;
+    const y=towerY0+i*FH+drop;
+    const alpha=clamp(p*3);
+    if(p>=1 && i>landed){landed=i; shake=Math.max(shake,1.2); if(i%3===0)Sound.thud(.12)}
+    const lit=clamp((t-2.6-i*.05)/2.4);
+    fx.globalAlpha=alpha;
+    box(fx,0,y,0,TW,TD,FH*.94,{top:i===FLOORS-1||p<1,edge:'rgba(255,255,255,.07)',
+      color:(L,f)=>`rgb(${36+L*60|0},${42+L*62|0},${58+L*64|0})`,
+      windows:(ctx,f,sp)=>{
+        const n=Math.max(2,Math.round(f.u/0.85));
+        const pt=(u,v)=>[lerp(lerp(sp[0][0],sp[1][0],u),lerp(sp[3][0],sp[2][0],u),v),lerp(lerp(sp[0][1],sp[1][1],u),lerp(sp[3][1],sp[2][1],u),v)];
+        for(let c=0;c<n;c++){
+          const u0=(c+.16)/n,u1=(c+.84)/n, r=rnd(i*31+c*7+f.n[0]*3+f.n[2]*5);
+          const on = r < lit*.75;
+          const col= on?`rgba(255,${196+r*40|0},${90+r*60|0},${.75+.25*Math.sin(t*.7+r*30)})`:'rgba(14,19,30,.92)';
+          quad(ctx,[pt(u0,.16),pt(u1,.16),pt(u1,.86),pt(u0,.86)],col);
+        }
+        // slab edge — gold hairline
+        const a=pt(0,.98),b=pt(1,.98); ctx.strokeStyle=`rgba(245,191,27,${.18+.25*(1-p)})`; ctx.lineWidth=1; ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();
+      }});
+    fx.globalAlpha=1;
+  }
+  // floor counter
+  const shown=Math.max(0,landed+1);
+  if(shown!==lastFloorShown){lastFloorShown=shown;$('#floorNum').textContent=String(shown).padStart(2,'0')}
+  // roof chevron (logo) lands after the last floor
+  const rp=clamp((t-(.25+FLOORS*.13+.7))/.9);
+  if(rp>0){
+    const e=easeOutBack(rp), topY=towerY0+FLOORS*FH+.25+(1-e)*7;
+    if(rp>=1&&!roofLanded){roofLanded=true;shake=3;Sound.thud(.3);Sound.bell(659.25,.08,3);Sound.bell(987.77,.04,3.4);onRoofLanded()}
+    const zf=TD*.5+.05, zb=TD*.5-.55;
+    const pts=[[-TW*.62,0],[-TW*.05,2.3],[TW*.5,.5]];
+    const F=pts.map(([x,y])=>project(x,topY+y,zf)), B=pts.map(([x,y])=>project(x,topY+y,zb));
+    const lw=Math.max(5,(F[1][2]>0?230/F[1][2]:5));
+    fx.globalAlpha=clamp(rp*2); fx.lineJoin='miter'; fx.lineCap='square';
+    // depth: draw several interpolated layers from back to front = solid extrusion
+    for(let k=0;k<=6;k++){const q=k/6; fx.strokeStyle=k<6?`rgb(${150+q*40|0},${110+q*30|0},${10})`:'#f5bf1b'; fx.lineWidth=lw;
+      if(k===6){fx.shadowColor='rgba(245,191,27,.85)';fx.shadowBlur=26*(roofLanded?1:rp)}
+      fx.beginPath(); for(let j=0;j<3;j++){const x=lerp(B[j][0],F[j][0],q),y=lerp(B[j][1],F[j][1],q); j?fx.lineTo(x,y):fx.moveTo(x,y)} fx.stroke();}
+    fx.shadowBlur=0; fx.globalAlpha=1;
+  }
+  return built/FLOORS;
+}
+
+function drawDust(t){
+  for(const d of DUST){
+    const y=(d.y+t*.25*(.3+d.s))%16, p=project(d.x+Math.sin(t*.2+d.s*9),y,d.z);
+    if(p[2]<1) continue; const r=Math.max(.4,3.2/p[2]*6);
+    fx.fillStyle=`rgba(255,220,150,${.08+.18*d.s})`; fx.beginPath(); fx.arc(p[0],p[1],r,0,7); fx.fill();
+  }
+}
+
+function onRoofLanded(){
+  heroIntroDone=true;
+  $('#hSub').style.cssText='opacity:1;transform:none;transition:opacity 1.2s var(--ease),transform 1.4s var(--ease)';
+}
+
+/* ==========================================================
+   SCROLL ENGINE — lerped scroll + velocity, section progress
+   ========================================================== */
+let sy=scrollY, sySmooth=scrollY, vel=0;
+addEventListener('scroll',()=>{sy=scrollY},{passive:true});
+const prog=(el)=>{const r=el.getBoundingClientRect();return clamp(-r.top/(r.height-innerHeight))};
+
+let lastHdr=0;
+function updateHeader(){
+  const h=$('#top'); h.classList.toggle('solid',sy>40);
+  if(sy<120) h.classList.remove('hide'); else if(sy>innerHeight*.6 && sy>lastHdr+4) h.classList.add('hide'); else if(sy<lastHdr-4) h.classList.remove('hide');
+  lastHdr=sy;
+}
+
+/* process blueprint */
+function buildBlueprint(){
+  const s=$('#bp'); const fl=12, fh=30, x0=110, w=180, base=480;
+  let h=`<g stroke="#0a0d13" fill="none">`;
+  // grid
+  for(let x=20;x<=380;x+=20) h+=`<line class="g" x1="${x}" y1="20" x2="${x}" y2="${base}" stroke-opacity=".08" pathLength="1"/>`;
+  for(let y=20;y<=base;y+=20) h+=`<line class="g" x1="20" y1="${y}" x2="380" y2="${y}" stroke-opacity=".08" pathLength="1"/>`;
+  // outline + axes + dims
+  h+=`<path class="o" d="M${x0} ${base} V${base-fl*fh} H${x0+w} V${base}" stroke-width="2" pathLength="1"/>`;
+  h+=`<line class="o" x1="20" y1="${base}" x2="380" y2="${base}" stroke-width="2" pathLength="1"/>`;
+  h+=`<path class="o" d="M${x0-24} ${base} V${base-fl*fh} M${x0-30} ${base} H${x0-18} M${x0-30} ${base-fl*fh} H${x0-18}" stroke-width="1" pathLength="1"/>`;
+  for(let i=1;i<fl;i++) h+=`<line class="o" x1="${x0}" y1="${base-i*fh}" x2="${x0+w}" y2="${base-i*fh}" stroke-dasharray=".02 .02" stroke-opacity=".5" pathLength="1"/>`;
+  h+=`</g><g id="bpFloors">`;
+  for(let i=0;i<fl;i++){
+    h+=`<g class="bf" data-i="${i}"><rect x="${x0}" y="${base-(i+1)*fh}" width="${w}" height="${fh-2}" fill="#0a0d13"/>`;
+    for(let c=0;c<5;c++) h+=`<rect class="bw" x="${x0+8+c*34.4}" y="${base-(i+1)*fh+8}" width="22" height="13" fill="#2c364c"/>`;
+    h+=`</g>`;
+  }
+  h+=`</g><path id="bpRoof" d="M${x0-16} ${base-fl*fh-4} L${x0+60} ${base-fl*fh-56} L${x0+120} ${base-fl*fh-14}" fill="none" stroke="#f5bf1b" stroke-width="14" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>`;
+  h+=`<text x="${x0-34}" y="${base-fl*fh/2}" font-family="Unbounded" font-size="9" fill="#0a0d13" transform="rotate(-90 ${x0-34} ${base-fl*fh/2})" text-anchor="middle" opacity=".6">H = ${fl} × 3.0 m</text>`;
+  s.innerHTML=h;
+}
+buildBlueprint();
+function updateBlueprint(p){
+  // 0-.33 design (lines draw) · .33-.66 construction (floors stack) · .66-1 handover (windows light + roof)
+  const d=clamp(p/.3), c=clamp((p-.3)/.36), hnd=clamp((p-.64)/.3);
+  $$('#bp .g').forEach((l,i)=>l.style.strokeDasharray=`${clamp(d*1.6-i*.012)} 1`);
+  $$('#bp .o').forEach(l=>{l.style.strokeDasharray='1 1';l.style.strokeDashoffset=1-d});
+  $$('#bp .bf').forEach((g,i)=>{const k=clamp(c*12-i);g.style.opacity=k;g.style.transform=`translateY(${(1-easeOut(k))*-40}px)`});
+  $$('#bp .bw').forEach((w,i)=>{const r=rnd(i*3.3);w.setAttribute('fill',r<hnd*.9?'#f5bf1b':'#2c364c')});
+  $('#bpRoof').style.strokeDashoffset=1-easeOut(clamp((hnd-.5)*2));
+  const steps=$$('.step'), k=p<.33?0:p<.66?1:2;
+  steps.forEach((s,i)=>{s.classList.toggle('on',i===k);s.classList.toggle('past',i<k)});
+  $$('.prog b').forEach((b,i)=>b.style.transform=`scaleX(${clamp(p*3-i)})`);
+  if(k!==updateBlueprint.k){ if(updateBlueprint.k!==undefined) Sound.bell([440,523.25,659.25][k],.06,1.8); updateBlueprint.k=k }
+}
+
+/* ==========================================================
+   MAIN LOOP
+   ========================================================== */
+let tPrev=performance.now(), clock=0;
+function frame(now){
+  const dt=Math.min(.05,(now-tPrev)/1000); tPrev=now; clock+=dt;
+  sySmooth=lerp(sySmooth,sy,1-Math.pow(.0009,dt)); vel=lerp(vel,(sy-sySmooth),.2);
+  const tIntro = introT0===null?0:(now-introT0)/1000;
+
+  /* hero */
+  const hero=$('#hero'); heroP=prog(hero);
+  if(heroP<1 || tIntro<12){
+    // camera: slow orbit while building; scroll lifts camera to roof, then pushes in
+    const s=easeIO(heroP);
+    cam.th = .7 + clock*.06 + s*1.4;
+    cam.ph = lerp(.30,-.05,s) + Math.sin(clock*.3)*.02;
+    cam.y  = lerp(4.6,FLOORS*FH*.85,s);
+    cam.dist = lerp(31,20,s) - Math.min(1,tIntro/8)*2;
+    cam.fov = 1;
+    shake*=.86; if(REDUCED) shake=0;
+    // motion blur by scroll velocity: keep a fraction of the previous frame
+    const smear=clamp(Math.abs(vel)/260,0,.55);
+    bx.clearRect(0,0,W,H); drawSky(clock);
+    if(smear>.02){fx.globalCompositeOperation='destination-out';fx.fillStyle=`rgba(0,0,0,${1-smear})`;fx.fillRect(0,0,W,H);fx.globalCompositeOperation='source-over'}
+    else fx.clearRect(0,0,W,H);
+    drawGrid();
+    const built=drawTower(REDUCED?99:tIntro);
+    drawCrane(clock,built);
+    drawDust(clock);
+    // copy choreography
+    const out=clamp((heroP-.08)/.3);
+    $('#heroCopy').style.transform=`translateY(${-out*120}px)`; $('#heroCopy').style.opacity=1-out;
+    $('#heroCopy').style.filter=`blur(${out*8}px)`;
+    $('#heroMeta').style.opacity=1-out; $('#cue').style.opacity=1-clamp(heroP*6);
+    const cap=clamp((heroP-.42)/.2)-clamp((heroP-.82)/.15);
+    const capEl=$('#heroCap'); capEl.style.opacity=cap; capEl.style.transform=`translate(0,-50%) scale(${.86+cap*.14})`;capEl.style.transformOrigin='left center'; capEl.style.letterSpacing=`${(1-cap)*.3}em`;
+    capEl.style.filter=`blur(${(1-cap)*10}px)`;
+  }
+
+  /* about statement — words light up with scroll */
+  const st=$('#statement'), r=st.getBoundingClientRect();
+  const sp=clamp((innerHeight*.85-r.top)/(r.height+innerHeight*.45));
+  const ws=st.children, n=ws.length; for(let i=0;i<n;i++) ws[i].classList.toggle('lit',i<sp*n*1.05);
+
+  /* process */
+  updateBlueprint(prog($('#process')));
+
+  /* projects horizontal */
+  const pj=$('#projects'), pp=prog(pj), track=$('#track');
+  const maxX=Math.max(0,track.scrollWidth-innerWidth+Math.min(56,innerWidth*.04)+24);
+  const x=-easeIO(pp)*maxX;
+  track.style.transform=`translate3d(${x}px,0,0) skewX(${clamp(vel*.02,-4,4)}deg)`;
+  $('#trackBar').style.transform=`scaleX(${pp})`;
+  $$('#track .card').forEach(card=>{
+    const cr=card.getBoundingClientRect(); const c=(cr.left+cr.width/2)/innerWidth; // 0..1 across screen
+    const k=clamp(1.25-c); // grows as card moves left into view
+    const fls=card.querySelectorAll('.fl'), N=fls.length;
+    fls.forEach((g,i)=>{const q=clamp(k*N*1.3-i);g.style.opacity=q;g.style.transform=`translateY(${(1-easeOut(q))*-18}px)`});
+    const rf=card.querySelector('.rf'); if(rf){const q=clamp(k*1.3-1);rf.style.opacity=q;rf.style.transform=`translateY(${(1-easeOutBack(q))*-24}px)`}
+    const dist=Math.abs(c-.42); card.style.transform=`rotateY(${(c-.42)*-8}deg) scale(${1-dist*.06})`;
+  });
+  if(pp>0&&pp<1){const idx=Math.round(pp*(PROJECTS_CURRENT.length));if(idx!==frame.pidx){frame.pidx=idx;Sound.whoosh(.06)}}
+
+  /* marquee with velocity */
+  const mq=$('#marq'); frame.mx=(frame.mx||0)-(1.2+Math.abs(vel)*.08)*60*dt; const mw=mq.scrollWidth/3; if(-frame.mx>mw)frame.mx+=mw;
+  mq.style.transform=`translate3d(${frame.mx}px,0,0) skewX(${clamp(-vel*.03,-8,8)}deg)`;
+
+  /* offer zero — scale in with blur */
+  const zw=$('#zeroWrap'), zr=zw.getBoundingClientRect(); const zp=clamp((innerHeight-zr.top)/(innerHeight*.8));
+  zw.style.transform=`scale(${.6+easeOut(zp)*.4}) rotate(${(1-zp)*-6}deg)`; zw.style.filter=`blur(${(1-zp)*14}px)`; zw.style.opacity=.2+zp*.8;
+
+  /* mega footer letters */
+  const mg=$('#mega'), mr=mg.getBoundingClientRect(); const mp=clamp((innerHeight-mr.top)/(mr.height+innerHeight*.3));
+  [...mg.children].forEach((s,i)=>{s.style.transform=`translateY(${(1-easeOut(clamp(mp*1.6-i*.15)))*70}%)`});
+
+  /* skew on velocity for headlines */
+  updateHeader();
+  requestAnimationFrame(frame);
+}
+
+/* ==========================================================
+   INTRO / PRELOADER
+   ========================================================== */
+function intro(){
+  const L=$('#loader'), cnt=$('.count',L), bar=$('.bar',L), roof=$('.roof',L), chk=$('.check',L);
+  const t0=performance.now(), D=REDUCED?200:1700;
+  (function f(now){
+    const p=clamp((now-t0)/D), e=easeIO(p);
+    cnt.textContent=Math.round(e*100); bar.style.width=(e*100)+'%';
+    chk.style.strokeDashoffset=110*(1-clamp(e*1.6));
+    roof.style.strokeDashoffset=80*(1-clamp(e*1.6-.6));
+    roof.style.transform=`translateY(${(1-easeOutBack(clamp(e*1.6-.6)))*-14}px)`;
+    if(p<1) return requestAnimationFrame(f);
+    L.classList.add('done'); Sound.whoosh(.08);
+    setTimeout(()=>L.remove(),1200);
+    introT0=performance.now();
+    $$('#hTitle .ln>span').forEach((s,i)=>{s.style.transition=`transform 1.4s var(--ease) ${.35+i*.12}s`;s.style.transform='none'});
+  })(t0);
+}
+
+/* ==========================================================
+   UI bits — cursor, magnetic, menu, form
+   ========================================================== */
+const cur=$('#cur'); let mx=innerWidth/2,my=innerHeight/2,cx=mx,cy=my;
+addEventListener('pointermove',e=>{mx=e.clientX;my=e.clientY;if(e.pointerType==='mouse')cur.style.opacity=1});
+(function cl(){cx=lerp(cx,mx,.2);cy=lerp(cy,my,.2);cur.style.transform=`translate(${cx}px,${cy}px)`;requestAnimationFrame(cl)})();
+document.addEventListener('pointerover',e=>{cur.classList.toggle('big',!!e.target.closest('a,button,.card,.row'))});
+document.addEventListener('pointermove',e=>{
+  const m=e.target.closest('.mag'); $$('.mag').forEach(x=>{if(x!==m)x.style.transform=''});
+  if(!m) return; const r=m.getBoundingClientRect(); m.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.18}px,${(e.clientY-r.top-r.height/2)*.25}px)`;
+});
+$('#menuBtn').addEventListener('click',()=>$('#mnav').classList.toggle('open'));
+$$('#mnav a').forEach(a=>a.addEventListener('click',()=>$('#mnav').classList.remove('open')));
+$('#lead').addEventListener('submit',e=>{
+  e.preventDefault();
+  const n=$('#fName').value.trim(), ph=$('#fPhone').value.trim(), pr=$('#fProj').value;
+  if(!n||!ph){$('#fPhone').focus();return}
+  const body=encodeURIComponent(`${n}\n${ph}\n${pr}`);
+  $('#lead button span').textContent=tr('ct.ok'); Sound.bell(783.99,.08,2);
+  location.href=`mailto:info@roofdevelopment.ge?subject=${encodeURIComponent('Roof Development — '+pr)}&body=${body}`;
+});
+// smooth anchor scrolling
+$$('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{const t=$(a.getAttribute('href'));if(!t)return;e.preventDefault();scrollTo({top:t.offsetTop,behavior:'smooth'})}));
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(a&&!a.dataset.bound){}});
+
+applyLang();
+document.fonts?.ready.then(()=>{});
+requestAnimationFrame(frame);
+intro();
+</script>
+</body>
+</html>
