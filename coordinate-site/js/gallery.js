@@ -1,13 +1,13 @@
 /* Coordinate — light gallery (#gallery): six renders, no scroll-jacking.
    Desktop: an airy editorial layout; each photo is revealed once with a soft wipe when it comes into view.
-   Phones: the section pins and the photos slide sideways as you scroll down. Tap opens a simple full-screen viewer.
+   Phones: a plain vertical list that scrolls with the page; each photo fades in once. Tap opens a full-screen viewer.
    Nothing is downloaded until the section gets close. Data: data/gallery.json. */
 const root = document.getElementById("gallery");
 const lang = () => (["ka", "en", "ru"].includes(document.documentElement.lang) ? document.documentElement.lang : "en");
 const T = {
-  en: { eyebrow: "Gallery", title: "Life at Coordinate", close: "Close", prev: "Previous", next: "Next", swipe: "Keep scrolling" },
-  ru: { eyebrow: "Галерея", title: "Жизнь в Coordinate", close: "Закрыть", prev: "Назад", next: "Вперёд", swipe: "Листайте вниз" },
-  ka: { eyebrow: "გალერეა", title: "ცხოვრება Coordinate-ში", close: "დახურვა", prev: "წინა", next: "შემდეგი", swipe: "გადაახვიეთ ქვემოთ" },
+  en: { eyebrow: "Gallery", title: "Life at Coordinate", close: "Close", prev: "Previous", next: "Next", swipe: "" },
+  ru: { eyebrow: "Галерея", title: "Жизнь в Coordinate", close: "Закрыть", prev: "Назад", next: "Вперёд", swipe: "" },
+  ka: { eyebrow: "გალერეა", title: "ცხოვრება Coordinate-ში", close: "დახურვა", prev: "წინა", next: "შემდეგი", swipe: "" },
 };
 const pad = n => String(n).padStart(2, "0");
 let P = [];
@@ -25,7 +25,7 @@ async function boot() {
       <div class="gl-grid" id="glGrid">
         ${P.map((p, i) => `<figure class="gl-item gl-${i}" data-i="${i}" style="--d:${(i % 3) * .12}s">
             <button class="gl-open" type="button"><img loading="lazy" decoding="async" alt=""
-              sizes="(min-width: 801px) ${i === 0 ? 58 : 40}vw, 84vw" srcset="${srcset(p)}" src="${p.srcset[1] ? p.srcset[1][0] : p.full}"
+              sizes="(min-width: 801px) ${i === 0 ? 58 : 40}vw, 100vw" srcset="${srcset(p)}" src="${p.srcset[1] ? p.srcset[1][0] : p.full}"
               width="${p.w}" height="${p.h}"></button>
             <figcaption><span>${pad(i + 1)}</span><em></em></figcaption></figure>`).join("")}
       </div>
@@ -36,30 +36,6 @@ async function boot() {
   root.querySelectorAll(".gl-item").forEach(f => io.observe(f));
   const grid = root.querySelector("#glGrid"), now = root.querySelector("#glNow");
   grid.addEventListener("click", e => { const f = e.target.closest(".gl-item"); if (f) openLb(+f.dataset.i); });
-  pin(grid, now);
-}
-// Phones: pin the section and move the row sideways with the vertical scroll (1 px down = 1 px across).
-const PHONE = matchMedia("(max-width: 800px)");
-function pin(grid, now) {
-  let maxX = 0, vis = false, raf = 0;
-  const update = () => {
-    raf = 0; if (!PHONE.matches) return;
-    const r = root.getBoundingClientRect(), span = r.height - innerHeight;
-    const p = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0;
-    grid.style.transform = `translate3d(${(-p * maxX).toFixed(1)}px,0,0)`;
-    now.textContent = pad(Math.round(p * (P.length - 1)) + 1);
-  };
-  const measure = () => {
-    if (!PHONE.matches) { root.classList.remove("gl-pinned"); root.style.height = ""; grid.style.transform = ""; return; }
-    root.classList.add("gl-pinned"); grid.style.transform = "";
-    maxX = Math.max(0, grid.scrollWidth - grid.clientWidth);
-    root.style.height = `calc(100svh + ${Math.round(maxX)}px)`;
-    update();
-  };
-  addEventListener("scroll", () => { if (vis && !raf) raf = requestAnimationFrame(update); }, { passive: true });
-  new IntersectionObserver(([e]) => { vis = e.isIntersecting; if (vis) update(); }).observe(root);
-  addEventListener("resize", measure); PHONE.addEventListener("change", measure);
-  measure();
 }
 function relang() {
   if (!root.classList.contains("glite")) return;

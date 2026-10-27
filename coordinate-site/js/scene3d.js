@@ -3,7 +3,7 @@
    selector state through the `coord:sel` event ({block, floor}). */
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
-import { buildTower, buildCommercial, buildSite, floorBand, lights, TOWER_POS, LOBBY_H, FLOOR_H, towerHeight } from "./complex.js?v=20261028e";
+import { buildTower, buildCommercial, buildSite, floorBand, lights, TOWER_POS, LOBBY_H, FLOOR_H, towerHeight } from "./complex.js?v=20261028g";
 
 const C = window.COORD, BLOCKS = C.BLOCKS;
 const touch = matchMedia("(pointer:coarse)").matches;
@@ -32,7 +32,7 @@ function makeRenderer(canvas, { shadows, onRestore }) {
   r.outputColorSpace = THREE.SRGBColorSpace;
   r.shadowMap.enabled = shadows; r.shadowMap.type = THREE.PCFSoftShadowMap;
   r._maxDpr = Math.min(devicePixelRatio || 1, touch ? 1.5 : 2);
-  r._dpr = touch ? Math.min(1.5, r._maxDpr) : r._maxDpr; r.setPixelRatio(r._dpr);   // phones start lighter, sharpen if fast
+  r._dpr = touch ? Math.min(1.25, r._maxDpr) : r._maxDpr; r.setPixelRatio(r._dpr);   // phones start lighter, sharpen if fast
   return r;
 }
 function envFor(renderer, scene) {
@@ -91,6 +91,21 @@ async function warmUp(renderer, scene, camera, extra = []) {
   for (const o of extra) scene.remove(o);
 }
 
+/* Letter label drawn on a canvas, shown as a sprite with a thin stem underneath. */
+function labelSprite(txt) {
+  const c = document.createElement("canvas"); c.width = 128; c.height = 192; const g = c.getContext("2d");
+  const draw = () => { g.clearRect(0, 0, 128, 192);
+    g.fillStyle = "#efe8d8"; g.font = '800 70px "Unbounded", system-ui, sans-serif'; g.textAlign = "center"; g.textBaseline = "middle";
+    g.shadowColor = "rgba(0,0,0,.45)"; g.shadowBlur = 14; g.fillText(txt, 64, 66);
+    g.shadowBlur = 0; g.fillStyle = "#f3dfae"; g.fillRect(62, 128, 4, 52); };
+  draw();
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  if (document.fonts) document.fonts.load('800 70px "Unbounded"').then(() => { draw(); t.needsUpdate = true; }).catch(() => {});
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthTest: false, depthWrite: false, sizeAttenuation: false, toneMapped: false }));
+  sp.center.set(.5, 0); sp.renderOrder = 10; sp.userData.k = .06; sp.scale.set(.04, .06, 1); sp.visible = false;
+  return sp;
+}
+
 /* Painted soft shadow (a radial gradient on the ground) for devices without real-time shadows. */
 let shadowTex = null;
 function softShadow(x, z, r) {
@@ -111,7 +126,7 @@ function initHero() {
   stage.insertBefore(canvas, stage.querySelector(".hero-layer"));
   let alive = true;
   const renderer = makeRenderer(canvas, { shadows: SHADOWS, onRestore: () => {        // rebuild the whole scene on a fresh context
-    alive = false; canvas.remove(); labels.forEach(l => l.remove()); try { renderer.dispose(); } catch (e) {} initHero(); } });
+    alive = false; canvas.remove(); try { renderer.dispose(); } catch (e) {} initHero(); } });
   const scene = new THREE.Scene(); envFor(renderer, scene);
   const sun = lights(scene, { shadow: SHADOWS, mapSize: 2048, extent: 130 });
   const camera = new THREE.PerspectiveCamera(32, 1, 1, 6000);
@@ -126,8 +141,8 @@ function initHero() {
   const com = buildCommercial(); com.position.set(10, 0, 30); com.rotation.y = -.12; scene.add(com);
   if (!SHADOWS) site.add(softShadow(16, 24, 46));
 
-  // HTML labels A/B/C that follow the tower tops
-  const labels = BLOCKS.map(b => { const d = document.createElement("div"); d.className = "t3label"; d.textContent = b.id; stage.insertBefore(d, stage.querySelector(".hero-layer")); return d; });
+  // Labels A/B/C live inside the 3D scene (sprites), so they move exactly with the towers — no lag, no jitter
+  const labels = BLOCKS.map(b => { const sp = labelSprite(b.id); scene.add(sp); return sp; });
 
   let W = 0, H = 0;
   function resize() {
@@ -167,7 +182,7 @@ function initHero() {
     camera.lookAt(target);
     // shift the composition so captions/facts have room
     const offX = wide ? (lerp(0, -.1, eio(range(p, .2, .3))) * (1 - eio(range(p, .38, .5))) + lerp(0, .13, eio(range(p, .5, .68)))) : 0;
-    const offY = wide ? 0 : lerp(0, .05, eio(range(p, .55, .68)));
+    const offY = wide ? 0 : lerp(0, -.04, eio(range(p, .4, .6)));   // phones: complex a bit lower, tower tops clear of the header
     camera.setViewOffset(W, H, offX * W, offY * H, W, H);
 
     // pin drop + ripple
@@ -183,14 +198,10 @@ function initHero() {
     towers.forEach((t, i) => {
       const g = eback(range(p, .42 + i * .04, .56 + i * .04));
       t.scale.y = Math.max(.001, g); t.visible = p > .415 + i * .04;
-      const lb = labels[i], show = p > .52 + i * .04 && p < .97;
-      let y = 0;
-      if (show) {
-        v.set(t.position.x, t.userData.height * t.scale.y + 16, t.position.z).project(camera);
-        y = (-v.y * .5 + .5) * H;
-        lb.style.transform = `translate3d(${(v.x * .5 + .5) * W}px,${y}px,0) translate(-50%,-100%)`;
-      }
-      lb.style.opacity = show && y > (W > 700 ? 100 : 150) ? 1 : 0;              // never under the header/logo
+      const lb = labels[i], a = clamp(range(p, .5 + i * .04, .56 + i * .04)) * (1 - range(p, .94, .98));
+      lb.visible = a > 0; lb.material.opacity = a;
+      lb.position.set(t.position.x, t.userData.height * t.scale.y + 6, t.position.z);
+      { const k = lb.userData.k * (W > 700 ? 1 : 1.15); lb.scale.set(k * 2 / 3, k, 1); }
     });
     const gc = eback(range(p, .5, .64)); com.scale.y = Math.max(.001, gc); com.visible = p > .5;
     const gs = eo(range(p, .4, .55)); site.visible = gs > 0; site.scale.set(1, Math.max(.001, gs), 1);
@@ -199,8 +210,7 @@ function initHero() {
 
     const key = [p.toFixed(5), W, H].join();
     // phones: draw every frame while the hero is on screen (iOS can drop "draw only on change" frames)
-    const animating = touch || (pd > 0 && fadePin > 0) || adaptive(renderer, dt);
-    if (touch) adaptive(renderer, dt);
+    const animating = (pd > 0 && fadePin > 0) || adaptive(renderer, dt);
     if (key === lastKey && !animating) return;
     lastKey = key;
     renderer.render(scene, camera); window.__heroFrames = (window.__heroFrames || 0) + 1;

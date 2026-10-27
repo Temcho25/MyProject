@@ -23,13 +23,14 @@
 .gl-5{height:clamp(220px,24vw,380px)}
 .gl-hint{display:none}
 @media (max-width:800px){
-  .gl-grid{display:flex;grid-template-areas:none;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;margin-left:calc(var(--gutter)*-1);margin-right:calc(var(--gutter)*-1);
-    padding:0 var(--gutter) 6px;scroll-padding:0 var(--gutter);scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
-  .gl-grid::-webkit-scrollbar{display:none}
-  .gl-item{flex:0 0 84%;height:min(58svh,520px);scroll-snap-align:start}
-  .gl-5{height:min(58svh,520px)}
-  .gl-hint{display:block;margin-top:14px;font:600 10px/1 var(--text);letter-spacing:.24em;text-transform:uppercase;color:var(--paper-dim)}
-  .gl-hint:after{content:" →"}
+  /* phones: simple vertical list, no scroll effects — light on memory */
+  .gl-grid{display:grid;grid-template-columns:1fr;grid-template-areas:none;grid-auto-rows:auto;gap:14px}
+  .gl-item,.gl-5{grid-area:auto!important;height:auto;aspect-ratio:4/3}
+  .gl-open{clip-path:none;opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
+  .gl-open img{transform:none;transition:none}
+  .gl-item.in .gl-open{opacity:1;transform:none}
+  .gl-item.in .gl-open img{transform:none}
+  .gl-count,.gl-hint{display:none}
 }
 @media (prefers-reduced-motion:reduce){.gl-open{clip-path:none;transition:none}.gl-open img{transform:none;transition:none}.gl-item figcaption{opacity:1;transform:none;transition:none}}
 /* lightbox */
@@ -46,12 +47,3 @@ html.lb-open{overflow:hidden}
 @media (pointer:coarse){.rlb-p,.rlb-n{display:none}}
 @media (min-width:801px){.gl-count{display:none}}
 
-/* phones: pinned section, the row slides sideways while scrolling down */
-@media (max-width:800px){
-  #gallery.gl-pinned{padding:0}
-  .gl-pinned .gl-stick{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding-top:56px}
-  .gl-pinned .gl-grid{overflow:visible;scroll-snap-type:none;will-change:transform}
-  .gl-pinned .gl-item{height:min(56svh,500px)}
-  .gl-pinned .gl-head .h2{font-size:clamp(28px,8vw,40px)}
-  .gl-hint:after{content:" ↓"}
-}
