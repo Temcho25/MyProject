@@ -3,7 +3,7 @@
    selector state through the `coord:sel` event ({block, floor}). */
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
-import { buildTower, buildCommercial, buildSite, floorBand, lights, TOWER_POS, LOBBY_H, FLOOR_H, towerHeight } from "./complex.js";
+import { buildTower, buildCommercial, buildSite, floorBand, lights, TOWER_POS, LOBBY_H, FLOOR_H, towerHeight } from "./complex.js?v=20261028a";
 
 const C = window.COORD, BLOCKS = C.BLOCKS;
 const touch = matchMedia("(pointer:coarse)").matches;
@@ -19,8 +19,11 @@ const D2R = Math.PI / 180;
 
 // iPhones drop a WebGL page when GPU memory runs out: keep phones at ≤1.5× resolution and recover if the context is lost.
 function makeRenderer(canvas, { shadows, onRestore }) {
-  canvas.addEventListener("webglcontextlost", e => { e.preventDefault(); r._lost = true; document.documentElement.classList.add("gl-lost"); }, false);
-  canvas.addEventListener("webglcontextrestored", () => { r._lost = false; document.documentElement.classList.remove("gl-lost"); if (onRestore) onRestore(); }, false);
+  let rebuilt = false;
+  const rebuild = () => { if (rebuilt) return; rebuilt = true; document.documentElement.classList.remove("gl-lost"); if (onRestore) onRestore(); };
+  canvas.addEventListener("webglcontextlost", e => { e.preventDefault(); r._lost = true; document.documentElement.classList.add("gl-lost");
+    setTimeout(() => { if (r._lost) rebuild(); }, 1500); }, false);   // Safari may never send "restored": rebuild on a fresh canvas
+  canvas.addEventListener("webglcontextrestored", () => { r._lost = false; rebuild(); }, false);
   const r = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
   r.setClearColor(0x000000, 0);
   r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05;
