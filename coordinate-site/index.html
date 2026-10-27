@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="ka">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Coordinate — by Keystone</title>
+<meta name="description" content="Coordinate by Keystone — 73 Vakhtang Gorgasali St, Tbilisi, Georgia">
+<meta name="theme-color" content="#1d2433">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700&family=Noto+Sans+Georgian:wght@300;400;600;800&family=Unbounded:wght@300;500;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1d2433;          /* navy from the logo */
+  --ink-2:#262e40;
+  --ink-3:#30394e;
+  --paper:#efe8d8;        /* cream from the logo */
+  --paper-dim:rgba(239,232,216,.62);
+  --line:rgba(239,232,216,.16);
+  --line-2:rgba(239,232,216,.32);
+  --accent:#d8c49a;
+  --glow:#f3dfae;
+  --display:"Unbounded","Noto Sans Georgian",system-ui,sans-serif;
+  --text:"Manrope","Noto Sans Georgian",system-ui,sans-serif;
+  --gutter:clamp(16px,4vw,56px);
+}
+html[lang="ka"]{--display:"Noto Sans Georgian",system-ui,sans-serif;--text:"Noto Sans Georgian",system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--ink);-webkit-text-size-adjust:100%}
+body{background:var(--ink);color:var(--paper);font-family:var(--text);font-weight:400;line-height:1.5;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+img{display:block;max-width:100%}
+::selection{background:var(--accent);color:var(--ink)}
+
+/* grain */
+body:after{content:"";position:fixed;inset:-50%;pointer-events:none;z-index:100;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* ---------- header ---------- */
+.top{position:fixed;inset:0 0 auto 0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+  padding:14px var(--gutter);padding-top:max(14px,env(safe-area-inset-top));
+  background:linear-gradient(var(--ink) 0%,rgba(29,36,51,.0) 100%);transition:background .4s}
+.top.solid{background:rgba(29,36,51,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.mark{display:flex;flex-direction:column;line-height:1}
+.mark small{font:500 6.5px/1 "Manrope",sans-serif;letter-spacing:.14em;opacity:.7;margin-bottom:3px}
+.mark b{font:500 17px/1 "Unbounded",sans-serif;letter-spacing:.02em}
+.mark i{font:500 7px/1 "Manrope",sans-serif;font-style:normal;letter-spacing:.32em;align-self:flex-end;margin-top:4px;opacity:.85}
+.nav{display:flex;gap:28px;font-size:13px;letter-spacing:.04em}
+.nav a{opacity:.7;transition:opacity .25s;position:relative}
+.nav a:hover{opacity:1}
+.nav a:after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:1px;background:var(--paper);transform:scaleX(0);transform-origin:left;transition:transform .35s}
+.nav a:hover:after{transform:scaleX(1)}
+.langs{display:flex;border:1px solid var(--line-2);border-radius:999px;padding:3px;font:600 11px/1 "Manrope",sans-serif;letter-spacing:.08em}
+.langs button{padding:7px 10px;border-radius:999px;opacity:.6;transition:all .3s}
+.langs button[aria-pressed="true"]{background:var(--paper);color:var(--ink);opacity:1}
+@media (max-width:900px){.nav{display:none}}
+
+/* ---------- world (scroll-driven 3D scene) ---------- */
+.world-track{position:relative;height:640vh}
+.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;perspective:1100px;perspective-origin:50% 42%}
+.stage-bg{position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 30%,var(--ink-3) 0%,var(--ink) 60%)}
+.stage-fade{position:absolute;inset:0;background:var(--ink);pointer-events:none;opacity:1}
+.cam{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
+.world{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d}
+.grid{position:absolute;left:-1300px;top:-1300px;width:2600px;height:2600px;
+  background-image:
+    linear-gradient(var(--line-2) 1px,transparent 1px),
+    linear-gradient(90deg,var(--line-2) 1px,transparent 1px),
+    linear-gradient(var(--line) 1px,transparent 1px),
+    linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:200px 200px,200px 200px,40px 40px,40px 40px;
+  background-position:-1px -1px;
+  -webkit-mask-image:radial-gradient(closest-side,#000 30%,transparent 100%);mask-image:radial-gradient(closest-side,#000 30%,transparent 100%)}
+.axis{position:absolute;background:var(--accent);opacity:.75}
+.axis.x{left:-1300px;width:2600px;top:0;height:1px}
+.axis.y{top:-1300px;height:2600px;left:0;width:1px}
+.tick{position:absolute;font:500 13px/1 "Manrope",sans-serif;letter-spacing:.12em;color:var(--accent);white-space:nowrap}
+.pin{position:absolute;left:0;top:0;transform-style:preserve-3d}
+.pin .ring{position:absolute;left:-60px;top:-60px;width:120px;height:120px;border:1px solid var(--glow);border-radius:50%}
+.pin .ring.r2{left:-110px;top:-110px;width:220px;height:220px;opacity:.5}
+.pin .dot{position:absolute;left:-5px;top:-5px;width:10px;height:10px;border-radius:50%;background:var(--glow);box-shadow:0 0 24px 6px rgba(243,223,174,.6)}
+.pin .needle{position:absolute;left:0;top:0;width:1px;height:260px;background:linear-gradient(var(--glow),transparent);transform-origin:0 0;transform:rotateX(-90deg)}
+
+/* towers */
+#towers,#selWorld{position:absolute;left:0;top:0;transform-style:preserve-3d}
+.tower{position:absolute;transform-style:preserve-3d}
+.tower .z{position:absolute;left:0;top:0;transform-style:preserve-3d;transform-origin:0 0}
+.face{position:absolute;backface-visibility:visible;border:1px solid rgba(243,223,174,.55);
+  background-color:rgba(38,46,64,.82)}
+.face.f,.face.b{background-image:repeating-linear-gradient(to top,rgba(243,223,174,.42) 0 1px,transparent 1px var(--fh))}
+.face.l,.face.r{background-image:repeating-linear-gradient(to right,rgba(243,223,174,.42) 0 1px,transparent 1px var(--fh))}
+.face.t{background:rgba(216,196,154,.28)}
+.tower .label{position:absolute;left:50%;top:50%;transform-style:preserve-3d}
+.tower .label span{display:block;transform:translate(-50%,-100%);font:800 30px/1 "Unbounded",sans-serif;color:var(--paper);text-shadow:0 2px 20px rgba(0,0,0,.4);white-space:nowrap}
+.slab{position:absolute;transform-style:preserve-3d;pointer-events:none;transition:opacity .3s}
+.slab div{position:absolute;background:rgba(243,223,174,.85);box-shadow:0 0 30px rgba(243,223,174,.8)}
+
+/* hero letters */
+.hero-layer{position:absolute;inset:0;display:grid;place-items:center;transform-style:preserve-3d;pointer-events:none}
+.hero-word{position:relative;display:flex;transform-style:preserve-3d;font:300 clamp(40px,10.5vw,170px)/1 "Unbounded",sans-serif;letter-spacing:-.01em}
+.hero-word span{display:inline-block;will-change:transform,opacity,filter}
+.hero-meta{position:absolute;left:0;right:0;text-align:center;font:500 clamp(10px,1.1vw,14px)/1.4 "Manrope",sans-serif;letter-spacing:.32em;text-transform:uppercase}
+.hero-coords{top:calc(50% - clamp(54px,9vw,140px));color:var(--accent)}
+.hero-by{top:calc(50% + clamp(36px,6.5vw,110px));opacity:.85}
+.scroll-hint{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);width:1px;height:56px;background:var(--line-2);overflow:hidden}
+.scroll-hint:after{content:"";position:absolute;left:0;top:-40%;width:1px;height:40%;background:var(--paper);animation:hint 1.8s cubic-bezier(.6,0,.2,1) infinite}
+@keyframes hint{to{top:110%}}
+
+/* floating captions over 3D */
+.cap{position:absolute;pointer-events:none;will-change:transform,opacity}
+.cap .k{font:500 11px/1.2 "Manrope","Noto Sans Georgian",sans-serif;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.cap .v{font:500 clamp(22px,3vw,44px)/1.1 var(--display);letter-spacing:-.01em}
+.cap .s{font-size:clamp(13px,1.2vw,16px);color:var(--paper-dim);margin-top:8px;max-width:30ch}
+.cap-loc{left:var(--gutter);bottom:12vh;max-width:520px}
+.cap-loc .v{font-size:clamp(26px,3.6vw,56px)}
+.facts{position:absolute;right:var(--gutter);top:50%;display:grid;gap:clamp(18px,3vh,34px);text-align:right}
+.facts .v{font-size:clamp(26px,3.4vw,52px)}
+@media (max-width:700px){
+  .facts{top:auto;bottom:9vh;left:var(--gutter);right:var(--gutter);grid-template-columns:repeat(3,1fr);text-align:left;gap:10px}
+  .facts .k{font-size:9px;letter-spacing:.14em}
+  .facts .v{font-size:20px}
+  .cap-loc{bottom:auto;top:15vh}
+}
+
+/* ---------- sections ---------- */
+section{position:relative}
+.wrap{padding:0 var(--gutter);max-width:1440px;margin:0 auto}
+.eyebrow{font:500 11px/1 "Manrope","Noto Sans Georgian",sans-serif;letter-spacing:.3em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:14px}
+.eyebrow:before{content:"";width:36px;height:1px;background:var(--accent)}
+.h2{font:500 clamp(34px,6vw,96px)/1.02 var(--display);letter-spacing:-.02em;margin-top:22px}
+html[lang="ka"] .h2{font-weight:600;letter-spacing:0}
+/* word reveal */
+.rv .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em}
+.rv .w>i{display:inline-block;font-style:normal;transform:translateY(105%) rotateX(-70deg);transform-origin:50% 100%;opacity:0;
+  transition:transform 1.1s cubic-bezier(.16,1,.3,1),opacity .8s;transition-delay:calc(var(--d)*55ms)}
+.rv.in .w>i{transform:none;opacity:1}
+.fade{opacity:0;transform:translateY(30px);transition:opacity 1s,transform 1.2s cubic-bezier(.16,1,.3,1)}
+.fade.in{opacity:1;transform:none}
+
+/* ring carousel */
+.ring-track{height:420vh}
+.ring-stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;perspective:1400px;display:flex;flex-direction:column}
+.ring-head{padding-top:clamp(88px,13vh,140px)}
+.ring-view{flex:1;position:relative;transform-style:preserve-3d}
+.ring{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
+.card{position:absolute;width:var(--cw);height:calc(var(--cw)*1.18);left:calc(var(--cw)/-2);top:calc(var(--cw)*-.59);
+  border:1px solid var(--line-2);background:linear-gradient(160deg,rgba(48,57,78,.95),rgba(29,36,51,.95));
+  padding:clamp(18px,2vw,28px);display:flex;flex-direction:column;justify-content:space-between;backface-visibility:hidden;will-change:filter,opacity}
+.card .ic{width:44px;height:44px;stroke:var(--accent);fill:none;stroke-width:1.3}
+.card .num{font:500 clamp(28px,3.2vw,46px)/1 "Unbounded",sans-serif;letter-spacing:-.02em}
+.card .num small{font-size:.45em;margin-left:4px;color:var(--accent)}
+.card .lbl{font-size:clamp(14px,1.25vw,18px);line-height:1.3;margin-top:10px}
+.card:before{content:"";position:absolute;inset:8px;border:1px solid var(--line);pointer-events:none}
+
+/* gallery depth tunnel */
+.gal-track{height:520vh}
+.gal-stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;perspective:900px}
+.gal-stage .ph{position:absolute;left:50%;top:50%;transform-style:preserve-3d;will-change:transform,opacity,filter}
+.gal-stage .ph img{width:100%;height:100%;object-fit:contain;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.gal-full{display:none}
+
+/* selector */
+.sel{padding:clamp(100px,16vh,180px) 0 clamp(80px,12vh,140px)}
+.sel-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(24px,5vw,80px);margin-top:clamp(36px,6vh,70px);align-items:start}
+@media (max-width:900px){.sel-grid{grid-template-columns:1fr}}
+.sel-3d{position:relative;height:clamp(420px,68vh,720px);perspective:1200px;border:1px solid var(--line);overflow:hidden;
+  background:radial-gradient(80% 70% at 50% 40%,var(--ink-3),var(--ink));touch-action:pan-y;cursor:grab}
+.sel-3d .grid{left:-700px;top:-700px;width:1400px;height:1400px;background-size:100px 100px,100px 100px,20px 20px,20px 20px}
+.sel-3d .hint{position:absolute;left:16px;bottom:14px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--paper-dim)}
+.ctl h3{font:500 11px/1 "Manrope","Noto Sans Georgian",sans-serif;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+.ctl .grp{margin-bottom:34px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line-2);padding:12px 18px;min-width:52px;font-weight:600;transition:background .25s,color .25s,border-color .25s}
+.chip:hover{border-color:var(--paper)}
+.chip[aria-pressed="true"]{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.chip small{display:block;font-weight:400;font-size:12px;opacity:.75;margin-top:2px}
+.floors{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px;max-height:248px;overflow:auto;padding-right:4px}
+.floors .chip{padding:10px 0;min-width:0;text-align:center;font-size:14px}
+.summary{border-top:1px solid var(--line-2);padding-top:22px;display:flex;flex-wrap:wrap;gap:16px 34px;align-items:flex-end;justify-content:space-between}
+.summary .big{font:500 clamp(24px,2.6vw,38px)/1.15 var(--display)}
+.plan-img{margin-top:16px;border:1px solid var(--line);background:#fff}
+.plan-img:empty{display:none}
+.plan-img img{width:100%;height:auto}
+.btn{display:inline-flex;align-items:center;gap:12px;padding:16px 26px;border-radius:999px;background:var(--paper);color:var(--ink);font-weight:700;letter-spacing:.02em;transition:transform .3s,box-shadow .3s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(0,0,0,.35)}
+.btn.ghost{background:none;color:var(--paper);border:1px solid var(--line-2)}
+.btn svg{width:18px;height:18px}
+
+/* partners */
+.partners{padding:clamp(60px,10vh,120px) 0}
+.p-row{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line-2);margin-top:40px}
+.p-row>div{padding:30px 24px 30px 0;border-right:1px solid var(--line)}
+.p-row>div:last-child{border-right:0}
+.p-row b{display:block;font:500 clamp(20px,2vw,30px)/1.2 var(--display);margin-top:12px}
+@media (max-width:800px){.p-row{grid-template-columns:1fr}.p-row>div{border-right:0;border-bottom:1px solid var(--line)}}
+
+/* contact */
+.contact{padding:clamp(90px,14vh,170px) 0 60px;overflow:hidden}
+.c-big{font:500 clamp(34px,7.4vw,124px)/1 "Unbounded",sans-serif;letter-spacing:-.03em;display:block;margin-top:26px;white-space:nowrap;transition:color .3s}
+.c-big:hover{color:var(--accent)}
+.c-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:clamp(40px,8vh,90px);border-top:1px solid var(--line-2);padding-top:30px}
+.c-grid .k{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.c-grid a:hover{color:var(--accent)}
+.open{display:inline-flex;align-items:center;gap:8px}
+.open i{width:8px;height:8px;border-radius:50%;background:#5bd37a;box-shadow:0 0 0 0 rgba(91,211,122,.6);animation:pulse 2s infinite}
+.open.closed i{background:#c96b5b;animation:none}
+@keyframes pulse{70%{box-shadow:0 0 0 10px rgba(91,211,122,0)}100%{box-shadow:0 0 0 0 rgba(91,211,122,0)}}
+.c-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:40px}
+@media (max-width:900px){.c-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.c-grid{grid-template-columns:1fr}}
+footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--paper-dim)}
+
+/* progress rail */
+.rail{position:fixed;right:10px;top:50%;height:160px;width:1px;background:var(--line);transform:translateY(-50%);z-index:40}
+.rail b{position:absolute;left:-1px;top:0;width:3px;height:100%;background:var(--paper);transform-origin:top;transform:scaleY(0)}
+@media (max-width:700px){.rail{display:none}}
+
+@media (prefers-reduced-motion:reduce){
+  .rv .w>i,.fade{transition:none;transform:none;opacity:1}
+  .scroll-hint:after,.open i{animation:none}
+}
+</style>
+</head>
+<body>
+
+<header class="top" id="top">
+  <a class="mark" href="#home" aria-label="Coordinate by Keystone">
+    <small>41° 40' 30.9" N · 44° 49' 37.4" E</small>
+    <b>COORDINATE</b>
+    <i>BY KEYSTONE</i>
+  </a>
+  <nav class="nav" aria-label="main">
+    <a href="#location" data-i="nav_loc"></a>
+    <a href="#infra" data-i="nav_infra"></a>
+    <a href="#choose" data-i="nav_choose"></a>
+    <a href="#contact" data-i="nav_contact"></a>
+  </nav>
+  <div class="langs" role="group" aria-label="Language">
+    <button data-lang="ka">ქარ</button><button data-lang="en">EN</button><button data-lang="ru">RU</button>
+  </div>
+</header>
+<div class="rail" aria-hidden="true"><b id="railbar"></b></div>
+
+<!-- ============ 3D WORLD: hero → location → complex ============ -->
+<div class="world-track" id="home">
+  <div class="stage" id="stage">
+    <div class="stage-bg"></div>
+    <div class="cam" id="cam">
+      <div class="world" id="world">
+        <div class="grid"></div>
+        <div class="axis x"></div><div class="axis y"></div>
+        <div class="tick" style="left:24px;top:-26px">41° 40' 30.9" N</div>
+        <div class="tick" style="left:14px;top:-560px;transform:rotate(90deg);transform-origin:0 0">44° 49' 37.4" E</div>
+        <div class="pin" id="pin"><div class="ring r2"></div><div class="ring"></div><div class="dot"></div><div class="needle"></div></div>
+        <div id="towers"></div>
+      </div>
+    </div>
+
+    <div class="hero-layer" id="heroLayer">
+      <div class="hero-meta hero-coords" id="heroCoords">41° 40' 30.9" N · 44° 49' 37.4" E</div>
+      <div class="hero-word" id="heroWord" aria-label="Coordinate"></div>
+      <div class="hero-meta hero-by" id="heroBy">by Keystone</div>
+    </div>
+    <div class="stage-fade" id="stageFade"></div>
+    <div class="scroll-hint" id="hint"></div>
+
+    <div class="cap cap-loc" id="capLoc" style="opacity:0">
+      <div class="k" data-i="nav_loc"></div>
+      <div class="v" data-i="address"></div>
+      <div class="s" data-i="district"></div>
+    </div>
+
+    <div class="facts" id="facts">
+      <div class="cap" style="position:relative;opacity:0"><div class="k" data-i="f_floors"></div><div class="v"><span data-i="upto"></span> 31</div></div>
+      <div class="cap" style="position:relative;opacity:0"><div class="k" data-i="f_park"></div><div class="v" data-i="ha"></div></div>
+      <div class="cap" style="position:relative;opacity:0"><div class="k" data-i="f_done"></div><div class="v" data-i="q2028"></div></div>
+    </div>
+  </div>
+</div>
+<span id="location" style="position:absolute;top:220vh"></span>
+
+<!-- ============ INFRASTRUCTURE RING ============ -->
+<section class="ring-track" id="infra">
+  <div class="ring-stage" id="ringStage">
+    <div class="wrap ring-head">
+      <div class="eyebrow" data-i="nav_infra"></div>
+      <h2 class="h2 rv" data-i="infra_h"></h2>
+    </div>
+    <div class="ring-view"><div class="ring" id="ring"></div></div>
+  </div>
+</section>
+
+<!-- ============ GALLERY (shown when PHOTOS has items) ============ -->
+<section class="gal-track" id="gallery" hidden>
+  <div class="gal-stage" id="galStage"></div>
+</section>
+
+<!-- ============ SELECTOR ============ -->
+<section class="sel" id="choose">
+  <div class="wrap">
+    <div class="eyebrow" data-i="nav_choose"></div>
+    <h2 class="h2 rv" data-i="choose_h"></h2>
+    <div class="sel-grid">
+      <div class="sel-3d" id="sel3d">
+        <div class="cam" id="selCam"><div class="world" id="selWorld"><div class="grid"></div></div></div>
+        <div class="hint" data-i="drag"></div>
+      </div>
+      <div class="ctl">
+        <div class="grp"><h3 data-i="block"></h3><div class="chips" id="blocks"></div></div>
+        <div class="grp"><h3 data-i="floor"></h3><div class="floors" id="floors"></div></div>
+        <div class="grp"><h3 data-i="layout"></h3><div class="chips" id="layouts"></div><div class="plan-img" id="planImg"></div></div>
+        <div class="summary">
+          <div class="big" id="summary"></div>
+          <a class="btn" id="req" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.6 14.1c-.2.7-1.4 1.3-1.9 1.4-.5.1-1.1.1-1.8-.1a16 16 0 0 1-1.6-.6 12.6 12.6 0 0 1-4.9-4.3c-.4-.5-.9-1.4-.9-2.3s.5-1.4.7-1.6c.2-.2.4-.3.6-.3h.4c.1 0 .3 0 .5.4l.7 1.7c.1.1.1.3 0 .4l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.7.8c.3.1.4.2.5.3.1.2.1.7-.1 1.4Z"/></svg>
+            <span data-i="send"></span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PARTNERS ============ -->
+<section class="partners">
+  <div class="wrap">
+    <div class="p-row fade">
+      <div><div class="eyebrow" data-i="p_fin"></div><b data-i="bog"></b></div>
+      <div><div class="eyebrow" data-i="p_pay"></div><b data-i="install"></b></div>
+      <div><div class="eyebrow" data-i="p_sales"></div><b>Georgian Real Estate Agency</b></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="contact" id="contact">
+  <div class="wrap">
+    <div class="eyebrow" data-i="nav_contact"></div>
+    <a class="c-big" href="tel:+995596207474" id="bigPhone">+995 596 20 74 74</a>
+    <div class="c-grid fade">
+      <div><div class="k" data-i="addr_k"></div><a href="https://www.google.com/maps?q=41.675250,44.827056" target="_blank" rel="noopener" data-i="address"></a></div>
+      <div><div class="k">Email</div><a href="mailto:info@coordinate.ge">info@coordinate.ge</a></div>
+      <div><div class="k" data-i="hours_k"></div><span class="open" id="openState"><i></i><span>10:00 – 18:00</span></span></div>
+      <div><div class="k" data-i="type_k"></div><span data-i="type"></span></div>
+    </div>
+    <div class="c-actions">
+      <a class="btn" href="https://wa.me/995596207474" target="_blank" rel="noopener"><span>WhatsApp</span></a>
+      <a class="btn ghost" href="tel:+995596207474" data-i="call"></a>
+      <a class="btn ghost" href="https://www.coordinate.ge" target="_blank" rel="noopener">www.coordinate.ge</a>
+    </div>
+  </div>
+</section>
+<footer><span>© Coordinate by Keystone</span><span>41° 40' 30.9" N · 44° 49' 37.4" E</span></footer>
+
+<script>
+/* =====================================================================
+   DATA — edit here. Everything shown on the page comes from this block.
+   ===================================================================== */
+// Blocks and floor counts (from public listings — please confirm with the developer).
+const BLOCKS = [
+  {id:"A", floors:31, x:-150, y:-40,  w:100, d:100},
+  {id:"B", floors:18, x:  20, y:-150, w:100, d:90},
+  {id:"C", floors:14, x: 120, y:  40, w:90,  d:100},
+  {id:"D", floors:11, x: -30, y: 110, w:110, d:80},
+];
+// Layout types with area ranges in m². `plan` = path to a floor-plan image (e.g. "plans/3-rooms.jpg").
+const LAYOUTS = [
+  {rooms:"2",  area:"62.6 – 68.9",   plan:""},
+  {rooms:"3",  area:"85.5 – 100.8",  plan:""},
+  {rooms:"4",  area:"125.3",         plan:""},
+  {rooms:"5+", area:"391.6 – 401.3", plan:""},
+];
+// Photos at full resolution, e.g. ["photos/01.jpg", ...]. Gallery section appears automatically.
+const PHOTOS = [];
+
+const PHONE = "995596207474";
+
+const I18N = {
+ en:{
+  nav_loc:"Location", nav_infra:"Infrastructure", nav_choose:"Choose an apartment", nav_contact:"Contact",
+  address:"73 Vakhtang Gorgasali St, Tbilisi, Georgia", district:"Ortachala, Old Tbilisi",
+  f_floors:"Floors", upto:"up to", f_park:"Park", ha:"1 ha", f_done:"Completion", q2028:"Q4 2028",
+  infra_h:"11 000 m² of infrastructure",
+  c_infra:"m² of infrastructure", c_park:"m² two-level parking", c_ha:"ha park",
+  ev:"EV chargers", power:"Backup power", play:"Playgrounds", sport:"Sports zones", pets:"Pet walking area",
+  market:"Supermarket", food:"Food court", pharm:"Pharmacy", bank:"Bank", cowork:"Business center & co-working", courts:"Padel & badminton courts",
+  choose_h:"Block. Floor. Layout.", block:"Block", floor:"Floor", layout:"Layout", drag:"Drag to rotate",
+  rooms:n=>`${n} rooms`, m2:"m²", send:"Send request",
+  msg:(b,f,r)=>`Hello! I'm interested in Coordinate: Block ${b}, floor ${f}, ${r} rooms.`,
+  sum:(b,f,r)=>`Block ${b} · Floor ${f} · ${r} rooms`,
+  p_fin:"Financial partner", bog:"Bank of Georgia", p_pay:"Payment", install:"In-house instalments & mortgage", p_sales:"Exclusive sales",
+  addr_k:"Address", hours_k:"Hours", type_k:"Company", type:"Real Estate Developer", call:"Call"
+ },
+ ru:{
+  nav_loc:"Локация", nav_infra:"Инфраструктура", nav_choose:"Выбор квартиры", nav_contact:"Контакты",
+  address:"ул. Вахтанга Горгасали 73, Тбилиси, Грузия", district:"Ортачала, Старый Тбилиси",
+  f_floors:"Этажность", upto:"до", f_park:"Парк", ha:"1 га", f_done:"Завершение", q2028:"IV кв. 2028",
+  infra_h:"11 000 м² инфраструктуры",
+  c_infra:"м² инфраструктуры", c_park:"м² двухуровневый паркинг", c_ha:"га парк",
+  ev:"Зарядки для электромобилей", power:"Резервное электропитание", play:"Детские площадки", sport:"Спортивные зоны", pets:"Зона выгула питомцев",
+  market:"Супермаркет", food:"Фуд-корт", pharm:"Аптека", bank:"Банк", cowork:"Бизнес-центр и коворкинг", courts:"Корты для падела и бадминтона",
+  choose_h:"Блок. Этаж. Планировка.", block:"Блок", floor:"Этаж", layout:"Планировка", drag:"Потяните, чтобы вращать",
+  rooms:n=>`${n} ${n==="2"||n==="3"||n==="4"?"комнаты":"комнат"}`, m2:"м²", send:"Отправить запрос",
+  msg:(b,f,r)=>`Здравствуйте! Интересует Coordinate: блок ${b}, этаж ${f}, ${r} ${r==="5+"?"комнат":"комнаты"}.`,
+  sum:(b,f,r)=>`Блок ${b} · Этаж ${f} · ${r} ${r==="5+"?"комн.":"комн."}`,
+  p_fin:"Финансовый партнёр", bog:"Банк Грузии", p_pay:"Оплата", install:"Внутренняя рассрочка и ипотека", p_sales:"Эксклюзивные продажи",
+  addr_k:"Адрес", hours_k:"Часы работы", type_k:"Компания", type:"Девелопер недвижимости", call:"Позвонить"
+ },
+ ka:{
+  nav_loc:"ლოკაცია", nav_infra:"ინფრასტრუქტურა", nav_choose:"ბინის არჩევა", nav_contact:"კონტაქტი",
+  address:"ვახტანგ გორგასლის ქ. 73, თბილისი, საქართველო", district:"ორთაჭალა, ძველი თბილისი",
+  f_floors:"სართულიანობა", upto:"", f_park:"პარკი", ha:"1 ჰა", f_done:"დასრულება", q2028:"2028 IV კვ.",
+  infra_h:"11 000 მ² ინფრასტრუქტურა",
+  c_infra:"მ² ინფრასტრუქტურა", c_park:"მ² ორდონიანი პარკინგი", c_ha:"ჰა პარკი",
+  ev:"ელექტრომობილების დამტენები", power:"სარეზერვო ელექტრომომარაგება", play:"საბავშვო მოედნები", sport:"სპორტული ზონები", pets:"შინაური ცხოველების სასეირნო ზონა",
+  market:"სუპერმარკეტი", food:"ფუდ-კორტი", pharm:"აფთიაქი", bank:"ბანკი", cowork:"ბიზნეს-ცენტრი და კოვორკინგი", courts:"პადელისა და ბადმინტონის კორტები",
+  choose_h:"ბლოკი. სართული. გეგმარება.", block:"ბლოკი", floor:"სართული", layout:"გეგმარება", drag:"გადაატრიალეთ",
+  rooms:n=>`${n} ოთახი`, m2:"მ²", send:"მოთხოვნის გაგზავნა",
+  msg:(b,f,r)=>`გამარჯობა! მაინტერესებს Coordinate: ბლოკი ${b}, სართული ${f}, ${r} ოთახი.`,
+  sum:(b,f,r)=>`ბლოკი ${b} · სართული ${f} · ${r} ოთახი`,
+  p_fin:"ფინანსური პარტნიორი", bog:"საქართველოს ბანკი", p_pay:"გადახდა", install:"შიდა განვადება და იპოთეკა", p_sales:"ექსკლუზიური გაყიდვები",
+  addr_k:"მისამართი", hours_k:"სამუშაო საათები", type_k:"კომპანია", type:"უძრავი ქონების დეველოპერი", call:"დარეკვა"
+ }
+};
+const RING_ITEMS = [
+  {num:"11 000", key:"c_infra", ic:"grid"},
+  {num:"7 000",  key:"c_park",  ic:"car"},
+  {num:"1",      key:"c_ha",    ic:"tree"},
+  {key:"ev",ic:"bolt"},{key:"power",ic:"plug"},{key:"play",ic:"play"},{key:"sport",ic:"ball"},
+  {key:"pets",ic:"paw"},{key:"market",ic:"cart"},{key:"food",ic:"food"},{key:"pharm",ic:"cross"},
+  {key:"bank",ic:"bank"},{key:"cowork",ic:"desk"},{key:"courts",ic:"court"},
+];
+const ICONS = {
+ grid:'<rect x="4" y="4" width="16" height="16"/><path d="M4 12h16M12 4v16"/>',
+ car:'<path d="M5 16V11l2-5h10l2 5v5M5 16h14M7 16v2M17 16v2"/><circle cx="8" cy="13" r="1"/><circle cx="16" cy="13" r="1"/>',
+ tree:'<path d="M12 21v-7M12 3l6 9H6z"/><path d="M8 12l-3 4h14l-3-4"/>',
+ bolt:'<path d="M13 2 5 14h6l-1 8 8-12h-6z"/>',
+ plug:'<path d="M9 2v5M15 2v5M6 7h12v4a6 6 0 0 1-12 0zM12 17v5"/>',
+ play:'<circle cx="12" cy="5" r="2"/><path d="M12 7v7M8 22l4-8 4 8M7 10h10"/>',
+ ball:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+ paw:'<circle cx="7" cy="9" r="1.6"/><circle cx="11" cy="6" r="1.6"/><circle cx="15" cy="6.5" r="1.6"/><circle cx="18" cy="10" r="1.6"/><path d="M8 17c0-3 2-5 4-5s4 2 4 5c0 2-2 3-4 2-2 1-4 0-4-2z"/>',
+ cart:'<path d="M3 4h2l3 11h10l2-8H7"/><circle cx="9" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/>',
+ food:'<path d="M7 3v8a2 2 0 0 0 4 0V3M9 11v10M16 3c-2 2-2 6 0 8v10"/>',
+ cross:'<path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z"/>',
+ bank:'<path d="M3 10 12 4l9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/>',
+ desk:'<rect x="3" y="5" width="18" height="11"/><path d="M8 20h8M12 16v4"/>',
+ court:'<rect x="3" y="5" width="18" height="14"/><path d="M12 5v14M3 12h18"/>',
+};
+
+/* ===================================================================== */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const range=(p,a,b)=>clamp((p-a)/(b-a));
+const eo=t=>1-Math.pow(1-t,3), eio=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2, eback=t=>{const c=1.5;return 1+(c+1)*Math.pow(t-1,3)+c*Math.pow(t-1,2)};
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+let lang = "ka";
+try{ const s=localStorage.getItem("coord-lang"); if(s&&I18N[s]) lang=s; else { const n=(navigator.language||"").slice(0,2); if(I18N[n]) lang=n; } }catch(e){}
+let L = I18N[lang];
+
+/* ---------- 3D tower builder ---------- */
+function makeTower(b, fh, opts={}){
+  const h=b.floors*fh, t=document.createElement("div");
+  t.className="tower"; t.style.left=(b.x-b.w/2)+"px"; t.style.top=(b.y-b.d/2)+"px"; t.style.width=b.w+"px"; t.style.height=b.d+"px";
+  t.style.setProperty("--fh",fh+"px");
+  const z=document.createElement("div"); z.className="z"; t.appendChild(z);
+  const f=(cls,css)=>{const e=document.createElement("div");e.className="face "+cls;e.style.cssText=css;z.appendChild(e);return e};
+  f("b",`left:0;top:${-h}px;width:${b.w}px;height:${h}px;transform-origin:50% 100%;transform:rotateX(-90deg)`);
+  f("l",`left:${-h}px;top:0;width:${h}px;height:${b.d}px;transform-origin:100% 50%;transform:rotateY(90deg)`);
+  f("r",`left:${b.w}px;top:0;width:${h}px;height:${b.d}px;transform-origin:0 50%;transform:rotateY(-90deg)`);
+  f("f",`left:0;top:${b.d-h}px;width:${b.w}px;height:${h}px;transform-origin:50% 100%;transform:rotateX(-90deg)`);
+  f("t",`left:0;top:0;width:${b.w}px;height:${b.d}px;transform:translateZ(${h}px)`);
+  if(opts.label){ const lb=document.createElement("div"); lb.className="label"; lb.style.transform=`translateZ(${h+26}px)`;
+    lb.innerHTML=`<span>${b.id}</span>`; z.appendChild(lb); t._label=lb; }
+  if(opts.slab){ const s=document.createElement("div"); s.className="slab"; s.style.cssText=`left:-6px;top:-6px;width:${b.w+12}px;height:${b.d+12}px`;
+    s.innerHTML=`<div style="inset:0;opacity:.35"></div>`+
+      `<div style="left:0;top:${b.d+12}px;width:${b.w+12}px;height:${fh}px;transform-origin:50% 0;transform:rotateX(90deg)"></div>`+
+      `<div style="left:${b.w+12}px;top:0;width:${fh}px;height:${b.d+12}px;transform-origin:0 50%;transform:rotateY(-90deg)"></div>`;
+    z.appendChild(s); t._slab=s; }
+  t._z=z; t._h=h; return t;
+}
+
+/* ---------- hero letters ---------- */
+const word="COORDINATE", hw=$("#heroWord");
+const letters=[...word].map((c,i)=>{const s=document.createElement("span");s.textContent=c;hw.appendChild(s);
+  return {el:s,i,seed:[Math.sin(i*12.9)*.5+.5,Math.sin(i*78.2)*.5+.5,Math.sin(i*39.4)*.5+.5]}});
+
+/* ---------- world towers ---------- */
+const FH=11;
+const towers=BLOCKS.map(b=>{const t=makeTower(b,FH,{label:true});$("#towers").appendChild(t);return t});
+
+/* ---------- ring cards ---------- */
+const ring=$("#ring"), N=RING_ITEMS.length;
+const cards=RING_ITEMS.map((it,i)=>{const c=document.createElement("div");c.className="card";
+  c.innerHTML=`<svg class="ic" viewBox="0 0 24 24">${ICONS[it.ic]}</svg><div>${it.num?`<div class="num">${it.num}</div>`:""}<div class="lbl" data-i="${it.key}"></div></div>`;
+  ring.appendChild(c);return c});
+
+/* ---------- gallery (photos at native quality, no recompression) ---------- */
+const gal=$("#gallery"), galStage=$("#galStage"); let galItems=[];
+if(PHOTOS.length){
+  gal.hidden=false; gal.style.height=(120+PHOTOS.length*90)+"vh";
+  galItems=PHOTOS.map((src,i)=>{const d=document.createElement("div");d.className="ph";
+    const im=new Image(); im.src=src; im.alt=""; im.decoding="async"; im.loading=i<2?"eager":"lazy";
+    d.appendChild(im); galStage.appendChild(d);
+    const side=i%2?1:-1; const it={el:d,side,i}; im.onload=()=>{it.ar=im.naturalWidth/im.naturalHeight}; return it});
+}
+
+/* ---------- i18n ---------- */
+function splitWords(el){ const txt=el.textContent; el.innerHTML=txt.split(" ").map((w,i)=>`<span class="w"><i style="--d:${i}">${w}</i></span>`).join(" "); }
+function applyLang(){
+  L=I18N[lang]; document.documentElement.lang=lang;
+  $$("[data-i]").forEach(el=>{const v=L[el.dataset.i]; if(typeof v==="string"){ el.textContent=v; if(el.classList.contains("rv")) splitWords(el);} });
+  $$(".langs button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.lang===lang));
+  renderSelector();
+  try{localStorage.setItem("coord-lang",lang)}catch(e){}
+}
+$$(".langs button").forEach(b=>b.onclick=()=>{lang=b.dataset.lang;applyLang();requestAnimationFrame(()=>$$(".rv").forEach(r=>{if(r.dataset.seen)r.classList.add("in")}))});
+
+/* ---------- selector ---------- */
+const sel={block:BLOCKS[0].id,floor:Math.ceil(BLOCKS[0].floors/2),layout:LAYOUTS[1].rooms};
+const SFH=14; let selTower=null, selRot=-28, selVel=.06, dragging=false;
+function buildSelTower(){
+  const b=BLOCKS.find(x=>x.id===sel.block);
+  const scale=Math.min(1, 470/(b.floors*SFH));
+  if(selTower) selTower.remove();
+  selTower=makeTower({...b,x:0,y:0,w:150,d:150},SFH*scale,{slab:true});
+  selTower._fh=SFH*scale; $("#selWorld").appendChild(selTower);
+  selTower._z.style.transform="scaleZ(0)"; selTower._grow=0;
+}
+function renderSelector(){
+  const b=BLOCKS.find(x=>x.id===sel.block); if(sel.floor>b.floors) sel.floor=b.floors;
+  $("#blocks").innerHTML=BLOCKS.map(x=>`<button class="chip" data-b="${x.id}" aria-pressed="${x.id===sel.block}">${x.id}<small>${x.floors} ${L.floor.toLowerCase()}</small></button>`).join("");
+  let fl=""; for(let i=b.floors;i>=1;i--) fl+=`<button class="chip" data-f="${i}" aria-pressed="${i===sel.floor}">${i}</button>`;
+  $("#floors").innerHTML=fl;
+  $("#layouts").innerHTML=LAYOUTS.map(x=>`<button class="chip" data-l="${x.rooms}" aria-pressed="${x.rooms===sel.layout}">${L.rooms(x.rooms)}<small>${x.area} ${L.m2}</small></button>`).join("");
+  const lay=LAYOUTS.find(x=>x.rooms===sel.layout);
+  $("#planImg").innerHTML=lay.plan?`<img src="${lay.plan}" alt="" decoding="async">`:"";
+  $("#summary").textContent=L.sum(sel.block,sel.floor,sel.layout);
+  $("#req").href=`https://wa.me/${PHONE}?text=${encodeURIComponent(L.msg(sel.block,sel.floor,sel.layout))}`;
+  placeSlab();
+}
+function placeSlab(){ if(!selTower) return; const s=selTower._slab; s.style.transform=`translateZ(${(sel.floor-1)*selTower._fh+selTower._fh}px)`; }
+$("#blocks").onclick=e=>{const t=e.target.closest("[data-b]"); if(!t) return; sel.block=t.dataset.b; buildSelTower(); renderSelector();};
+$("#floors").onclick=e=>{const t=e.target.closest("[data-f]"); if(!t) return; sel.floor=+t.dataset.f; renderSelector();};
+$("#floors").onmouseover=e=>{const t=e.target.closest("[data-f]"); if(t&&selTower) selTower._slab.style.transform=`translateZ(${(+t.dataset.f)*selTower._fh}px)`;};
+$("#floors").onmouseleave=placeSlab;
+$("#layouts").onclick=e=>{const t=e.target.closest("[data-l]"); if(!t) return; sel.layout=t.dataset.l; renderSelector();};
+(()=>{const el=$("#sel3d"); let lx=0;
+  el.addEventListener("pointerdown",e=>{dragging=true;lx=e.clientX;el.setPointerCapture(e.pointerId);el.style.cursor="grabbing"});
+  el.addEventListener("pointermove",e=>{if(!dragging)return;const dx=e.clientX-lx;lx=e.clientX;selRot+=dx*.4;selVel=dx*.4});
+  const up=()=>{dragging=false;el.style.cursor=""}; el.addEventListener("pointerup",up); el.addEventListener("pointercancel",up);
+})();
+
+/* ---------- reveal on view ---------- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");e.target.dataset.seen=1;io.unobserve(e.target)}}),{threshold:.25});
+
+/* ---------- open-now (Tbilisi time, UTC+4) ---------- */
+(()=>{const d=new Date(), h=(d.getUTCHours()+4)%24+d.getUTCMinutes()/60; if(!(h>=10&&h<18)) $("#openState").classList.add("closed");})();
+
+/* =====================================================================
+   SCROLL TIMELINE
+   ===================================================================== */
+let sy=scrollY, ssy=scrollY, vel=0, vw=innerWidth, vh=innerHeight;
+const track=$(".world-track"), ringTrack=$(".ring-track");
+function prog(el){const r=el.getBoundingClientRect(); return clamp(-r.top/(r.height-vh));}
+function k(){ return vw<700 ? Math.min(vw/560, vh/980) : Math.min(vw/1300, vh/850, 1.2); }  // scene scale
+addEventListener("resize",()=>{vw=innerWidth;vh=innerHeight});
+addEventListener("scroll",()=>{sy=scrollY},{passive:true});
+
+const cam=$("#cam"), world=$("#world"), heroLayer=$("#heroLayer"), coords=$("#heroCoords"), by=$("#heroBy"), hint=$("#hint"),
+      pin=$("#pin"), stageFade=$("#stageFade"), capLoc=$("#capLoc"), factEls=$$("#facts .cap"), topBar=$("#top"), railbar=$("#railbar");
+const t0=performance.now();
+
+function frame(now){
+  const dt=Math.min(64,now-(frame.last||now)); frame.last=now;
+  // smoothed scroll (camera inertia) + velocity for motion blur
+  const prev=ssy; ssy=reduce?sy:lerp(ssy,sy,1-Math.pow(.0009,dt/1000));
+  if(Math.abs(ssy-sy)<.1) ssy=sy;
+  vel=lerp(vel,(ssy-prev)/Math.max(dt,1)*16,.3);
+
+  const intro=reduce?1:eo(clamp((now-t0-150)/1700));
+  const rTrack=track.getBoundingClientRect();
+  const p=clamp(-(rTrack.top+(sy-ssy))/(rTrack.height-vh));
+  const s=k();
+
+  const worldOn = rTrack.bottom>-50;
+  if(worldOn){
+  /* hero letters: assemble from depth on load, then fly through the camera */
+  const fly=range(p,0,.16);
+  const blur=reduce?0:Math.min(8,Math.abs(vel)*.12);
+  letters.forEach(L_=>{const {el,i,seed}=L_;
+    const inP=eo(clamp(intro*1.25-i*.025));
+    const zIn=lerp(-1600-seed[0]*1400,0,inP), yIn=lerp((seed[1]-.5)*300,0,inP), rIn=lerp((seed[2]-.5)*120,0,inP);
+    const f=eio(clamp(fly*1.6-Math.abs(i-4.5)*.06));
+    const z=zIn+f*(900+seed[0]*700), x=f*(i-4.5)*120*(1+seed[1]), y=yIn+f*(seed[2]-.5)*500;
+    el.style.transform=`translate3d(${x}px,${y}px,${z}px) rotateY(${rIn+f*(i-4.5)*14}deg) rotateX(${f*(seed[1]-.5)*60}deg)`;
+    el.style.opacity=clamp(inP*1.4)*(1-clamp((f-.55)/.45));
+    el.style.filter=(blur>.4||f>0&&f<1)?`blur(${(blur+f*(1-f)*10).toFixed(1)}px)`:"none";
+  });
+  coords.style.opacity=intro*(1-range(p,0,.05)); coords.style.transform=`translateY(${-range(p,0,.08)*60}px)`;
+  coords.style.letterSpacing=lerp(.9,.32,intro)+"em";
+  by.style.opacity=intro*(1-range(p,0,.05)); by.style.transform=`translateY(${range(p,0,.08)*60}px)`;
+  hint.style.opacity=intro*(1-range(p,0,.03));
+  heroLayer.style.visibility=fly>=1?"hidden":"visible";
+
+  /* camera path */
+  const tilt=lerp(0,62,eio(range(p,.03,.22))) - lerp(0,8,eio(range(p,.5,.8)));       // sheet → ground
+  const spin=lerp(0,-18,eio(range(p,.1,.35))) + lerp(0,62,eio(range(p,.38,.9)));      // orbit
+  const zoom=lerp(-700,0,eo(range(p,0,.2))) + lerp(0,260,eio(range(p,.2,.34))) - lerp(0,560,eio(range(p,.34,.56))) + lerp(0,-180,eio(range(p,.8,1)));
+  const lift=lerp(0,vw<700?40:90,eio(range(p,.4,.7)));
+  const camX=lerp(0, vw>700?-120:0, eio(range(p,.2,.36))) * (1-eio(range(p,.4,.6))) + (vw>700?lerp(0,-150,eio(range(p,.5,.7))):0);
+  cam.style.transform=`translate3d(${camX}px,${lift}px,0) scale(${s}) translateZ(${zoom}px)`;
+  world.style.transform=`rotateX(${tilt}deg) rotateZ(${spin}deg)`;
+  stageFade.style.opacity=(1-clamp(intro*1.2))*.85 + range(p,.93,1)*.7;
+
+  /* pin drop + ripple */
+  const pd=range(p,.18,.3);
+  pin.style.transform=`translateZ(${lerp(500,0,eback(pd))}px)`;
+  pin.style.opacity=pd>0?1:0;
+  const rp=((now/1600)%1);
+  pin.children[0].style.transform=`scale(${.4+rp*1.4})`; pin.children[0].style.opacity=(1-rp)*.6*pd;
+  pin.children[1].style.transform=`scale(${.6+((rp+.5)%1)*1.2})`; pin.children[1].style.opacity=(1-((rp+.5)%1))*pd;
+
+  /* location caption */
+  const lc=range(p,.22,.3)*(1-range(p,.38,.44));
+  capLoc.style.opacity=lc; capLoc.style.transform=`translate3d(${(1-eo(range(p,.22,.3)))*-60}px,${range(p,.38,.44)*-40}px,0)`;
+
+  /* towers rise, staggered */
+  towers.forEach((t,i)=>{
+    const g=eback(range(p,.42+i*.04,.56+i*.04));
+    t._z.style.transform=`scaleZ(${Math.max(.001,g)})`;
+    t.style.visibility=p>.415+i*.04?"visible":"hidden";
+    t._label.style.transform=`translateZ(${t._h*g+30}px) rotateZ(${-spin}deg) rotateX(${-tilt}deg)`;
+    t._label.style.visibility=p>.52+i*.04?"visible":"hidden";
+  });
+
+  /* facts float in with depth */
+  factEls.forEach((el,i)=>{const a=range(p,.6+i*.05,.7+i*.05), o=a*(1-range(p,.92,.98));
+    el.style.opacity=o; el.style.transform=`translate3d(${(1-eo(a))*80}px,0,0)`; el.style.filter=a<1?`blur(${(1-a)*6}px)`:"none";});
+
+  }
+  /* infrastructure ring */
+  const rr=ringTrack.getBoundingClientRect();
+  if(rr.top<vh&&rr.bottom>0){
+  const rp2=prog(ringTrack), vmob=vw<700;
+  const cw=vmob?Math.min(220,vw*.56):Math.min(280,vw*.2);
+  const R=Math.max(cw*N/(2*Math.PI)*1.15, vmob?320:520);
+  ring.style.setProperty("--cw",cw+"px");
+  const rot=-eio(rp2)*360*(N-1)/N;
+  ring.style.transform=`translateZ(${-R-(vmob?60:120)}px) rotateX(${-6+rp2*4}deg) rotateY(${rot}deg)`;
+  cards.forEach((c,i)=>{const a=i*360/N; c.style.transform=`rotateY(${a}deg) translateZ(${R}px)`;
+    const rel=(((a+rot)%360)+540)%360-180, f=Math.abs(rel)/180;
+    c.style.opacity=f>.5?0:1-f*1.4; c.style.visibility=f>.5?"hidden":"visible"; c.style.filter=f<.04?"none":`blur(${(f*8).toFixed(1)}px) brightness(${1-f*.6})`;});
+  }
+
+  /* gallery depth tunnel */
+  const gr=galItems.length?gal.getBoundingClientRect():null;
+  if(gr&&gr.top<vh&&gr.bottom>0){
+    const gp=prog(gal), n=galItems.length;
+    galItems.forEach(it=>{const {el,side,i}=it;
+      const ar=it.ar||1.5, maxW=vw>800?vw*.66:vw*.9, maxH=vh*.72;
+      const gw=Math.min(maxW,maxH*ar), gh=gw/ar;
+      const Lc=gp*(n+.5)-i-.2;                                   // <0.5 arriving · 0.5–0.85 hold · >0.85 fly past
+      const z = Lc<.5 ? lerp(-2400,0,eo(clamp((Lc+.6)/1.1))) : Lc<.85 ? (Lc-.5)*120 : lerp(42,1000,eio(clamp((Lc-.85)/.35)));
+      const x = side*(vw>800?vw*.16:vw*.06)*(1-eo(clamp((Lc+.6)/1.1)));
+      const o = clamp((Lc+.6)/.4)*(1-clamp((Lc-1.05)/.15));
+      el.style.width=gw+"px"; el.style.height=gh+"px"; el.style.marginLeft=-gw/2+"px"; el.style.marginTop=-gh/2+"px";
+      el.style.transform=`translate3d(${x}px,0,${z}px) rotateY(${-side*lerp(16,0,eo(clamp((Lc+.6)/1.1)))}deg)`;
+      el.style.zIndex=Math.round(z+3000);
+      el.style.opacity=o; el.style.filter=Lc>.9?`blur(${Math.min(12,(Lc-.9)*40).toFixed(1)}px)`:"none";
+      el.style.visibility=o<=0?"hidden":"visible";
+    });
+  }
+
+  /* selector tower */
+  if(selTower){
+    const r=$("#sel3d").getBoundingClientRect(); const vis=r.top<vh&&r.bottom>0;
+    if(vis){
+      if(!dragging){ selVel=lerp(selVel,.06,.03); selRot+=selVel*dt/16; }
+      selTower._grow=Math.min(1,selTower._grow+dt/1100);
+      selTower._z.style.transform=`scaleZ(${Math.max(.001,eback(selTower._grow))})`;
+      const ss=Math.min(1,r.width/620);
+      $("#selCam").style.transform=`translate3d(0,${r.height*.24}px,0) scale(${ss})`;
+      $("#selWorld").style.transform=`rotateX(64deg) rotateZ(${selRot}deg)`;
+    }
+  }
+
+  topBar.classList.toggle("solid",sy>vh*5.6);
+  railbar.style.transform=`scaleY(${clamp(sy/(document.documentElement.scrollHeight-vh))})`;
+  requestAnimationFrame(frame);
+}
+
+/* ---------- boot ---------- */
+$("#selCam").style.left="50%"; $("#selCam").style.top="50%";
+applyLang(); buildSelTower(); placeSlab();
+$$(".rv,.fade").forEach(e=>io.observe(e));
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
