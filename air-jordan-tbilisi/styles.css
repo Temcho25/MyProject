@@ -148,10 +148,10 @@ main, .foot { position: relative; z-index: 2; }
 /* ── 03 цвета ──────────────────────────── */
 .colors { height: 520vh; }
 .colors__head { position: absolute; left: var(--pad); top: clamp(90px, 14vh, 140px); }
-.cw { position: absolute; left: var(--pad); bottom: clamp(110px, 16vh, 170px); }
+.cw { position: absolute; left: var(--pad); bottom: clamp(124px, 19vh, 190px); }
 .cw__index { font-size: 12px; font-weight: 700; letter-spacing: .14em; color: var(--mute); margin-bottom: 8px; }
 .cw__index span { color: var(--accent); }
-.cw__name { font-family: var(--display); font-weight: 900; font-size: clamp(44px, 8vw, 132px); line-height: .9; letter-spacing: -.04em; text-transform: uppercase; }
+.cw__name { font-family: var(--display); font-weight: 900; font-size: clamp(36px, 5.6vw, 96px); line-height: .9; letter-spacing: -.04em; text-transform: uppercase; }
 .cw__name .char { display: inline-block; }
 .cw__sub { margin-top: 10px; color: #c9c6c0; font-weight: 500; }
 .swatches { position: absolute; right: var(--pad); top: 50%; transform: translateY(-50%); list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
@@ -177,11 +177,12 @@ main, .foot { position: relative; z-index: 2; }
 .card:hover .card__in { border-color: rgba(255,255,255,.3); }
 .card:hover .card__in::before { opacity: 1; }
 .card__img { flex: 1; display: grid; place-items: center; transform: translateZ(40px); }
-.card__img img { width: 118%; max-width: none; height: auto; filter: drop-shadow(0 30px 30px rgba(0,0,0,.6)); transition: transform .8s var(--ease); transform: rotate(-8deg); }
+.card__img { min-height: 0; }
+.card__img img { width: 104%; max-width: none; max-height: 100%; object-fit: contain; height: auto; filter: drop-shadow(0 30px 30px rgba(0,0,0,.6)); transition: transform .8s var(--ease); transform: rotate(-6deg); }
 .card:hover .card__img img { transform: rotate(-14deg) scale(1.06) translateY(-6px); }
 .card__meta { display: grid; grid-template-columns: auto 1fr; column-gap: 12px; align-items: baseline; }
 .card__meta span { grid-row: span 2; font-family: var(--display); font-size: 11px; color: var(--c, var(--accent)); filter: brightness(1.6); }
-.card__meta b { font-family: var(--display); font-weight: 900; font-size: 24px; text-transform: uppercase; letter-spacing: -.02em; }
+.card__meta b { font-family: var(--display); font-weight: 900; font-size: clamp(17px, 1.6vw, 22px); text-transform: uppercase; letter-spacing: -.02em; }
 .card__meta small { color: var(--mute); font-size: 13px; }
 .card__cta { margin-top: 16px; font-size: 13px; font-weight: 700; padding-top: 14px; border-top: 1px solid var(--line); color: #d9d6d0; transition: color .3s; }
 .card__cta:hover { color: #fff; }

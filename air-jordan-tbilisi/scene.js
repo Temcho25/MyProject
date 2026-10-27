@@ -1,23 +1,32 @@
-// 3D-сцена: кроссовок из 4 слоёв (разрез по высоте), сценарий движения задаётся прокруткой.
+// 3D-сцена: Air Jordan 1 High из 4 деталей (подошва, стелька, верх, шнурки), сценарий движения задаётся прокруткой.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { MeshoptDecoder } from 'three/addons/meshopt_decoder.module.js';
 
 export const COLORWAYS = [
-  { key: 'bred', name: 'Bred', sub: 'Чёрный · Красный', accent: '#e3141e' },
-  { key: 'royal', name: 'Royal', sub: 'Синий · Чёрный', accent: '#2f5bff' },
-  { key: 'chicago', name: 'Chicago', sub: 'Красный · Белый', accent: '#ff2a36' },
-  { key: 'shadow', name: 'Shadow', sub: 'Серый · Чёрный', accent: '#9aa0aa' },
-  { key: 'pine', name: 'Pine Green', sub: 'Зелёный · Чёрный', accent: '#14a364' },
+  { key: 'bred', name: 'Bred Toe', sub: 'Air Jordan 1 High OG', accent: '#e3141e', laces: '#111111' },
+  { key: 'mocha', name: 'Travis Scott', sub: 'Air Jordan 1 High · Mocha', accent: '#b07a52', laces: '#2a1d16' },
+  { key: 'royal', name: 'Royal Toe', sub: 'Air Jordan 1 High OG', accent: '#2f5bff', laces: '#111111' },
+  { key: 'fragment', name: 'TS × Fragment', sub: 'Air Jordan 1 High · Travis Scott', accent: '#3d7bd9', laces: '#f1f0ee' },
+  { key: 'shadow', name: 'Shadow', sub: 'Air Jordan 1 High OG', accent: '#9aa0aa', laces: '#111111' },
 ];
 
-// слои по высоте (локальная Y модели), снизу вверх
-const BANDS = [-0.6, -0.42, -0.27, -0.02, 0.62];
+// исходная модель: носок по +Z, высота по Y → приводим к длине 2 и носку по +X
+const SRC = { cx: 0.0507, cy: 0.1912, cz: 0.0015, k: 7.0 };
+const CUT = (0.137 - SRC.cy) * SRC.k;          // граница подошвы и верха (в нормализованных единицах)
+// детали снизу вверх: 0 подошва, 1 стелька, 2 верх, 3 шнурки
+const PARTS = [
+  { mesh: 'Shoe', lo: -9, hi: CUT },
+  { mesh: 'Sole', lo: -9, hi: 9 },
+  { mesh: 'Shoe', lo: CUT, hi: 9 },
+  { mesh: 'Laces', lo: -9, hi: 9 },
+];
 const SLICE_OFF = [  // разлёт: [dy, dx, rz, ry]
-  [-0.62, 0.06, 0.05, -0.10],
-  [-0.20, -0.04, -0.03, 0.06],
-  [0.24, 0.05, 0.04, -0.05],
-  [0.70, -0.08, -0.07, 0.12],
+  [-0.66, 0.05, 0.04, -0.08],
+  [-0.12, -0.03, -0.03, 0.05],
+  [0.30, 0.04, 0.03, -0.05],
+  [0.95, -0.06, -0.06, 0.12],
 ];
 
 // ── ключевые кадры по оси сюжета s ∈ [0,5]; одинаковые s подряд = монтажная склейка
@@ -25,8 +34,8 @@ const SLICE_OFF = [  // разлёт: [dy, dx, rz, ry]
 const KEYS = [
   [0.00, 0.62, -0.02, 0.0, 0.10, -0.70, 0.16, 1.00, 0, -10, 6, 7.3, 0.0],
   [0.50, 0.78, 0.06, 0.0, 0.06, -0.10, 0.12, 1.00, 0, 4, 10, 7.0, 0.0],
-  [1.00, 0.00, 0.02, 0.0, 0.00, 0.00, 0.02, 1.08, 0, 0, 4, 6.9, 0.0],
-  [1.14, 0.00, 0.02, 0.0, 0.00, 0.10, 0.00, 1.06, 0.06, 6, 8, 7.0, 0.0],
+  [1.00, 0.30, -0.22, 0.0, 0.00, 0.00, 0.02, 1.0, 0, 0, 4, 7.2, 0.0],
+  [1.14, 0.30, -0.18, 0.0, 0.00, 0.10, 0.00, 1.0, 0.06, 6, 8, 7.3, 0.0],
   [1.44, 0.45, 0.06, 0.0, 0.05, 0.42, 0.00, 1.00, 1, 30, 20, 8.6, 0.1],
   [1.70, 0.45, 0.06, 0.0, 0.06, 0.78, 0.00, 1.00, 1, 42, 24, 8.8, 0.1],
   [1.90, 0.10, 0.00, 0.0, 0.00, 1.20, 0.00, 1.00, 0, 22, 10, 7.4, 0.0],
@@ -37,8 +46,8 @@ const KEYS = [
   [3.32, -1.20, 3.60, 0.6, -0.95, 10.9, 1.10, 0.85, 0, -10, 6, 7.4, 0.0],
   [3.32, 1.80, -3.60, 0.0, 0.40, 2.20, -0.40, 0.85, 0, 8, 10, 7.4, 0.0],
   [3.92, 1.80, -3.40, 0.0, 0.40, 2.20, -0.40, 0.85, 0, 8, 10, 7.4, 0.0],
-  [4.45, 1.30, -0.10, 0.0, 0.12, 0.70, 0.14, 0.92, 0, 4, 8, 7.2, 0.0],
-  [5.00, 1.25, 0.10, 0.0, 0.08, 0.20, 0.10, 0.92, 0, -6, 6, 7.0, 0.0],
+  [4.45, 1.55, -0.05, 0.0, 0.12, 0.70, 0.14, 0.82, 0, 4, 8, 7.2, 0.0],
+  [5.00, 1.50, 0.12, 0.0, 0.08, 0.20, 0.10, 0.82, 0, -6, 6, 7.0, 0.0],
 ];
 const NCH = KEYS[0].length - 1;
 
@@ -95,12 +104,13 @@ export async function createScene(canvas, { onProgress = () => {}, capture = fal
   const tick = () => onProgress(++loaded / total);
   const texLoader = new THREE.TextureLoader(manager);
   const loadTex = url => new Promise((res, rej) => texLoader.load(url, t => { t.colorSpace = THREE.SRGBColorSpace; t.flipY = false; t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy()); tick(); res(t); }, undefined, rej));
-  const gltfP = new Promise((res, rej) => new GLTFLoader(manager).load('assets/shoe-lite.glb', g => { tick(); res(g); }, undefined, rej));
-  const [gltf, ...maps] = await Promise.all([gltfP, ...COLORWAYS.map(c => loadTex(`assets/cw-${c.key}.jpg`))]);
+  const gl = new GLTFLoader(manager); gl.setMeshoptDecoder(MeshoptDecoder);
+  const gltfP = new Promise((res, rej) => gl.load('assets/aj1.glb', g => { tick(); res(g); }, undefined, rej));
+  const [gltf, ...maps] = await Promise.all([gltfP, ...COLORWAYS.map(c => loadTex(`assets/aj-${c.key}.webp`))]);
 
-  let srcMesh; gltf.scene.traverse(o => { if (o.isMesh && !srcMesh) srcMesh = o; });
-  const geo = srcMesh.geometry; geo.computeBoundingBox();
-  const base = srcMesh.material;
+  const src = {}; gltf.scene.traverse(o => { if (o.isMesh) src[o.name.split('_')[0]] = o; });
+  gltf.scene.updateMatrixWorld(true);
+  const base = src.Shoe.material;
 
   // общие юниформы для перекраски «волной»
   const U = {
@@ -109,8 +119,8 @@ export async function createScene(canvas, { onProgress = () => {}, capture = fal
   };
   const makeMat = () => {
     const m = new THREE.MeshPhysicalMaterial({
-      map: maps[0], normalMap: base.normalMap, roughnessMap: base.roughnessMap, metalnessMap: base.metalnessMap, aoMap: base.aoMap,
-      roughness: 1, metalness: 1, sheen: 0.4, sheenRoughness: 0.6, sheenColor: new THREE.Color(0x777777),
+      map: maps[0], normalMap: base.normalMap, roughnessMap: base.roughnessMap, aoMap: base.aoMap, aoMapIntensity: 0.8,
+      roughness: 1, metalness: 0, sheen: 0.25, sheenRoughness: 0.7, sheenColor: new THREE.Color(0x888888),
       side: THREE.DoubleSide, clipShadows: true,
     });
     m.onBeforeCompile = sh => {
@@ -128,28 +138,31 @@ export async function createScene(canvas, { onProgress = () => {}, capture = fal
           gSweep = (1.0 - abs(k * 2.0 - 1.0)) * step(0.001, uMix) * step(uMix, 0.999);
           diffuseColor *= mix(c1, c2, k);`)
         .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += uGlow * gSweep * 2.2;')
-        .replace('#include <dithering_fragment>', '#include <dithering_fragment>\nif (!gl_FrontFacing) gl_FragColor.rgb = mix(gl_FragColor.rgb * 0.35, uInner, 0.55);');
+        .replace('#include <dithering_fragment>', '#include <dithering_fragment>\nif (!gl_FrontFacing) gl_FragColor.rgb = mix(gl_FragColor.rgb, uInner, 0.22);');
     };
     return m;
   };
 
-  // ── 4 слоя с плоскостями отсечения (плоскости живут в мировых координатах — обновляем каждый кадр)
+  // ── 4 детали; подошва и верх — одна сетка, разделённая плоскостями отсечения (обновляются каждый кадр)
   const shoe = new THREE.Group(); scene.add(shoe);
   const pivot = new THREE.Group(); shoe.add(pivot);
+  const lacesMat = new THREE.MeshPhysicalMaterial({ color: 0x111111, roughness: 0.85, normalMap: src.Laces.material.normalMap, aoMap: src.Laces.material.aoMap, side: THREE.DoubleSide, sheen: 0.5, sheenColor: new THREE.Color(0x666666) });
   const slices = [];
-  for (let i = 0; i < 4; i++) {
-    const mat = makeMat();
-    const lo = new THREE.Plane(new THREE.Vector3(0, 1, 0), -BANDS[i]);
-    const hi = new THREE.Plane(new THREE.Vector3(0, -1, 0), BANDS[i + 1]);
+  PARTS.forEach(pt => {
+    const mat = pt.mesh === 'Shoe' ? makeMat() : pt.mesh === 'Laces' ? lacesMat : src.Sole.material.clone();
+    const lo = new THREE.Plane(new THREE.Vector3(0, 1, 0), -pt.lo);
+    const hi = new THREE.Plane(new THREE.Vector3(0, -1, 0), pt.hi);
     mat.clippingPlanes = [lo.clone(), hi.clone()];
     const holder = new THREE.Group();
-    const mesh = new THREE.Mesh(geo, mat);
-    holder.add(mesh); pivot.add(holder);
-    // светящийся срез — тонкое кольцо по контуру среза задаём «кромкой» через плоскость отсечения
-    slices.push({ holder, mesh, mat, local: [lo, hi] });
-  }
-  // модель: X — длина, Y — высота; носок смотрит в −X → разворачиваем носком вправо
-  pivot.rotation.y = Math.PI;
+    const norm = new THREE.Group();                     // нормализация исходной модели
+    norm.rotation.y = Math.PI / 2; norm.scale.setScalar(SRC.k);
+    norm.position.set(-SRC.cz * SRC.k, -SRC.cy * SRC.k, SRC.cx * SRC.k);
+    const m = src[pt.mesh];
+    const mesh = new THREE.Mesh(m.geometry, mat);
+    mesh.matrixAutoUpdate = false; mesh.matrix.copy(m.matrixWorld);
+    norm.add(mesh); holder.add(norm); pivot.add(holder);
+    slices.push({ holder, mesh, mat, local: [lo, hi], recolor: pt.mesh === 'Shoe' });
+  });
 
   // мягкая тень на «полу»
   const shadowTex = (() => {
@@ -194,12 +207,14 @@ export async function createScene(canvas, { onProgress = () => {}, capture = fal
     if (i === cwCur) return;
     cwNext = i; U.uMap2.value = maps[i]; mixT = 0;
     st.accentTarget.set(COLORWAYS[i].accent);
+    lacesFrom.copy(lacesMat.color); lacesTo.set(COLORWAYS[i].laces);
   }
+  const lacesFrom = new THREE.Color(), lacesTo = new THREE.Color(0x111111);
 
   const tmpM = new THREE.Matrix4(), tmpV = new THREE.Vector3();
   const anchorsLocal = [
-    new THREE.Vector3(-0.55, -0.52, 0.3), new THREE.Vector3(0.45, -0.36, 0.34),
-    new THREE.Vector3(-0.05, -0.05, 0.38), new THREE.Vector3(0.45, 0.32, 0.12),
+    new THREE.Vector3(-0.45, -0.5, 0.36), new THREE.Vector3(0.1, -0.36, 0.0),
+    new THREE.Vector3(-0.35, 0.05, 0.42), new THREE.Vector3(0.3, 0.3, 0.12),
   ];
   const anchorsScreen = anchorsLocal.map(() => ({ x: 0, y: 0, v: 0 }));
 
@@ -275,8 +290,9 @@ export async function createScene(canvas, { onProgress = () => {}, capture = fal
     if (mixT < 1) {
       mixT = Math.min(1, mixT + dt / 1.05);
       U.uMix.value = smooth(mixT);
+      lacesMat.color.copy(lacesFrom).lerp(lacesTo, smooth(clamp(mixT * 1.6 - 0.3)));
       if (mixT >= 1) {
-        cwCur = cwNext; slices.forEach(sl => { sl.mat.map = maps[cwCur]; }); U.uMix.value = 0;
+        cwCur = cwNext; slices.forEach(sl => { if (sl.recolor) sl.mat.map = maps[cwCur]; }); U.uMix.value = 0;
         if (queued !== null && queued !== cwCur) { const q = queued; queued = null; setColorway(q); } else queued = null;
       }
     }
@@ -302,7 +318,7 @@ export async function createScene(canvas, { onProgress = () => {}, capture = fal
     state: st, update, resize, setColorway, anchors: anchorsScreen,
     get explode() { return explodeOut; }, get colorway() { return cwNext; },
     snapshot(cwIndex, rotY, w, h) {           // для карточек
-      slices.forEach(sl => { sl.mat.map = maps[cwIndex]; }); U.uMix.value = 0; cwCur = cwNext = cwIndex;
+      slices.forEach(sl => { if (sl.recolor) sl.mat.map = maps[cwIndex]; }); lacesMat.color.set(COLORWAYS[cwIndex].laces); U.uMix.value = 0; cwCur = cwNext = cwIndex;
       st.accent.set(COLORWAYS[cwIndex].accent); st.accentTarget.copy(st.accent);
       shadow.visible = floorGlow.visible = dust.visible = false;
       st.s = 1; st.intro = 1;
