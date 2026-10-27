@@ -46,7 +46,8 @@ function materials() {
    Mostly dark reflective glass, a few softly lit rooms, curtains, balcony railings and slab edges. */
 function facadeTexture(floors, bays, seed) {
   const r = (s => () => (s = (s * 16807) % 2147483647) / 2147483647)(seed);
-  const cw = 24, ch = 36, W = bays * cw, H = floors * ch;
+  const small = matchMedia("(pointer: coarse)").matches;             // phones: 4× less texture memory
+  const cw = small ? 12 : 24, ch = small ? 18 : 36, W = bays * cw, H = floors * ch, u = cw / 24;
   const c = document.createElement("canvas"); c.width = W; c.height = H;
   const e = document.createElement("canvas"); e.width = W; e.height = H;
   const g = c.getContext("2d"), ge = e.getContext("2d");
@@ -55,11 +56,11 @@ function facadeTexture(floors, bays, seed) {
   for (let y = 0; y < floors; y++) for (let x = 0; x < bays; x++) {
     const X = x * cw, Y = H - (y + 1) * ch, k = r();
     g.fillStyle = `rgba(${10 + r() * 30 | 0},${16 + r() * 30 | 0},${28 + r() * 34 | 0},${.25 + r() * .3})`; g.fillRect(X, Y, cw, ch);
-    if (k < .055) { const a = .45 + r() * .4; ge.fillStyle = `rgba(255,${200 + r() * 30 | 0},150,${a})`; ge.fillRect(X + 2, Y + 6, cw - 4, ch - 14);
-                    g.fillStyle = `rgba(255,214,160,${a * .5})`; g.fillRect(X + 2, Y + 6, cw - 4, ch - 14); }
-    else if (k < .2) { g.fillStyle = "rgba(220,210,190,.14)"; g.fillRect(X + 2, Y + 6, cw - 4, ch - 14); }
-    g.fillStyle = "rgba(170,190,210,.10)"; g.fillRect(X, Y + ch - 13, cw, 8);   // glass railing
-    g.fillStyle = "#11151d"; g.fillRect(X, Y + ch - 4, cw, 4);                   // slab edge
+    if (k < .055) { const a = .45 + r() * .4; ge.fillStyle = `rgba(255,${200 + r() * 30 | 0},150,${a})`; ge.fillRect(X + 2 * u, Y + 6 * u, cw - 4 * u, ch - 14 * u);
+                    g.fillStyle = `rgba(255,214,160,${a * .5})`; g.fillRect(X + 2 * u, Y + 6 * u, cw - 4 * u, ch - 14 * u); }
+    else if (k < .2) { g.fillStyle = "rgba(220,210,190,.14)"; g.fillRect(X + 2 * u, Y + 6 * u, cw - 4 * u, ch - 14 * u); }
+    g.fillStyle = "rgba(170,190,210,.10)"; g.fillRect(X, Y + ch - 13 * u, cw, 8 * u);   // glass railing
+    g.fillStyle = "#11151d"; g.fillRect(X, Y + ch - 4 * u, cw, 4 * u);                   // slab edge
   }
   const map = new THREE.CanvasTexture(c), emi = new THREE.CanvasTexture(e);
   for (const t of [map, emi]) { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; t.wrapS = THREE.RepeatWrapping; }

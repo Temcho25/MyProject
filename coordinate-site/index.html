@@ -96,7 +96,8 @@ html.intro-on{overflow:hidden}
 .stage-bg{position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 30%,var(--ink-3) 0%,var(--ink) 60%)}
 .stage-fade{position:absolute;inset:0;background:var(--ink);pointer-events:none;opacity:1}
 /* WebGL scenes (js/scene3d.js) */
-.no-webgl .stage-bg{background:linear-gradient(rgba(29,36,51,.55),rgba(29,36,51,.85)),url(photos/01-aerial-day.webp) center/cover}
+.gl-lost .hero3d,.gl-lost .t3label{visibility:hidden}
+.no-webgl .stage-bg,.gl-lost .stage-bg{background:linear-gradient(rgba(29,36,51,.55),rgba(29,36,51,.85)),url(photos/01-aerial-day.webp) center/cover}
 .hero3d,.sel3d-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .t3label{position:absolute;left:0;top:0;font:800 clamp(18px,2.2vw,30px)/1 "Unbounded",sans-serif;color:var(--paper);
   text-shadow:0 2px 20px rgba(0,0,0,.5);pointer-events:none;transition:opacity .4s;opacity:0;will-change:transform}

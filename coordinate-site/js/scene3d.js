@@ -17,13 +17,16 @@ const eo = t => 1 - Math.pow(1 - t, 3), eio = t => t < .5 ? 4 * t * t * t : 1 - 
 const eback = t => { const c = 1.4; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); };
 const D2R = Math.PI / 180;
 
-function makeRenderer(canvas, { shadows }) {
+// iPhones drop a WebGL page when GPU memory runs out: keep phones at ≤1.5× resolution and recover if the context is lost.
+function makeRenderer(canvas, { shadows, onRestore }) {
+  canvas.addEventListener("webglcontextlost", e => { e.preventDefault(); r._lost = true; document.documentElement.classList.add("gl-lost"); }, false);
+  canvas.addEventListener("webglcontextrestored", () => { r._lost = false; document.documentElement.classList.remove("gl-lost"); if (onRestore) onRestore(); }, false);
   const r = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
   r.setClearColor(0x000000, 0);
   r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05;
   r.outputColorSpace = THREE.SRGBColorSpace;
   r.shadowMap.enabled = shadows; r.shadowMap.type = THREE.PCFSoftShadowMap;
-  r._maxDpr = Math.min(devicePixelRatio || 1, 2);
+  r._maxDpr = Math.min(devicePixelRatio || 1, touch ? 1.5 : 2);
   r._dpr = touch ? Math.min(1.5, r._maxDpr) : r._maxDpr; r.setPixelRatio(r._dpr);   // phones start lighter, sharpen if fast
   return r;
 }
@@ -101,7 +104,9 @@ function initHero() {
   if (!stage) return;
   const canvas = document.createElement("canvas"); canvas.className = "hero3d"; canvas.setAttribute("aria-hidden", "true");
   stage.insertBefore(canvas, stage.querySelector(".hero-layer"));
-  const renderer = makeRenderer(canvas, { shadows: SHADOWS });
+  let alive = true;
+  const renderer = makeRenderer(canvas, { shadows: SHADOWS, onRestore: () => {        // rebuild the whole scene on a fresh context
+    alive = false; canvas.remove(); labels.forEach(l => l.remove()); try { renderer.dispose(); } catch (e) {} initHero(); } });
   const scene = new THREE.Scene(); envFor(renderer, scene);
   const sun = lights(scene, { shadow: SHADOWS, mapSize: 2048, extent: 130 });
   const camera = new THREE.PerspectiveCamera(32, 1, 1, 6000);
@@ -133,9 +138,10 @@ function initHero() {
   new IntersectionObserver(es => { visible = es[0].isIntersecting; }, { rootMargin: "200px" }).observe(track);
 
   function frame(now) {
+    if (!alive) return;
     requestAnimationFrame(frame);
     const dt = Math.min(64, now - last); last = now;
-    if (!visible) return;
+    if (!visible || renderer._lost) return;
     const p = C.heroP ?? 0;
     const wide = W > 700, aspect = W / H;
 
@@ -240,7 +246,7 @@ function initSelector() {
   function frame(now) {
     requestAnimationFrame(frame);
     const dt = Math.min(64, now - last); last = now;
-    if (!visible || !tower) return;
+    if (!visible || !tower || renderer._lost) return;
     if (!drag && !reduce) { vel = lerp(vel, .05, .03); rot += vel * dt / 16; dirty = true; }
     if (grow < 1) { grow = Math.min(1, grow + dt / 1100); dirty = true; }
     tower.scale.y = Math.max(.001, eback(grow));

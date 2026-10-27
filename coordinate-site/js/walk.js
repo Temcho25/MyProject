@@ -152,7 +152,8 @@ function boot() {
 }
 new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) boot(); }), { rootMargin: '1500px 0px' }).observe(ROOT);
 // otherwise prepare it during idle time a few seconds after load, so scrolling never pauses on it
-addEventListener('load', () => setTimeout(() => (window.requestIdleCallback ? requestIdleCallback(boot, { timeout: 5000 }) : boot()), 6000));
+// desktop: prepare it during idle time; phones build it on approach only (keeps GPU memory low on iPhone)
+if (!TOUCH) addEventListener('load', () => setTimeout(() => (window.requestIdleCallback ? requestIdleCallback(boot, { timeout: 5000 }) : boot()), 6000));
 new IntersectionObserver(es => es.forEach(e => { visible = e.isIntersecting; if (engine) engine.setVisible(visible); })).observe(view);
 
 /* =====================================================================
