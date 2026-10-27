@@ -2,7 +2,7 @@
 
 Usage (from coordinate-site/):  python3 -I tools/plan_walls.py [debug_dir]
 Reads plans/<id>-2d.png for every layout in js/data.js, writes plans/walls/<id>.json:
-  {id, w, h, mpp, cell, rects:[[x,y,w,h],...] walls, edges:[...] perimeter glass, spawn:[x,y], bounds:[x0,y0,x1,y1]}   (all in plan pixels)
+  {id, w, h, mpp, cell, rects:[[x,y,w,h],...] wall boxes (collision), polys:[{o:[[x,y]..], h:[holes]}] wall outlines (render), rails:[[[x,y]..]] glass railing polylines, spawn:[x,y], bounds:[x0,y0,x1,y1]}   (all in plan pixels)
 mpp = metres per pixel, calibrated so the drawn footprint (rooms + balconies) equals the layout's total area.
 """
 import json, os, re, sys
@@ -83,6 +83,65 @@ def keep_blobs(m, min_side):
             out[list(ys), list(xs)] = True
     return out
 
+def trace_loops(m):
+    """Boundary loops of a binary grid as vertex lists (grid-corner coords), inside kept on the left.
+    Outer boundaries come out counter-clockwise in image coords (y down), holes clockwise."""
+    H, W = m.shape; p = np.pad(m, 1); nxt = {}
+    # directed unit edges with the filled cell on the left (y axis points down)
+    ys, xs = np.nonzero(p[1:-1, 1:-1] & ~p[:-2, 1:-1]);  [nxt.setdefault((x + 1, y), []).append((x, y)) for y, x in zip(ys, xs)]       # top edge: right->left
+    ys, xs = np.nonzero(p[1:-1, 1:-1] & ~p[2:, 1:-1]);   [nxt.setdefault((x, y + 1), []).append((x + 1, y + 1)) for y, x in zip(ys, xs)]  # bottom: left->right
+    ys, xs = np.nonzero(p[1:-1, 1:-1] & ~p[1:-1, :-2]);  [nxt.setdefault((x, y), []).append((x, y + 1)) for y, x in zip(ys, xs)]       # left: down
+    ys, xs = np.nonzero(p[1:-1, 1:-1] & ~p[1:-1, 2:]);   [nxt.setdefault((x + 1, y + 1), []).append((x + 1, y)) for y, x in zip(ys, xs)]  # right: up
+    loops = []
+    while nxt:
+        start = next(iter(nxt)); loop = [start]; cur = start
+        while True:
+            outs = nxt.get(cur)
+            if not outs: break
+            n = outs.pop()
+            if not outs: del nxt[cur]
+            if n == start: break
+            loop.append(n); cur = n
+        if len(loop) >= 4: loops.append(loop)
+    return loops
+
+def simplify(pts, tol):
+    """Douglas–Peucker on a closed loop."""
+    P = np.array(pts, float)
+    if len(P) < 4: return pts
+    # split at the farthest pair so both halves are open polylines
+    i = 0; j = int(np.argmax(((P - P[0]) ** 2).sum(1)))
+    def dp(a):
+        if len(a) < 3: return list(map(tuple, a))
+        s, e = a[0], a[-1]; d = e - s; L = np.hypot(*d)
+        dist = np.abs(d[0] * (a - s)[:, 1] - d[1] * (a - s)[:, 0]) / L if L > 1e-9 else np.hypot(*(a - s).T)
+        k = int(np.argmax(dist))
+        if dist[k] > tol: return dp(a[: k + 1])[:-1] + dp(a[k:])
+        return [tuple(s), tuple(e)]
+    A = dp(np.vstack([P[i:j + 1]])); B = dp(np.vstack([P[j:], P[:1]]))
+    return A[:-1] + B[:-1]
+
+def simplify_open(pts, tol):
+    P = np.array(pts, float)
+    def dp(a):
+        if len(a) < 3: return [tuple(v) for v in a]
+        s, e = a[0], a[-1]; d = e - s; L = np.hypot(*d)
+        dist = np.abs(d[0] * (a - s)[:, 1] - d[1] * (a - s)[:, 0]) / L if L > 1e-9 else np.hypot(*(a - s).T)
+        k = int(np.argmax(dist))
+        if dist[k] > tol: return dp(a[: k + 1])[:-1] + dp(a[k:])
+        return [tuple(s), tuple(e)]
+    return dp(P)
+
+def area2(loop):
+    a = np.array(loop, float); return float(np.sum(a[:, 0] * np.roll(a[:, 1], -1) - np.roll(a[:, 0], -1) * a[:, 1]))
+
+def inside(pt, loop):
+    x, y = pt; c = False; n = len(loop)
+    for i in range(n):
+        x1, y1 = loop[i]; x2, y2 = loop[(i + 1) % n]
+        if (y1 > y) != (y2 > y) and x < (x2 - x1) * (y - y1) / (y2 - y1) + x1: c = not c
+    return c
+
 def flood_outside(barrier):
     H, W = barrier.shape; out = np.zeros_like(barrier); q = deque()
     for x in range(W):
@@ -119,9 +178,36 @@ def process(L, debug=None):
     spk = keep_blobs(spk, .6 / (mpp * CELL))     # drop pillow / stove / bed-corner false positives
     grid = (to_grid(walls, CELL, .5) | spk) & foot
     rects = greedy_rects(grid)
-    # perimeter of the footprint not covered by walls -> glass railing / curtain wall panels (also blocks walking off)
-    edge = foot & (np.roll(outside, 1, 0) | np.roll(outside, -1, 0) | np.roll(outside, 1, 1) | np.roll(outside, -1, 1)) & ~grid
-    edges = greedy_rects(edge)
+    # wall outlines: traced and simplified so curved / diagonal walls are smooth (extruded in the viewer)
+    polys = []
+    loops = [simplify(l, 1.6) for l in trace_loops(grid)]
+    outer = [l for l in loops if area2(l) < 0 and len(l) >= 3]      # y-down: CCW on screen = negative shoelace
+    holes = [l for l in loops if area2(l) > 0 and len(l) >= 3]
+    for o in outer: polys.append({'o': o, 'h': []})
+    for hl in holes:
+        for P in polys:
+            if inside(hl[0], P['o']) or inside(((hl[0][0] + hl[1][0]) / 2, (hl[0][1] + hl[1][1]) / 2), P['o']): P['h'].append(hl); break
+    # glass railing along the footprint outline where there is no wall (balcony edges, glazed facade gaps)
+    near_wall = dilate(grid, 2)
+    rails = []
+    for l in trace_loops(foot):
+        l = simplify(l, 1.2); run = []
+        for i in range(len(l)):
+            (x1, y1), (x2, y2) = l[i], l[(i + 1) % len(l)]
+            n = max(1, int(np.hypot(x2 - x1, y2 - y1) / 2))
+            for k_ in range(n):
+                ax, ay = x1 + (x2 - x1) * k_ / n, y1 + (y2 - y1) * k_ / n
+                bx, by = x1 + (x2 - x1) * (k_ + 1) / n, y1 + (y2 - y1) * (k_ + 1) / n
+                mx, my = int(min(near_wall.shape[1] - 1, (ax + bx) / 2)), int(min(near_wall.shape[0] - 1, (ay + by) / 2))
+                blocked = near_wall[max(0, my - 1):my + 1, max(0, mx - 1):mx + 1].any()
+                if blocked:
+                    if len(run) > 1: rails.append(run)
+                    run = []
+                else:
+                    if not run: run = [(ax, ay)]
+                    run.append((bx, by))
+        if len(run) > 1: rails.append(run)
+    rails = [simplify_open(r, 0.6) for r in rails if np.hypot(r[-1][0] - r[0][0], r[-1][1] - r[0][1]) + len(r) > 3]
     # spawn: open cell farthest from walls (largest room, normally the living room)
     free = foot & ~grid
     d = free.copy(); best = None; it = 0
@@ -129,10 +215,12 @@ def process(L, debug=None):
         best = d; it += 1; d = erode(d, 1)
     ys, xs = np.nonzero(best); sy, sx = int(ys.mean()), int(xs.mean())
     if not best[sy, sx]: i = np.argmin((ys - sy) ** 2 + (xs - sx) ** 2); sy, sx = int(ys[i]), int(xs[i])
+    q = lambda pts: [[int(round(x * CELL)), int(round(y * CELL))] for x, y in pts]
     fy, fx = np.nonzero(foot)
     out = dict(id=L['id'], w=w, h=h, mpp=round(mpp, 6), cell=CELL,
                rects=[[x * CELL, y * CELL, ww * CELL, hh * CELL] for x, y, ww, hh in rects],
-               edges=[[x * CELL, y * CELL, ww * CELL, hh * CELL] for x, y, ww, hh in edges],
+               polys=[{'o': q(P['o']), 'h': [q(hl) for hl in P['h']]} for P in polys],
+               rails=[q(r) for r in rails],
                spawn=[sx * CELL + CELL // 2, sy * CELL + CELL // 2],
                bounds=[int(fx.min()) * CELL, int(fy.min()) * CELL, int(fx.max() + 1) * CELL, int(fy.max() + 1) * CELL])
     json.dump(out, open(f"plans/walls/{L['id']}.json", 'w'), separators=(',', ':'))

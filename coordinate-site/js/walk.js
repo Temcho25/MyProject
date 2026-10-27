@@ -11,7 +11,7 @@ const LAYOUTS = (window.COORD && window.COORD.LAYOUTS) || [];
 const TOUCH = matchMedia('(pointer: coarse)').matches;
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const WALL_H = 2.9, RAIL_H = 1.1, EYE = 1.6, BODY_R = 0.24, SPEED = 1.6;
+const WALL_H = 2.9, CUT = 0.5, RAIL_H = 1.1, EYE = 1.6, BODY_R = 0.24, SPEED = 1.6;
 
 /* ---------- i18n ---------- */
 const T = {
@@ -153,7 +153,7 @@ function createEngine(THREE, RoomEnvironment) {
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, DPR_MAX));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMappingExposure = 0.95;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -165,10 +165,10 @@ function createEngine(THREE, RoomEnvironment) {
   // gradient sky dome: dark navy above (site palette) to a warm haze at the horizon
   const sky = new THREE.Mesh(new THREE.SphereGeometry(400, 32, 16), new THREE.ShaderMaterial({
     side: THREE.BackSide, depthWrite: false, fog: false,
-    uniforms: { top: { value: new THREE.Color('#1d2433') }, mid: { value: new THREE.Color('#d9c6a0') }, bot: { value: new THREE.Color('#151b27') } },
+    uniforms: { top: { value: new THREE.Color('#1d2433') }, mid: { value: new THREE.Color('#d9c6a0') }, bot: { value: new THREE.Color('#4a5160') } },
     vertexShader: 'varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.); }',
     fragmentShader: `uniform vec3 top, mid, bot; varying vec3 vP;
-      void main(){ float h = vP.y; vec3 c = h > 0. ? mix(mid, top, pow(clamp(h*1.6,0.,1.), .7)) : mix(mid, bot, pow(clamp(-h*5.,0.,1.), .5));
+      void main(){ float h = vP.y; vec3 c = h > 0. ? mix(mid, top, pow(clamp(h*1.6,0.,1.), .7)) : mix(mid, bot, pow(clamp(-h*2.5,0.,1.), .6));
       gl_FragColor = vec4(c, 1.); }`,
   }));
   scene.add(sky);
@@ -176,7 +176,7 @@ function createEngine(THREE, RoomEnvironment) {
   const hemi = new THREE.HemisphereLight('#fff6e8', '#5b6474', 1.25); scene.add(hemi);
   const sun = new THREE.DirectionalLight('#ffe7c2', 2.1);
   sun.castShadow = true; sun.shadow.mapSize.set(TOUCH ? 1024 : 2048, TOUCH ? 1024 : 2048);
-  sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
+  sun.shadow.bias = -0.0008; sun.shadow.normalBias = 0.05;
   scene.add(sun, sun.target);
 
   // soft plinth under the floating model
@@ -195,28 +195,11 @@ function createEngine(THREE, RoomEnvironment) {
   const matWall = new THREE.MeshStandardMaterial({ color: '#f3efe7', roughness: 0.92, metalness: 0 });
   const matCap = new THREE.MeshStandardMaterial({ color: '#2a2f38', roughness: 0.8 });
   const matGlass = new THREE.MeshStandardMaterial({ color: '#a9c4d3', roughness: 0.08, metalness: 0.1, transparent: true, opacity: 0.28, depthWrite: false, side: THREE.DoubleSide });
-  const matRail = new THREE.MeshStandardMaterial({ color: '#30353d', roughness: 0.5, metalness: 0.6 });
+  const matRail = new THREE.MeshStandardMaterial({ color: '#30353d', roughness: 0.5, metalness: 0.6, side: THREE.DoubleSide });
 
   const group = new THREE.Group(); scene.add(group);
   let M = null;            // current model: {rects (m), size, center, spawn, floor, ceiling, mask, ...}
   let loadSeq = 0;
-
-  /* ----- geometry ----- */
-  function boxes(rects, h, withTop, y0 = 0) {
-    // sides + top for a list of [x0,z0,x1,z1] boxes in metres; returns {side, top} BufferGeometries
-    const sp = [], sn = [], tp = [], tn = [];
-    const quad = (P, N, a, b, c, d, n) => { P.push(...a, ...b, ...c, ...a, ...c, ...d); for (let i = 0; i < 6; i++) N.push(...n); };
-    for (const [x0, z0, x1, z1] of rects) {
-      const y1 = y0 + h;
-      quad(sp, sn, [x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1], [0, 0, 1]);
-      quad(sp, sn, [x1, y0, z0], [x0, y0, z0], [x0, y1, z0], [x1, y1, z0], [0, 0, -1]);
-      quad(sp, sn, [x1, y0, z1], [x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [1, 0, 0]);
-      quad(sp, sn, [x0, y0, z0], [x0, y0, z1], [x0, y1, z1], [x0, y1, z0], [-1, 0, 0]);
-      if (withTop) quad(tp, tn, [x0, y1, z1], [x1, y1, z1], [x1, y1, z0], [x0, y1, z0], [0, 1, 0]);
-    }
-    const mk = (P, N) => { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(N, 3)); return g; };
-    return { side: mk(sp, sn), top: withTop ? mk(tp, tn) : null };
-  }
 
   function loadImage(src) {
     return new Promise((res, rej) => { const im = new Image(); im.decoding = 'async'; im.onload = () => res(im); im.onerror = rej; im.src = src; });
@@ -229,7 +212,7 @@ function createEngine(THREE, RoomEnvironment) {
   }
 
   function clearModel() {
-    group.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material && o.material.map) o.material.map.dispose(); if (o.material && o.material.alphaMap) o.material.alphaMap.dispose(); if (o.material && o.material.userData.own) o.material.dispose(); });
+    group.traverse(o => { if (o.geometry) o.geometry.dispose(); const m = o.material; if (m && !Array.isArray(m)) { if (m.map) m.map.dispose(); if (m.alphaMap) m.alphaMap.dispose(); if (m.userData.own) m.dispose(); } });
     group.clear(); M = null;
   }
 
@@ -250,30 +233,48 @@ function createEngine(THREE, RoomEnvironment) {
     const cx = (bx0 + bx1) / 2, cy = (by0 + by1) / 2;
     const toM = (x, y) => [(x - cx) * k, (y - cy) * k];
     const R = r => { const [x0, z0] = toM(r[0], r[1]); const [x1, z1] = toM(r[0] + r[2], r[1] + r[3]); return [x0, z0, x1, z1]; };
-    const walls = data.rects.map(R), edges = (data.edges || []).map(R);
+    const walls = data.rects.map(R);
+    const rails = (data.rails || []).map(l => l.map(([x, y]) => toM(x, y)));
+    const segs = []; rails.forEach(l => { for (let i = 1; i < l.length; i++) segs.push([l[i - 1][0], l[i - 1][1], l[i][0], l[i][1]]); });
     const W = data.w * k, H = data.h * k, ox = (data.w / 2 - cx) * k, oz = (data.h / 2 - cy) * k;
     const size = Math.max((bx1 - bx0) * k, (by1 - by0) * k);
 
     // floor = the plan drawing, trimmed by the footprint mask, tinted like pale oak
     const map = texFrom(img, TOUCH ? 2048 : 4096); map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
     const alpha = new THREE.Texture(maskImg); alpha.needsUpdate = true;
-    const floorMat = new THREE.MeshStandardMaterial({ map, alphaMap: alpha, alphaTest: 0.5, color: '#efe2cc', roughness: 0.85 }); floorMat.userData.own = true;
+    const floorMat = new THREE.MeshStandardMaterial({ map, alphaMap: alpha, alphaTest: 0.5, color: '#e6d7bd', roughness: 0.85 }); floorMat.userData.own = true;
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(W, H), floorMat);
     floor.rotation.x = -Math.PI / 2; floor.position.set(ox, 0, oz); floor.receiveShadow = true; group.add(floor);
 
     // ceiling (walk mode only): faces down, does not block the sun
-    const ceilMat = new THREE.MeshStandardMaterial({ color: '#f6f3ee', roughness: 1, alphaMap: alpha, alphaTest: 0.5 }); ceilMat.userData.own = true;
+    const ceilAlpha = new THREE.Texture(maskImg); ceilAlpha.flipY = false; ceilAlpha.needsUpdate = true;   // plane faces down -> mirrored UVs
+    const ceilMat = new THREE.MeshStandardMaterial({ color: '#f6f3ee', roughness: 1, alphaMap: ceilAlpha, alphaTest: 0.5 }); ceilMat.userData.own = true;
     const ceil = new THREE.Mesh(new THREE.PlaneGeometry(W, H), ceilMat);
     ceil.rotation.x = Math.PI / 2; ceil.position.set(ox, WALL_H, oz); ceil.visible = false; group.add(ceil);
 
-    const wg = boxes(walls, WALL_H, true);
-    const wallMesh = new THREE.Mesh(wg.side, matWall); wallMesh.castShadow = wallMesh.receiveShadow = true;
-    const capMesh = new THREE.Mesh(wg.top, matCap);
-    const eg = boxes(edges, RAIL_H - 0.04, false);
-    const glass = new THREE.Mesh(eg.side, matGlass); glass.renderOrder = 2;
-    const rg = boxes(edges, 0.04, true, RAIL_H - 0.04);
-    const rail = new THREE.Mesh(rg.side, matRail), railTop = new THREE.Mesh(rg.top, matRail);
-    group.add(wallMesh, capMesh, glass, rail, railTop);
+    // walls: traced outlines (with holes) extruded to ceiling height. Shape y = -z so that rotateX(-90°) stands it up unmirrored.
+    const shapes = (data.polys || []).map(P => {
+      const sh = new THREE.Shape(P.o.map(([x, y]) => { const [mx, mz] = toM(x, y); return new THREE.Vector2(mx, -mz); }));
+      P.h.forEach(hl => sh.holes.push(new THREE.Path(hl.map(([x, y]) => { const [mx, mz] = toM(x, y); return new THREE.Vector2(mx, -mz); }))));
+      return sh;
+    });
+    const wgeo = new THREE.ExtrudeGeometry(shapes, { depth: WALL_H, bevelEnabled: false, curveSegments: 1 });
+    wgeo.rotateX(-Math.PI / 2);
+    const wallMesh = new THREE.Mesh(wgeo, [matCap, matWall]); wallMesh.castShadow = wallMesh.receiveShadow = true;
+    group.add(wallMesh);
+    // glass railings along open edges of the footprint (balconies, glazed facade)
+    const gp = [], rp = [];
+    for (const [x0, z0, x1, z1] of segs) {
+      gp.push(x0, 0, z0, x1, 0, z1, x1, RAIL_H, z1, x0, 0, z0, x1, RAIL_H, z1, x0, RAIL_H, z0);
+      const dx = x1 - x0, dz = z1 - z0, l = Math.hypot(dx, dz) || 1, nx = -dz / l * 0.03, nz = dx / l * 0.03, y = RAIL_H;
+      rp.push(x0 - nx, y, z0 - nz, x1 - nx, y, z1 - nz, x1 + nx, y, z1 + nz, x0 - nx, y, z0 - nz, x1 + nx, y, z1 + nz, x0 + nx, y, z0 + nz);
+    }
+    const geo = a => { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(a, 3)); g.computeVertexNormals(); return g; };
+    if (gp.length) {
+      const glass = new THREE.Mesh(geo(gp), matGlass); glass.renderOrder = 2;
+      const rail = new THREE.Mesh(geo(rp), matRail);
+      group.add(glass, rail);
+    }
 
     // mask pixels for "is this point on the floor?"
     const mc = document.createElement('canvas'); mc.width = maskImg.width; mc.height = maskImg.height;
@@ -291,7 +292,8 @@ function createEngine(THREE, RoomEnvironment) {
     plinth.scale.set(size * 2.4, size * 2.4, 1);
 
     const [sx, sz] = toM(data.spawn[0], data.spawn[1]);
-    M = { walls: walls.concat(edges), size, onFloor, ceil, spawn: [sx, sz] };
+    const cut = mode === 'walk' ? 1 : CUT; wallMesh.scale.y = cut;
+    M = { walls, segs, size, onFloor, ceil, wallMesh, cut, spawn: [sx, sz] };
     player.x = sx; player.z = sz; player.yaw = bestYaw(sx, sz); player.pitch = -0.05;
     doll.radius = fitRadius(); doll.target.set(0, 0, 0);
     if (mode === 'walk') { applyWalkCam(); ceil.visible = true; } else { intro(); }
@@ -315,13 +317,19 @@ function createEngine(THREE, RoomEnvironment) {
           moved = true;
         }
       }
+      for (const [x0, z0, x1, z1] of M.segs) {
+        const dx = x1 - x0, dz = z1 - z0, L2 = dx * dx + dz * dz || 1e-9;
+        const u = Math.max(0, Math.min(1, ((x - x0) * dx + (z - z0) * dz) / L2)), px = x0 + dx * u, pz = z0 + dz * u;
+        const ex = x - px, ez = z - pz, d = Math.hypot(ex, ez);
+        if (d < BODY_R && d > 1e-6) { x = px + ex / d * BODY_R; z = pz + ez / d * BODY_R; moved = true; }
+      }
       if (!moved) break;
     }
     return [x, z];
   }
   function freeDist(x, z, a, max = 12) {
     const dx = Math.sin(a), dz = -Math.cos(a);
-    for (let d = 0.2; d < max; d += 0.2) {
+    for (let d = 0.05; d < max; d += 0.05) {   // fine steps: interior walls are ~0.1 m thick
       const px = x + dx * d, pz = z + dz * d;
       if (!M.onFloor(px, pz)) return d;
       for (const [x0, z0, x1, z1] of M.walls) if (px > x0 && px < x1 && pz > z0 && pz < z1) return d;
@@ -331,11 +339,11 @@ function createEngine(THREE, RoomEnvironment) {
   function bestYaw(x, z) { let best = 0, bd = -1; for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2, d = freeDist(x, z, a); if (d > bd) { bd = d; best = a; } } return best; }
 
   /* ----- cameras ----- */
-  const doll = { theta: -0.6, phi: 0.95, radius: 20, target: new THREE.Vector3(), vt: 0, vp: 0 };
+  const doll = { theta: -0.6, phi: 0.78, radius: 20, target: new THREE.Vector3(), vt: 0, vp: 0 };
   const player = { x: 0, z: 0, yaw: 0, pitch: 0, vyaw: 0, vpitch: 0, goal: null, stuck: 0 };
   function fitRadius() {
     const vf = THREE.MathUtils.degToRad(camera.fov) / 2, hf = Math.atan(Math.tan(vf) * camera.aspect);
-    return (M.size * 0.62) / Math.sin(Math.min(vf, hf)) ;
+    return (M.size * 0.5) / Math.sin(Math.min(vf, hf));
   }
   function dollPose(out = camera) {
     const { theta, phi, radius, target } = doll;
@@ -511,6 +519,11 @@ function createEngine(THREE, RoomEnvironment) {
     } else if (M && mode === 'over' && !drag && !REDUCE && (Math.abs(doll.vt) > 1e-4 || Math.abs(doll.vp) > 1e-4)) {
       doll.theta += doll.vt; doll.phi = THREE.MathUtils.clamp(doll.phi + doll.vp, 0.25, 1.35);
       doll.vt *= 0.9; doll.vp *= 0.9; dollPose(); active = true;
+    }
+    if (M) { // section cut: half-height walls in overview, full height when walking
+      const goal = mode === 'walk' ? 1 : CUT;
+      if (Math.abs(M.cut - goal) > 0.002) { M.cut += (goal - M.cut) * (REDUCE ? 1 : Math.min(1, dt * 3.5)); M.wallMesh.scale.y = M.cut; active = true; }
+      else if (M.cut !== goal) { M.cut = goal; M.wallMesh.scale.y = goal; dirty = true; }
     }
     if (dirty || active) { renderer.render(scene, camera); dirty = false; }
     if ((active || stick.id !== null || keys.size) && visible) raf = requestAnimationFrame(tick);
