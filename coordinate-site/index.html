@@ -98,7 +98,8 @@ html.intro-on{overflow:hidden}
 /* WebGL scenes (js/scene3d.js) */
 .gl-lost .hero3d,.gl-lost .t3label{visibility:hidden}
 .no-webgl .stage-bg,.gl-lost .stage-bg{background:linear-gradient(rgba(29,36,51,.55),rgba(29,36,51,.85)),url(photos/01-aerial-day.webp) center/cover}
-.hero3d,.sel3d-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+/* own compositing layer: iOS Safari otherwise may not repaint a WebGL canvas inside a sticky block while scrolling */
+.hero3d,.sel3d-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;transform:translateZ(0);will-change:transform;-webkit-backface-visibility:hidden;backface-visibility:hidden}
 .t3label{position:absolute;left:0;top:0;font:800 clamp(18px,2.2vw,30px)/1 "Unbounded",sans-serif;color:var(--paper);
   text-shadow:0 2px 20px rgba(0,0,0,.5);pointer-events:none;transition:opacity .4s;opacity:0;will-change:transform}
 .t3label:after{content:"";display:block;width:1px;height:14px;margin:6px auto 0;background:var(--glow)}
@@ -233,7 +234,7 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
   .scroll-hint:after,.open i{animation:none}
 }
 </style>
-<link rel="stylesheet" href="css/gallery.css?v=20261028c"><link rel="stylesheet" href="css/finder.css?v=20261028c"><link rel="stylesheet" href="css/walk.css?v=20261028c"><link rel="stylesheet" href="css/live.css?v=20261028c">
+<link rel="stylesheet" href="css/gallery.css?v=20261028d"><link rel="stylesheet" href="css/finder.css?v=20261028d"><link rel="stylesheet" href="css/walk.css?v=20261028d"><link rel="stylesheet" href="css/live.css?v=20261028d">
 <script>
 /* Errors are kept in window.__errs; open the site with ?debug to see them on screen (helps diagnose a blank screen). */
 (function(){var E=window.__errs=[];function add(m){E.push(String(m).slice(0,300));if(window.__dbgBox)window.__dbgBox.textContent=E.join("\n");}
@@ -406,12 +407,12 @@ setInterval(function(){var C=window.COORD||{};var cv=document.querySelector(".he
 </section>
 <footer><span>© Coordinate by Keystone</span><span>41° 40' 30.9" N · 44° 49' 37.4" E</span></footer>
 
-<script src="js/data.js?v=20261028c"></script>
-<script type="module" src="js/scene3d.js?v=20261028c"></script>
-<script type="module" src="js/gallery.js?v=20261028c"></script>
-<script type="module" src="js/finder.js?v=20261028c"></script>
-<script type="module" src="js/walk.js?v=20261028c"></script>
-<script type="module" src="js/live.js?v=20261028c"></script>
+<script src="js/data.js?v=20261028d"></script>
+<script type="module" src="js/scene3d.js?v=20261028d"></script>
+<script type="module" src="js/gallery.js?v=20261028d"></script>
+<script type="module" src="js/finder.js?v=20261028d"></script>
+<script type="module" src="js/walk.js?v=20261028d"></script>
+<script type="module" src="js/live.js?v=20261028d"></script>
 <script>
 /* =====================================================================
    DATA — edit here. Everything shown on the page comes from this block.

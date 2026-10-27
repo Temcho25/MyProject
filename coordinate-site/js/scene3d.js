@@ -3,7 +3,7 @@
    selector state through the `coord:sel` event ({block, floor}). */
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
-import { buildTower, buildCommercial, buildSite, floorBand, lights, TOWER_POS, LOBBY_H, FLOOR_H, towerHeight } from "./complex.js?v=20261028c";
+import { buildTower, buildCommercial, buildSite, floorBand, lights, TOWER_POS, LOBBY_H, FLOOR_H, towerHeight } from "./complex.js?v=20261028d";
 
 const C = window.COORD, BLOCKS = C.BLOCKS;
 const touch = matchMedia("(pointer:coarse)").matches;
@@ -136,7 +136,9 @@ function initHero() {
   }
   resize(); addEventListener("resize", resize);
   camera.position.set(200, 260, 260); camera.lookAt(0, 30, 0);
-  warmUp(renderer, scene, camera).then(() => dispatchEvent(new CustomEvent("coord:heroready")));
+  warmUp(renderer, scene, camera).then(() => { lastKey = ""; dispatchEvent(new CustomEvent("coord:heroready")); });
+  addEventListener("coord:introdone", () => { lastKey = ""; });
+  addEventListener("pageshow", () => { lastKey = ""; }); document.addEventListener("visibilitychange", () => { lastKey = ""; });
 
   const v = new THREE.Vector3(), target = new THREE.Vector3();
   let lastKey = "", last = performance.now(), visible = true;
@@ -196,7 +198,9 @@ function initHero() {
     shadowCatcher.visible = SHADOWS && p > .42;
 
     const key = [p.toFixed(5), W, H].join();
-    const animating = (pd > 0 && fadePin > 0) || adaptive(renderer, dt);
+    // phones: draw every frame while the hero is on screen (iOS can drop "draw only on change" frames)
+    const animating = touch || (pd > 0 && fadePin > 0) || adaptive(renderer, dt);
+    if (touch) adaptive(renderer, dt);
     if (key === lastKey && !animating) return;
     lastKey = key;
     renderer.render(scene, camera); window.__heroFrames = (window.__heroFrames || 0) + 1;
