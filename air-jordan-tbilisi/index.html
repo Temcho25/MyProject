@@ -4,14 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Air Jordan Tbilisi</title>
-  <meta name="description" content="Air Jordan Tbilisi — Nike Air Jordan, Dunk и Travis Scott в Тбилиси. Пр. Казбеги 11. Новые поступления — в Telegram.">
+  <meta name="description" content="Air Jordan Tbilisi — кроссовки и часы в Тбилиси: Nike Air Jordan, Dunk, Travis Scott. Пр. Казбеги 11. Новые поступления — в Telegram.">
   <meta name="theme-color" content="#141516">
   <meta property="og:title" content="Air Jordan Tbilisi">
-  <meta property="og:description" content="Nike Air Jordan и Travis Scott в Тбилиси. Новые поступления — в Telegram.">
+  <meta property="og:description" content="Кроссовки и часы в Тбилиси: Air Jordan, Dunk, Travis Scott. Новые поступления — в Telegram.">
   <meta property="og:image" content="assets/og.jpg">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23070707'/%3E%3Ctext x='32' y='42' font-family='Arial Black,Arial' font-weight='900' font-size='26' fill='%23e3141e' text-anchor='middle'%3EAJ%3C/text%3E%3C/svg%3E">
   <link rel="preload" href="assets/aj1.glb" as="fetch" crossorigin>
   <link rel="stylesheet" href="fonts/fonts.css">
+  <link rel="stylesheet" href="watch/fonts/fonts.css">
   <link rel="stylesheet" href="styles.css">
   <script type="importmap">{ "imports": { "three": "./vendor/three.module.js", "three/addons/": "./vendor/addons/" } }</script>
 </head>
@@ -42,6 +43,7 @@
       <a href="#anatomy">Анатомия</a>
       <a href="#colors">Цвета</a>
       <a href="#drops">Новинки</a>
+      <a href="#watch">Часы</a>
       <a href="#visit">Магазин</a>
     </nav>
     <div class="nav__right">
@@ -61,13 +63,13 @@
     <section class="sec hero" id="hero" data-chapter="01|Тбилиси">
       <div class="sticky">
         <div class="hero__ui">
-          <p class="eyebrow reveal"><span class="dot"></span>Тбилиси · пр. Казбеги 11</p>
+          <p class="eyebrow reveal"><span class="dot"></span>Кроссовки и часы · Тбилиси</p>
           <h1 class="hero__title">
             <span class="line"><span class="split">Jordan.</span></span>
             <span class="line"><span class="split">Travis</span></span>
             <span class="line"><span class="split accent">Scott.</span></span>
           </h1>
-          <p class="hero__lead reveal">Nike Air Jordan, Dunk и коллаборации Travis Scott в Тбилиси. Наличие, размеры и новые поступления — в нашем Telegram.</p>
+          <p class="hero__lead reveal">Nike Air Jordan, Dunk, коллаборации Travis Scott — и часы. Магазин на Казбеги 11. Наличие, размеры и новинки — в нашем Telegram.</p>
           <div class="hero__cta reveal">
             <a class="btn magnetic" href="https://t.me/airjordantbilisi" target="_blank" rel="noopener"><span>Смотреть наличие</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
             <a class="btn btn--ghost magnetic" href="https://www.instagram.com/air.jordan.tbilisi13" target="_blank" rel="noopener">Instagram</a>
@@ -124,8 +126,8 @@
     <!-- лента -->
     <div class="ticker" aria-hidden="true">
       <div class="ticker__track" id="ticker">
-        <span>AIR JORDAN</span><b>✦</b><span>TRAVIS SCOTT</span><b>✦</b><span>CACTUS JACK</span><b>✦</b><span>TBILISI</span><b>✦</b>
-        <span>AIR JORDAN</span><b>✦</b><span>TRAVIS SCOTT</span><b>✦</b><span>CACTUS JACK</span><b>✦</b><span>TBILISI</span><b>✦</b>
+        <span>AIR JORDAN</span><b>✦</b><span>TRAVIS SCOTT</span><b>✦</b><span>WATCHES</span><b>✦</b><span>TBILISI</span><b>✦</b>
+        <span>AIR JORDAN</span><b>✦</b><span>TRAVIS SCOTT</span><b>✦</b><span>WATCHES</span><b>✦</b><span>TBILISI</span><b>✦</b>
       </div>
     </div>
 
@@ -147,6 +149,27 @@
       </div>
     </section>
 
+    <!-- 05 ЧАСЫ: сцена с rolex-submariner.vercel.app -->
+    <section class="sec watch" id="watch" data-chapter="05|Часы">
+      <div class="sticky watch__stage">
+        <canvas id="wc" aria-hidden="true"></canvas>
+        <div class="watch__head">
+          <p class="eyebrow"><span class="dot"></span>05 — Часы</p>
+          <h2 class="watch__title"><span class="line"><span class="split">Не только</span></span><span class="line"><span class="split">кроссовки.</span></span></h2>
+          <p class="watch__lead">В магазине есть и часы. Прокрути — разберём классический дайвер по деталям.</p>
+        </div>
+        <ol class="watch__parts" id="watchParts">
+          <li data-at="0.30"><b>01</b>Сапфировое стекло</li>
+          <li data-at="0.38"><b>02</b>Вращающийся безель</li>
+          <li data-at="0.46"><b>03</b>Циферблат и стрелки</li>
+          <li data-at="0.54"><b>04</b>Корпус Oyster</li>
+          <li data-at="0.62"><b>05</b>Заводная головка</li>
+          <li data-at="0.70"><b>06</b>Браслет</li>
+        </ol>
+        <a class="btn btn--ghost magnetic watch__cta" href="https://t.me/airjordantbilisi" target="_blank" rel="noopener"><span>Какие часы в наличии</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </section>
+
     <!-- ФОТО ИЗ МАГАЗИНА -->
     <section class="sec store" id="store">
       <div class="store__head">
@@ -162,9 +185,9 @@
     </section>
 
     <!-- 05 МАГАЗИН -->
-    <section class="sec visit" id="visit" data-chapter="05|Магазин">
+    <section class="sec visit" id="visit" data-chapter="06|Магазин">
       <div class="visit__in">
-        <p class="eyebrow"><span class="dot"></span>05 — Магазин</p>
+        <p class="eyebrow"><span class="dot"></span>06 — Магазин</p>
         <h2 class="h2"><span class="line"><span class="split">Приходи</span></span><span class="line"><span class="split accent">примерить.</span></span></h2>
         <ol class="steps">
           <li class="reveal"><b>01</b><span>Выбери пару</span><small>в Telegram или Instagram</small></li>
@@ -187,7 +210,7 @@
     <div class="foot__word" id="footWord"><span class="split">AIR JORDAN TBILISI</span></div>
     <div class="foot__row">
       <span>© <span id="year">2026</span> Air Jordan Tbilisi</span>
-      <span>Nike, Air Jordan, Jumpman и Swoosh — товарные знаки Nike, Inc. Travis Scott и Cactus Jack — товарные знаки их владельцев. Магазин не связан с Nike и Travis Scott.</span>
+      <span>Nike, Air Jordan, Jumpman и Swoosh — товарные знаки Nike, Inc.; Rolex и Submariner — Rolex SA; Travis Scott и Cactus Jack — их владельцев. Магазин не является официальным представителем этих брендов.</span>
       <span>3D-модели: Air Jordan 1 — DeezVertz, Dunk Low — kirilldrac78 (Sketchfab, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>), через проект Shoe Forge; расцветки изменены.</span>
     </div>
   </footer>

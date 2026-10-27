@@ -73,6 +73,11 @@ function storyS() {
   return 0;
 }
 
+// ── часы: модуль Rolex-сцены грузим, когда секция близко
+const watchSec = $('#watch'), watchItems = $$('#watchParts li');
+let watchLoaded = false;
+new IntersectionObserver(es => { if (!watchLoaded && es.some(e => e.isIntersecting)) { watchLoaded = true; import('./watch/watch3d.js'); } }, { rootMargin: '150% 0px' }).observe(watchSec);
+
 // ── мышь
 let mx = 0, my = 0, tmx = 0, tmy = 0;
 addEventListener('pointermove', e => { if (e.pointerType === 'mouse') { tmx = e.clientX / innerWidth * 2 - 1; tmy = e.clientY / innerHeight * 2 - 1; } }, { passive: true });
@@ -158,13 +163,16 @@ function frame(now) {
 
   // глава
   const ci = Math.min(4, Math.floor(sSm + 0.02));
-  const [num, name] = secs[ci].dataset.chapter.split('|');
+  const wr = watchSec.getBoundingClientRect(), inWatch = wr.top <= innerHeight * 0.3 && wr.bottom > innerHeight * 0.5;
+  const chSec = inWatch ? watchSec : secs[ci];
+  const [num, name] = chSec.dataset.chapter.split('|');
+  if (inWatch) { const wp = window.__watchP || 0; watchItems.forEach(li => li.classList.toggle('is-on', wp >= +li.dataset.at)); }
   if (num !== curChapter) {
     curChapter = num; chapterNum.textContent = num; chapterName.textContent = name;
-    navLinks.forEach(a => a.classList.toggle('is-active', a.getAttribute('href') === '#' + secs[ci].id));
+    navLinks.forEach(a => a.classList.toggle('is-active', a.getAttribute('href') === '#' + chSec.id));
     if (ci > 0) sound.whoosh();
     chapterEl.classList.toggle('is-hidden', ci === 4);
-    secs[ci].querySelectorAll('.split, .reveal').forEach(el => el.classList.add('is-in'));
+    chSec.querySelectorAll('.split, .reveal').forEach(el => el.classList.add('is-in'));
   }
   progress.style.transform = `scaleY(${y / Math.max(1, document.documentElement.scrollHeight - innerHeight)})`;
   nav.classList.toggle('is-hidden', dy > 2 && y > innerHeight * 0.6 && ci !== 4);
