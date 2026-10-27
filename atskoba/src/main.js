@@ -3,35 +3,48 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
-import { PROJECTS, REEL, KIND } from './projects.js';
-import { EN } from './i18n.js';
+import { PROJECTS, REEL, KIND, FEATURED } from './projects.js';
+import { DICT, LANGS } from './i18n.js';
 import { createHero } from './hero.js';
 import { createReel } from './reel.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
 // Contact — change to the studio's real address.
-const CONTACT = { email: 'hello@adscoba.com', subject: 'Проект сайта / Website project' };
+const CONTACT = { email: 'hello@atskoba.com', subject: 'საიტის პროექტი / Website project' };
+// Path back to the site root: './' on the home page, '../' on /portfolio/.
+const ROOT = document.documentElement.dataset.root || './';
+const PAGE = document.documentElement.dataset.page || 'home';
 
 const mobile = window.matchMedia('(max-width: 800px)').matches || navigator.maxTouchPoints > 1;
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 // Entrance animations are skipped entirely when the viewer asks for less motion.
 const reveal = (...a) => (reduced ? null : gsap.from(...a));
 
-// ---------- Language ----------
-let lang = 'ru';
-try { lang = new URLSearchParams(location.search).get('lang') || localStorage.getItem('adscoba-lang') || 'ru'; } catch { /* storage blocked */ }
-if (lang === 'en') {
-  document.documentElement.lang = 'en';
-  document.querySelectorAll('[data-i18n]').forEach((el) => { const v = EN[el.dataset.i18n]; if (v) el.textContent = v; });
-}
-document.querySelector('.nav__lang').textContent = lang === 'en' ? 'EN / RU' : 'RU / EN';
-document.querySelector('.nav__lang').addEventListener('click', () => {
-  const next = lang === 'en' ? 'ru' : 'en';
-  try { localStorage.setItem('adscoba-lang', next); } catch { /* ignore */ }
-  location.search = next === 'en' ? '?lang=en' : '';
+// ---------- Language (Georgian first) ----------
+let lang = 'ka';
+try { lang = new URLSearchParams(location.search).get('lang') || localStorage.getItem('atskoba-lang') || 'ka'; } catch { /* storage blocked */ }
+if (!LANGS.includes(lang)) lang = 'ka';
+const T = (key) => DICT[lang][key] ?? DICT.ka[key] ?? '';
+document.documentElement.lang = lang;
+document.querySelectorAll('[data-i18n]').forEach((el) => { const v = DICT[lang][el.dataset.i18n]; if (v != null) el.textContent = v; });
+document.querySelectorAll('[data-i18n-html]').forEach((el) => { const v = DICT[lang][el.dataset.i18nHtml]; if (v != null) el.innerHTML = v; });
+document.querySelectorAll('.nav__lang button').forEach((b) => {
+  b.classList.toggle('is-on', b.dataset.lang === lang);
+  b.setAttribute('aria-pressed', String(b.dataset.lang === lang));
+  b.addEventListener('click', () => {
+    if (b.dataset.lang === lang) return;
+    try { localStorage.setItem('atskoba-lang', b.dataset.lang); } catch { /* ignore */ }
+    const u = new URL(location.href); u.searchParams.set('lang', b.dataset.lang); location.href = u.toString();
+  });
 });
-const T = (ru, key) => (lang === 'en' && EN[key]) || ru;
+// keep the chosen language when moving between pages
+document.querySelectorAll('a[href]').forEach((a) => {
+  const h = a.getAttribute('href');
+  if (lang !== 'ka' && !h.startsWith('#') && !h.startsWith('http') && !h.startsWith('mailto')) {
+    const [path, hash] = h.split('#'); a.setAttribute('href', `${path}?lang=${lang}${hash ? '#' + hash : ''}`);
+  }
+});
 document.querySelector('.year').textContent = new Date().getFullYear();
 document.querySelector('[data-contact]').href = `mailto:${CONTACT.email}?subject=${encodeURIComponent(CONTACT.subject)}`;
 document.querySelector('.contact__mail').textContent = CONTACT.email;
@@ -76,74 +89,71 @@ function paintIris() {
 document.fonts.ready.then(paintIris);
 window.addEventListener('resize', paintIris);
 
-// ---------- Portfolio grid ----------
+// ---------- Portfolio cards ----------
 const grid = document.querySelector('.grid');
-const ARROW = '<svg viewBox="0 0 24 24" width="18" height="18"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2"/></svg>';
-PROJECTS.forEach((p) => {
-  const a = document.createElement('a');
-  a.className = `card ${p.size === 'wide' ? 'is-wide' : p.size === 'third' ? 'is-third' : ''}`;
-  a.href = p.url; a.target = '_blank'; a.rel = 'noopener';
-  a.dataset.cat = p.cat.join(' ');
+const ARROW = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2"/></svg>';
+function cardHTML(p, size) {
   const kinds = p.cat.map((c) => KIND[lang][c]).join(' · ');
-  a.innerHTML = `
+  return `
     <div class="card__media">
       <div class="card__chrome"><i></i><i></i><i></i></div>
       <span class="card__tag ${p.is3d ? 'is-3d' : ''}">${p.is3d ? '3D' : p.live ? 'LIVE' : kinds}</span>
-      <img src="${import.meta.env.BASE_URL}work/${p.id}${p.size === 'wide' ? '' : '-sm'}.jpg" alt="${lang === 'en' ? 'Website for' : 'Сайт для'} ${p.name}" loading="lazy" decoding="async" />
+      <img src="${ROOT}work/${p.id}${size === 'wide' ? '' : '-sm'}.jpg" alt="${T('alt')} ${p.name}" loading="lazy" decoding="async" />
     </div>
     <div class="card__info">
       <div>
         <h3 class="card__title">${p.name}</h3>
-        <p class="card__desc">${lang === 'en' ? p.en : p.ru}</p>
+        <p class="card__desc">${p[lang] || p.en}</p>
       </div>
       <span class="card__go">${ARROW}</span>
     </div>`;
-  grid.appendChild(a);
-});
-const more = document.createElement('p'); more.className = 'work__more';
-more.innerHTML = lang === 'en'
-  ? 'Plus fitness clubs, a fitness academy, cafés and more — <a href="#contact">ask for the full list</a>.'
-  : 'А ещё фитнес-клубы, фитнес-академия, кофейни и другие — <a href="#contact">попросите полный список</a>.';
-grid.after(more);
-
-// Filters
-const filters = document.querySelector('.filters');
-const cats = ['all', '3d', 'estate', 'food', 'retail', 'sport'];
-cats.forEach((c, i) => {
-  const b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab');
-  const n = c === 'all' ? PROJECTS.length : PROJECTS.filter((p) => p.cat.includes(c)).length;
-  b.innerHTML = `${c === 'all' ? T('Все', 'work.all') : KIND[lang][c]}<sup>${n}</sup>`;
-  if (!i) b.classList.add('is-on');
-  b.addEventListener('click', () => {
-    filters.querySelectorAll('button').forEach((x) => x.classList.toggle('is-on', x === b));
-    const cards = [...grid.children];
-    gsap.to(cards, { opacity: 0, y: 30, duration: 0.25, stagger: 0.01, onComplete: () => {
-      cards.forEach((el) => {
-        const show = c === 'all' || el.dataset.cat.includes(c);
-        el.classList.toggle('is-hidden', !show);
-        // keep a clean two-column rhythm when filtered
-        el.style.gridColumn = c === 'all' ? '' : (window.innerWidth > 900 ? 'span 6' : '');
-      });
-      const vis = cards.filter((el) => !el.classList.contains('is-hidden'));
-      gsap.fromTo(vis, { opacity: 0, y: 60, rotateX: -12 }, { opacity: 1, y: 0, rotateX: 0, duration: 0.9, stagger: 0.06, ease: 'expo.out' });
-      ScrollTrigger.refresh();
-    } });
+}
+if (grid) {
+  const featured = grid.dataset.mode === 'featured';
+  const list = featured ? FEATURED.map((id) => PROJECTS.find((p) => p.id === id)) : PROJECTS;
+  list.forEach((p, i) => {
+    const size = featured ? (i === 0 ? 'wide' : 'half') : p.size;
+    const a = document.createElement('a');
+    a.className = `card ${size === 'wide' ? 'is-wide' : size === 'third' ? 'is-third' : ''}`;
+    a.href = p.url; a.target = '_blank'; a.rel = 'noopener';
+    a.dataset.cat = p.cat.join(' ');
+    a.innerHTML = cardHTML(p, size);
+    grid.appendChild(a);
   });
-  filters.appendChild(b);
-});
+}
 
-// ---------- Marquee ----------
-const names = PROJECTS.map((p) => p.name);
-document.querySelectorAll('.marquee__track').forEach((track, r) => {
-  const list = r ? [...names].reverse() : names;
-  const html = list.map((n) => `<span>${n}</span>`).join('');
-  track.innerHTML = html + html;
-});
+// Filters (portfolio page)
+const filters = document.querySelector('.filters');
+if (filters) {
+  const cats = ['all', '3d', 'estate', 'food', 'retail', 'sport'];
+  cats.forEach((c, i) => {
+    const b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab');
+    const n = c === 'all' ? PROJECTS.length : PROJECTS.filter((p) => p.cat.includes(c)).length;
+    b.innerHTML = `${c === 'all' ? T('work.all') : KIND[lang][c]}<sup>${n}</sup>`;
+    if (!i) b.classList.add('is-on');
+    b.addEventListener('click', () => {
+      filters.querySelectorAll('button').forEach((x) => x.classList.toggle('is-on', x === b));
+      const cards = [...grid.children];
+      gsap.to(cards, { opacity: 0, y: 30, duration: reduced ? 0 : 0.25, stagger: 0.01, onComplete: () => {
+        cards.forEach((el) => {
+          const show = c === 'all' || el.dataset.cat.includes(c);
+          el.classList.toggle('is-hidden', !show);
+          // keep a clean two-column rhythm when filtered
+          el.style.gridColumn = c === 'all' ? '' : (window.innerWidth > 900 ? 'span 6' : '');
+        });
+        const vis = cards.filter((el) => !el.classList.contains('is-hidden'));
+        gsap.fromTo(vis, { opacity: 0, y: reduced ? 0 : 60, rotateX: reduced ? 0 : -12 }, { opacity: 1, y: 0, rotateX: 0, duration: reduced ? 0.2 : 0.9, stagger: 0.06, ease: 'expo.out' });
+        ScrollTrigger.refresh();
+      } });
+    });
+    filters.appendChild(b);
+  });
+}
 
 // ---------- Textures (shared by both 3D scenes) ----------
 const loader = new THREE.TextureLoader();
 function loadTex(id) {
-  return new Promise((res) => loader.load(`${import.meta.env.BASE_URL}work/${id}-sm.jpg`, (t) => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; res(t); }, undefined, () => res(new THREE.Texture())));
+  return new Promise((res) => loader.load(`${ROOT}work/${id}-sm.jpg`, (t) => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; res(t); }, undefined, () => res(new THREE.Texture())));
 }
 
 const loaderEl = document.querySelector('.loader');
@@ -152,7 +162,8 @@ const lineEl = document.querySelector('.loader__line i');
 const prog = { v: 0 };
 const progTween = gsap.to(prog, { v: 85, duration: 2.2, ease: 'power2.out', onUpdate: () => { numEl.textContent = Math.round(prog.v); lineEl.style.width = prog.v + '%'; } });
 
-const reelIds = REEL;
+const hasReel = !!document.querySelector('.reel__canvas');
+const reelIds = hasReel ? REEL : [];
 const heroIds = ['rolex', 'angels', 'mgrand', 'jordan', 'roof', 'thalassa', 'funicular', 'ishvi', 'orientiri', 'medea', 'townsquare', 'trio', 'tulips'];
 const allIds = [...new Set([...reelIds, ...heroIds])];
 const texMap = {};
@@ -164,16 +175,16 @@ function start() {
   const reelProjects = reelIds.map((id) => PROJECTS.find((p) => p.id === id));
   try {
     hero = createHero(document.querySelector('.hero-canvas'), { textures: heroIds.map((id) => texMap[id]), mobile });
-    reel = createReel(document.querySelector('.reel__canvas'), {
+    reel = hasReel ? createReel(document.querySelector('.reel__canvas'), {
       textures: reelIds.map((id) => texMap[id]), mobile,
       onActive: (i) => setReelLabel(reelProjects[i], i),
-    });
+    }) : { state: {} };
   } catch (err) {
     // No WebGL (old device, disabled GPU): keep the page fully usable without 3D.
     console.warn('WebGL unavailable, showing the static version', err);
     document.body.classList.add('no-webgl');
     hero = { state: {} }; reel = { state: {} };
-    buildStaticReel(reelProjects);
+    if (hasReel) buildStaticReel(reelProjects);
   }
 
   // Smooth scroll with inertia.
@@ -195,7 +206,7 @@ function start() {
 
 function buildStaticReel(list) {
   const strip = document.createElement('div'); strip.className = 'reel__static';
-  strip.innerHTML = list.map((p) => `<a href="${p.url}" target="_blank" rel="noopener"><img src="${import.meta.env.BASE_URL}work/${p.id}-sm.jpg" alt="${p.name}" loading="lazy" /><b>${p.name}</b></a>`).join('');
+  strip.innerHTML = list.map((p) => `<a href="${p.url}" target="_blank" rel="noopener"><img src="${ROOT}work/${p.id}-sm.jpg" alt="${p.name}" loading="lazy" /><b>${p.name}</b></a>`).join('');
   document.querySelector('.reel__sticky').appendChild(strip);
 }
 
@@ -239,7 +250,7 @@ function setReelLabel(p, i) {
     .add(() => {
       idxEl.textContent = String(i + 1).padStart(2, '0');
       nameEl.textContent = p.name;
-      kindEl.textContent = lang === 'en' ? p.en : p.ru;
+      kindEl.textContent = p[lang] || p.en;
       openEl.href = p.url;
     })
     .fromTo([nameEl, kindEl], { yPercent: 60, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.45, ease: 'expo.out', stagger: 0.05 });
@@ -270,29 +281,13 @@ function setupScroll() {
   ScrollTrigger.create({ trigger: '.contact', start: 'top bottom', end: 'bottom top', onToggle: (s) => { vis.fin = s.isActive; applyVis(); } });
   gsap.fromTo(hero.state, { finale: 0 }, { finale: 1, ease: 'none', scrollTrigger: { trigger: '.contact', start: 'top bottom', end: 'center center', scrub: true } });
 
-  // Marquee: base drift + skew from scroll velocity.
-  const rows = [...document.querySelectorAll('.marquee__row')];
-  const xs = rows.map(() => 0);
-  let vel = 0;
-  lenis.on('scroll', (e) => { vel = e.velocity; });
-  gsap.ticker.add(() => {
-    rows.forEach((row, i) => {
-      const dir = +row.dataset.dir;
-      const track = row.firstElementChild;
-      const w = track.scrollWidth / 2;
-      xs[i] -= (reduced ? 0.15 : 0.6 + Math.abs(vel) * 0.25) * dir;
-      if (xs[i] < -w) xs[i] += w; if (xs[i] > 0) xs[i] -= w;
-      gsap.set(track, { x: xs[i], skewX: reduced ? 0 : gsap.utils.clamp(-14, 14, -vel * 0.6 * dir) });
-    });
-  });
-
   // Reel: pinned via sticky; scroll drives the camera along the helix.
   const bar = document.querySelector('.reel__bar i');
-  ScrollTrigger.create({
+  if (hasReel) ScrollTrigger.create({
     trigger: '.reel', start: 'top top', end: 'bottom bottom', scrub: true,
     onUpdate: (s) => { reel.state.progress = s.progress; bar.style.transform = `scaleX(${s.progress})`; },
   });
-  ScrollTrigger.create({ trigger: '.reel', start: 'top bottom', end: 'bottom top', onToggle: (s) => { reel.state.visible = s.isActive; } });
+  if (hasReel) ScrollTrigger.create({ trigger: '.reel', start: 'top bottom', end: 'bottom top', onToggle: (s) => { reel.state.visible = s.isActive; } });
   reveal('.reel__title .w > span', { yPercent: 110, duration: 1.2, stagger: 0.06, ease: 'expo.out', scrollTrigger: { trigger: '.reel', start: 'top 60%' } });
   reveal('.reel__now', { y: 40, opacity: 0, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: '.reel', start: 'top 40%' } });
 
@@ -319,7 +314,7 @@ function setupScroll() {
 
   // Process: horizontal track inside a sticky frame.
   const track = document.querySelector('.process__track');
-  gsap.to(track, {
+  if (track) gsap.to(track, {
     x: () => -(track.scrollWidth - window.innerWidth + 40), ease: 'none',
     scrollTrigger: { trigger: '.process', start: 'top top', end: 'bottom bottom', scrub: 0.6, invalidateOnRefresh: true },
   });
@@ -352,7 +347,7 @@ function setupInteractions() {
   const yTo = gsap.quickTo(cursor, 'y', { duration: 0.35, ease: 'power3' });
   window.addEventListener('pointermove', (e) => { xTo(e.clientX); yTo(e.clientY); });
   document.querySelectorAll('.card, .reel__canvas').forEach((el) => {
-    el.addEventListener('pointerenter', () => { cursor.classList.add('is-big'); label.textContent = el.classList.contains('card') ? T('Открыть', 'cursor.open') : T('Листайте', 'cursor.drag'); });
+    el.addEventListener('pointerenter', () => { cursor.classList.add('is-big'); label.textContent = el.classList.contains('card') ? T('cursor.open') : T('cursor.drag'); });
     el.addEventListener('pointerleave', () => cursor.classList.remove('is-big'));
   });
 

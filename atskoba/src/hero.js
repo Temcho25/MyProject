@@ -29,7 +29,7 @@ export function createHero(canvas, { textures, mobile }) {
   const l3 = new THREE.PointLight(0xc6ff4a, 30, 20); l3.position.set(0, 4, -4); scene.add(l3);
   scene.add(new THREE.AmbientLight(0xffffff, 0.15));
 
-  // ---- Glass logo: the Adscoba "A" as a thick bevelled glass slab ----
+  // ---- Glass logo: the Atskoba "A" as a thick bevelled glass slab ----
   // Shape follows the SVG mark (40x40 viewBox), centred and flipped to Y-up.
   const S = 0.085;
   const P = (x, y) => new THREE.Vector2((x - 20) * S, (19 - y) * S);

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ka" data-root="../" data-page="portfolio">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>ნამუშევრები — Atskoba</title>
+  <meta name="description" content="Atskoba-ს პორტფოლიო: 20 საიტი 3D-ით და მოუშენ-დიზაინით — დეველოპერები, რესტორნები, სპორტი, რითეილი." />
+  <meta name="theme-color" content="#07070a" />
+  <meta property="og:title" content="Atskoba — ნამუშევრები" />
+  <meta property="og:image" content="../og.jpg" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+</head>
+<body class="is-loading page-portfolio">
+  <a class="skip-link" href="#work" data-i18n="skip">ნამუშევრებზე გადასვლა</a>
+
+  <div class="loader" aria-hidden="true">
+    <div class="loader__count"><span class="loader__num">0</span><sup>%</sup></div>
+    <div class="loader__line"><i></i></div>
+    <div class="loader__brand">ATSKOBA<span>/ აწყობა</span></div>
+  </div>
+
+  <div class="cursor" aria-hidden="true"><span class="cursor__label"></span></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="nav">
+    <a href="../" class="nav__logo" aria-label="Atskoba">
+      <svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c5cff"/><stop offset=".55" stop-color="#00e0ff"/><stop offset="1" stop-color="#c6ff4a"/></linearGradient></defs><path d="M20 3 37 35H27.5L20 20.5 12.5 35H3z" fill="url(#lg)"/><circle cx="20" cy="29" r="3.2" fill="#07070a"/></svg>
+      <span>atskoba</span>
+    </a>
+    <nav class="nav__links">
+      <a href="../#reel" data-i18n="nav.reel">შოურილი</a>
+      <a href="./" aria-current="page" data-i18n="nav.work">ნამუშევრები</a>
+      <a href="../#services" data-i18n="nav.services">სერვისები</a>
+      <a href="../#process" data-i18n="nav.process">პროცესი</a>
+    </nav>
+    <div class="nav__right">
+      <div class="nav__lang" role="group" aria-label="Language">
+        <button type="button" data-lang="ka">ქა</button><button type="button" data-lang="ru">RU</button><button type="button" data-lang="en">EN</button>
+      </div>
+      <a href="#contact" class="btn btn--small magnetic" data-i18n="nav.cta">პროექტის განხილვა</a>
+    </div>
+  </header>
+
+  <canvas class="hero-canvas" aria-hidden="true"></canvas>
+
+  <main id="top">
+    <section class="hero hero--page">
+      <div class="hero__inner">
+        <a class="back-link" href="../" data-i18n="work.back">← მთავარი</a>
+        <p class="eyebrow reveal-up"><span class="dot"></span><span data-i18n="work.eyebrow">პორტფოლიო</span></p>
+        <h1 class="hero__title page-title">
+          <span class="line"><span class="split" data-i18n="work.title">ნამუშევრები</span><sup class="page-title__n">20</sup></span>
+        </h1>
+        <p class="hero__lead reveal-up" data-i18n="work.lead">20 საუკეთესო პროექტი 25-ზე მეტი საიტიდან, რომლებიც ავაწყვეთ. დააჭირეთ ბარათს — გაიხსნება ცოცხალი საიტი.</p>
+      </div>
+    </section>
+
+    <section class="work work--all" id="work">
+      <div class="filters" role="tablist"></div>
+      <div class="grid" data-mode="all"></div>
+      <p class="work__more" data-i18n-html="work.more">ასევე ფიტნეს-კლუბები, ფიტნეს-აკადემია, კაფეები და სხვა — <a href="#contact">მოგვწერეთ სრული სიისთვის</a>.</p>
+    </section>
+
+    <section class="contact" id="contact">
+      <p class="eyebrow"><span class="dot"></span><span data-i18n="ct.eyebrow">შემდეგი პროექტი — თქვენია</span></p>
+      <h2 class="contact__title">
+        <span class="line"><span class="split" data-i18n="ct.t1">მოდით</span></span>
+        <span class="line"><span class="split iris" data-i18n="ct.t2">ავაწყოთ</span></span>
+        <span class="line"><span class="split" data-i18n="ct.t3">თქვენი საიტი</span></span>
+      </h2>
+      <a class="contact__btn magnetic" href="#" data-contact><span data-i18n="ct.btn">პროექტის განხილვა</span></a>
+      <p class="contact__note" data-i18n="ct.note">მოგვიყევით ამოცანის შესახებ — გიპასუხებთ და შემოგთავაზებთ იდეას.</p>
+      <p class="contact__mail"></p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>© <span class="year"></span> Atskoba · აწყობა</span>
+    <span data-i18n="ft.made">შექმნილია three.js-ით და GSAP-ით</span>
+    <a href="#top" data-i18n="ft.top">ზემოთ ↑</a>
+  </footer>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

@@ -6,6 +6,7 @@
 @import '@fontsource/unbounded/latin-800.css';
 @import '@fontsource-variable/manrope';
 @import '@fontsource/jetbrains-mono/latin-400.css';
+@import '@fontsource-variable/noto-sans-georgian/standard.css';
 
 :root {
   --bg: #07070a;
@@ -17,8 +18,9 @@
   --cyan: #00e0ff;
   --lime: #c6ff4a;
   --iris: linear-gradient(100deg, var(--violet) 0%, var(--cyan) 55%, var(--lime) 100%);
-  --display: 'Unbounded', system-ui, sans-serif;
-  --body: 'Manrope Variable', 'Manrope', system-ui, sans-serif;
+  /* Latin/Cyrillic glyphs come from Unbounded/Manrope; Georgian falls through to Noto Sans Georgian */
+  --display: 'Unbounded', 'Noto Sans Georgian Variable', system-ui, sans-serif;
+  --body: 'Manrope Variable', 'Manrope', 'Noto Sans Georgian Variable', system-ui, sans-serif;
   --mono: 'JetBrains Mono', ui-monospace, monospace;
   --pad: clamp(16px, 4vw, 56px);
   --ease: cubic-bezier(.2, .8, .2, 1);
@@ -88,8 +90,11 @@ img { display: block; max-width: 100%; }
 .nav__links a::after { content: ''; position: absolute; left: 0; right: 0; bottom: -4px; height: 1px; background: var(--iris); transform: scaleX(0); transform-origin: right; transition: transform .4s var(--ease); }
 .nav__links a:hover::after { transform: scaleX(1); transform-origin: left; }
 .nav__right { display: flex; align-items: center; gap: 12px; }
-.nav__lang { font-family: var(--mono); font-size: 12px; color: var(--muted); padding: 8px 10px; border: 1px solid var(--line); border-radius: 99px; }
-.nav__lang:hover { color: var(--text); }
+.nav__lang { display: flex; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: 99px; background: rgba(7,7,10,.4); }
+.nav__lang button { font-family: var(--mono), 'Noto Sans Georgian Variable'; font-size: 12px; color: var(--muted); padding: 7px 10px; border-radius: 99px; min-width: 34px; transition: color .2s, background .2s; }
+.nav__lang button:hover { color: var(--text); }
+.nav__lang button.is-on { background: var(--text); color: var(--bg); }
+.nav__links a[aria-current="page"] { color: var(--text); }
 @media (max-width: 900px) {
   .nav__links { display: none; }
   .nav .btn--small { display: none; }
@@ -356,3 +361,47 @@ main, .footer { position: relative; z-index: 1; }
 .reel__static a { flex: none; width: min(78vw, 460px); scroll-snap-align: start; }
 .reel__static img { border-radius: 18px; aspect-ratio: 16 / 10; object-fit: cover; border: 1px solid var(--line); }
 .reel__static b { display: block; margin-top: 10px; font-family: var(--display); font-weight: 600; }
+
+
+/* ---------- Georgian typography ---------- */
+/* Mtavruli capitals (text-transform: uppercase) set slightly condensed so long Georgian words fit. */
+html[lang="ka"] .hero__title, html[lang="ka"] .contact__title, html[lang="ka"] .loader__count {
+  font-stretch: 80%; letter-spacing: -.01em; line-height: 1.02;
+}
+html[lang="ka"] .hero__title { font-size: clamp(36px, 6.4vw, 116px); }
+html[lang="ka"] .section-title, html[lang="ka"] .reel__title { font-stretch: 85%; letter-spacing: -.01em; font-weight: 800; }
+html[lang="ka"] .card__title, html[lang="ka"] .cell h3, html[lang="ka"] .step h3 { font-stretch: 90%; letter-spacing: 0; }
+html[lang="ka"] .eyebrow { letter-spacing: .06em; }
+html[lang="ka"] .hero__meta span, html[lang="ka"] .nav__links { letter-spacing: 0; }
+
+/* ---------- Home: link to the full portfolio ---------- */
+.work--featured { padding-bottom: 80px; }
+.work__cta { display: flex; justify-content: center; padding: 70px var(--pad) 0; }
+.all-work {
+  display: inline-flex; align-items: center; gap: 22px; padding: 26px 40px; border-radius: 99px;
+  font-family: var(--display); font-weight: 600; font-size: clamp(22px, 3.2vw, 44px); letter-spacing: -.02em;
+  border: 1.5px solid transparent;
+  background: linear-gradient(var(--bg), var(--bg)) padding-box, var(--iris) border-box;
+  transition: background .5s var(--ease), color .5s var(--ease);
+}
+.all-work:hover { background: var(--iris) padding-box, var(--iris) border-box; color: #07070a; }
+.all-work__count { font-family: var(--mono); font-size: .4em; padding: 6px 10px; border-radius: 99px; border: 1px solid currentColor; opacity: .8; }
+.all-work svg { transition: transform .5s var(--ease); }
+.all-work:hover svg { transform: translateX(8px); }
+
+/* ---------- Portfolio page ---------- */
+.hero--page { min-height: 78svh; justify-content: flex-end; padding-bottom: 40px; }
+.back-link { display: inline-block; margin-bottom: 26px; font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.back-link:hover { color: var(--text); }
+.page-title { font-size: clamp(56px, 13vw, 230px) !important; margin: 18px 0 22px; }
+html[lang="ka"] .page-title { font-size: clamp(48px, 11vw, 200px) !important; }
+.page-title__n { font-family: var(--mono); font-size: .16em; vertical-align: top; color: var(--lime); margin-left: .25em; letter-spacing: 0; position: relative; top: .6em; }
+.work--all { padding-top: 30px; }
+.work--all .filters { padding-top: 0; }
+@media (max-width: 700px) {
+  .hero--page { padding-top: 46svh; min-height: 90svh; }
+  .all-work { padding: 20px 26px; gap: 14px; }
+}
+
+/* Split iris words: only the letters carry the gradient, never the parent box */
+.split.iris { background: none; animation: none; -webkit-background-clip: border-box; background-clip: border-box; color: inherit; }
