@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl https://api.coordinate.ge/:*)",
+      "Bash(curl -sS https://api.coordinate.ge/:*)",
+      "Bash(curl https://coordinate.ge/:*)",
+      "Bash(curl -sS https://coordinate.ge/:*)",
+      "WebFetch(domain:coordinate.ge)",
+      "WebFetch(domain:api.coordinate.ge)",
+      "Bash(npx vercel:*)",
+      "Bash(npx --yes vercel:*)",
+      "Bash(vercel:*)"
+    ]
+  }
+}
