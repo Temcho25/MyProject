@@ -9,23 +9,23 @@ const COMPLETION = new Date("2028-12-31T18:00:00+04:00");          // "Q4 2028"
 const lang = () => (["ka", "en", "ru"].includes(document.documentElement.lang) ? document.documentElement.lang : "en");
 
 const T = {
-  en: { eyebrow: "Construction", title: "Built in real time.", until: "until completion · Q4 2028",
-        d: "days", h: "hours", m: "min", s: "sec", live: "Live from coordinate.ge", snap: "Updates as of",
+  en: { eyebrow: "Construction", title: "Built in real time.", until: "until completion · Q4 2028", upd: "Construction update",
+        d: "days", h: "hours", m: "min", s: "sec", live: "Live from coordinate.ge", snap: d => `Updates as of ${d}`,
         video: "Watch the video", more: "Read more", less: "Show less", all: "All updates",
-        marquee: ["Ortachala, Old Tbilisi", "3 round towers", "Up to 31 floors", "1 ha park", "11 000 m² infrastructure", "Completion Q4 2028", "Bank of Georgia", "Coordinate by Keystone"],
+        marquee: ["Ortachala, Old Tbilisi", "3 round towers", "Up to 31 floors", "1 ha park", "11 000 m² of infrastructure", "Completion Q4 2028", "Bank of Georgia", "Coordinate by Keystone"],
         now: "Now in Tbilisi", open: m => `Open · closes in ${m}`, closed: t => `Closed · opens ${t}`, at10: "at 10:00", tmr: "tomorrow at 10:00",
         map: "Open in Google Maps", hm: (h, m) => h ? `${h} h ${m} min` : `${m} min` },
-  ru: { eyebrow: "Строительство", title: "Строится прямо сейчас.", until: "до завершения · IV кв. 2028",
-        d: "дней", h: "часов", m: "мин", s: "сек", live: "Онлайн с coordinate.ge", snap: "Данные на",
+  ru: { eyebrow: "Строительство", title: "Строится прямо сейчас.", until: "до сдачи · IV кв. 2028", upd: "Ход строительства",
+        d: "дн.", h: "ч", m: "мин", s: "сек", live: "Онлайн с coordinate.ge", snap: d => `Данные на ${d}`,
         video: "Смотреть видео", more: "Читать дальше", less: "Свернуть", all: "Все отчёты",
         marquee: ["Ортачала, Старый Тбилиси", "3 круглые башни", "До 31 этажа", "Парк 1 га", "11 000 м² инфраструктуры", "Сдача IV кв. 2028", "Банк Грузии", "Coordinate by Keystone"],
         now: "Сейчас в Тбилиси", open: m => `Открыто · закроется через ${m}`, closed: t => `Закрыто · откроется ${t}`, at10: "в 10:00", tmr: "завтра в 10:00",
         map: "Открыть в Google Картах", hm: (h, m) => h ? `${h} ч ${m} мин` : `${m} мин` },
-  ka: { eyebrow: "მშენებლობა", title: "შენდება ახლა.", until: "დასრულებამდე · 2028 IV კვ.",
-        d: "დღე", h: "საათი", m: "წთ", s: "წმ", live: "პირდაპირ coordinate.ge-დან", snap: "მონაცემები",
-        video: "ვიდეოს ნახვა", more: "მეტის ნახვა", less: "დახურვა", all: "ყველა ანგარიში",
-        marquee: ["ორთაჭალა, ძველი თბილისი", "3 მრგვალი კოშკი", "31-მდე სართული", "1 ჰა პარკი", "11 000 მ² ინფრასტრუქტურა", "დასრულება 2028 IV კვ.", "საქართველოს ბანკი", "Coordinate by Keystone"],
-        now: "ახლა თბილისში", open: m => `ღიაა · დაიხურება ${m}-ში`, closed: t => `დაკეტილია · გაიხსნება ${t}`, at10: "10:00-ზე", tmr: "ხვალ 10:00-ზე",
+  ka: { eyebrow: "მშენებლობა", title: "შენდება ჩვენს თვალწინ.", until: "დასრულებამდე · 2028 წლის IV კვ.", upd: "მშენებლობის მიმდინარეობა",
+        d: "დღე", h: "საათი", m: "წთ", s: "წმ", live: "პირდაპირ coordinate.ge-დან", snap: d => `მონაცემები ${d}-ის მდგომარეობით`,
+        video: "ვიდეოს ნახვა", more: "სრულად ნახვა", less: "შეკეცვა", all: "ყველა ანგარიში",
+        marquee: ["ორთაჭალა, ძველი თბილისი", "3 მრგვალი კოშკი", "31-მდე სართული", "1 ჰა პარკი", "11 000 მ² ინფრასტრუქტურა", "დასრულება — 2028 წლის IV კვ.", "საქართველოს ბანკი", "Coordinate by Keystone"],
+        now: "ახლა თბილისში", open: m => `ღიაა · დახურვამდე ${m}`, closed: t => `დახურულია · გაიხსნება ${t}`, at10: "10:00-ზე", tmr: "ხვალ 10:00-ზე",
         map: "Google Maps-ში გახსნა", hm: (h, m) => h ? `${h} სთ ${m} წთ` : `${m} წთ` },
 };
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -43,6 +43,55 @@ function bodyHTML(html) {
     out.push(n.tagName === "LI" ? `<li>${esc(t)}</li>` : `<p>${esc(t)}</p>`);
   });
   return out.join("").replace(/(<li>.*?<\/li>)+/g, m => `<ul>${m}</ul>`);
+}
+/* Titles from the API mix languages ("Сентябрь 2026 | Construction Update") and sometimes disagree between
+   languages, so the displayed title is rebuilt: reporting month = majority of the months named in the titles of
+   the same update across all loaded languages, falling back to the publish date. */
+const MONTHS = {
+  en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+  ru: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
+  ruGen: ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"],
+  ka: ["იანვარი", "თებერვალი", "მარტი", "აპრილი", "მაისი", "ივნისი", "ივლისი", "აგვისტო", "სექტემბერი", "ოქტომბერი", "ნოემბერი", "დეკემბერი"],
+};
+const MONTH_RE = [
+  /jan|янв|იანვ/i, /feb|фев|თებ/i, /mar|мар|მარტ/i, /apr|апр|აპრ/i, /\bmay\b|ма[йя]|მაის/i, /jun|июн|ივნ/i,
+  /jul|июл|ივლ/i, /aug|авг|აგვ/i, /sep|сен|სექ/i, /oct|окт|ოქტ/i, /nov|ноя|ნოე/i, /dec|дек|დეკ/i,
+];
+function parseMonth(s) {
+  s = String(s || "");
+  for (let i = 0; i < 12; i++) if (MONTH_RE[i].test(s)) return i;
+  return -1;
+}
+function parseDate(s) {                                     // "15 September, 2026" / "15 сентября, 2026" / "15 სექტემბერი, 2026"
+  const d = (String(s).match(/\b(\d{1,2})\b/) || [])[1], y = (String(s).match(/(20\d\d)/) || [])[1];
+  return { d: d ? +d : 0, m: parseMonth(s), y: y ? +y : 0 };
+}
+function reportMonth(u) {
+  const votes = new Array(12).fill(0);
+  for (const k of ["ka", "en", "ru"]) {
+    const x = (updates[k] || []).find(v => String(v.id) === String(u.id));
+    const m = x ? parseMonth(String(x.name).split("|")[0]) : -1;
+    if (m >= 0) votes[m] += k === "ka" ? 1.1 : 1;           // ka titles have been the consistent ones
+  }
+  const best = votes.indexOf(Math.max(...votes));
+  const pd = parseDate(u.date);
+  const y = (String(u.name).match(/(20\d\d)/) || [])[1] || pd.y;
+  return { m: votes[best] > 0 ? best : pd.m, y };
+}
+function updTitle(u) {
+  const l = lang(), { m, y } = reportMonth(u);
+  return m >= 0 ? `${MONTHS[l][m]} ${y} · ${T[l].upd}` : u.name;
+}
+function fmtDate(s) {
+  const l = lang(), { d, m, y } = parseDate(s);
+  if (m < 0 || !y) return s;
+  return l === "ru" ? `${d} ${MONTHS.ruGen[m]} ${y}` : l === "ka" ? `${d} ${MONTHS.ka[m]}, ${y}` : `${d} ${MONTHS.en[m]} ${y}`;
+}
+function updBody(u) {
+  const b = bodyHTML(u.body);
+  if (b) return b;
+  const en = (updates.en || []).find(v => String(v.id) === String(u.id));
+  return en ? bodyHTML(en.body) : "";
 }
 const ytId = u => (String(u).match(/(?:v=|youtu\.be\/|embed\/)([\w-]{11})/) || [])[1];
 
@@ -97,17 +146,17 @@ function render() {
     ${u ? `
     <article class="pg-card">
       <div class="pg-media" id="pgMedia">
-        ${gal.length ? gal.map((g, i) => `<img src="${esc(g.large || g.medium)}" alt="${esc(g.alt || u.name)}" loading="lazy" decoding="async"${i === cur ? ' class="on"' : ""}>`).join("") : `<div class="pg-noimg"></div>`}
+        ${gal.length ? gal.map((g, i) => `<img src="${esc(g.large || g.medium)}" alt="${esc(g.alt || updTitle(u))}" loading="lazy" decoding="async"${i === cur ? ' class="on"' : ""}>`).join("") : `<div class="pg-noimg"></div>`}
         ${gal.length > 1 ? `<div class="pg-dots">${gal.map((_, i) => `<button aria-label="${i + 1}" data-s="${i}"${i === cur ? ' class="on"' : ""}></button>`).join("")}</div>` : ""}
         ${vid ? `<button class="pg-play" data-v="${vid}"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span>${esc(L.video)}</span></button>` : ""}
       </div>
       <div class="pg-text">
-        <div class="pg-meta"><span class="pg-live${isLive[lang()] ? "" : " snap"}"><i></i>${esc(isLive[lang()] ? L.live : `${L.snap} ${snapDate}`)}</span><span>${esc(u.date)}</span></div>
-        <h3>${esc(u.name)}</h3>
-        <div class="pg-body" id="pgBody">${bodyHTML(u.body)}</div>
+        <div class="pg-meta"><span class="pg-live${isLive[lang()] ? "" : " snap"}"><i></i>${esc(isLive[lang()] ? L.live : L.snap(snapDate.split("-").reverse().join(".")))}</span><span>${esc(fmtDate(u.date))}</span></div>
+        <h3>${esc(updTitle(u))}</h3>
+        <div class="pg-body" id="pgBody">${updBody(u)}</div>
         <button class="pg-more" id="pgMore">${esc(L.more)}</button>
         ${list.length > 1 ? `<div class="pg-list"><div class="k">${esc(L.all)}</div>${list.map((x, i) =>
-          `<button data-u="${i}" aria-pressed="${i === (list[sel] ? sel : 0)}"><span>${esc(x.date)}</span>${esc(x.name)}</button>`).join("")}</div>` : ""}
+          `<button data-u="${i}" aria-pressed="${i === (list[sel] ? sel : 0)}"><span>${esc(fmtDate(x.date))}</span>${esc(updTitle(x))}</button>`).join("")}</div>` : ""}
       </div>
     </article>` : ""}
   </div>`;

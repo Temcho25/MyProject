@@ -9,6 +9,7 @@ const C = window.COORD, BLOCKS = C.BLOCKS;
 const touch = matchMedia("(pointer:coarse)").matches;
 const small = Math.min(innerWidth, innerHeight) < 600;
 const lowEnd = touch && (navigator.hardwareConcurrency || 4) <= 4;
+const SHADOWS = !touch;                 // real-time shadows only on desktop; phones get a painted soft shadow
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v)), lerp = (a, b, t) => a + (b - a) * t;
 const range = (p, a, b) => clamp((p - a) / (b - a));
@@ -23,7 +24,7 @@ function makeRenderer(canvas, { shadows }) {
   r.outputColorSpace = THREE.SRGBColorSpace;
   r.shadowMap.enabled = shadows; r.shadowMap.type = THREE.PCFSoftShadowMap;
   r._maxDpr = Math.min(devicePixelRatio || 1, 2);
-  r._dpr = r._maxDpr; r.setPixelRatio(r._dpr);
+  r._dpr = touch ? Math.min(1.5, r._maxDpr) : r._maxDpr; r.setPixelRatio(r._dpr);   // phones start lighter, sharpen if fast
   return r;
 }
 function envFor(renderer, scene) {
@@ -70,24 +71,38 @@ function pinModel() {
   return g;
 }
 
+/* Painted soft shadow (a radial gradient on the ground) for devices without real-time shadows. */
+let shadowTex = null;
+function softShadow(x, z, r) {
+  if (!shadowTex) {
+    const c = document.createElement("canvas"); c.width = c.height = 128; const g = c.getContext("2d");
+    const gr = g.createRadialGradient(64, 64, 4, 64, 64, 64); gr.addColorStop(0, "rgba(0,0,0,.55)"); gr.addColorStop(1, "rgba(0,0,0,0)");
+    g.fillStyle = gr; g.fillRect(0, 0, 128, 128); shadowTex = new THREE.CanvasTexture(c);
+  }
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(r * 2, r * 2), new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false }));
+  m.rotation.x = -Math.PI / 2; m.position.set(x, .09, z); m.renderOrder = 1; return m;
+}
+
 /* ===================== HERO ===================== */
 function initHero() {
   const stage = document.getElementById("stage"), track = document.querySelector(".world-track");
   if (!stage) return;
   const canvas = document.createElement("canvas"); canvas.className = "hero3d"; canvas.setAttribute("aria-hidden", "true");
   stage.insertBefore(canvas, stage.querySelector(".hero-layer"));
-  const renderer = makeRenderer(canvas, { shadows: !lowEnd });
+  const renderer = makeRenderer(canvas, { shadows: SHADOWS });
   const scene = new THREE.Scene(); envFor(renderer, scene);
-  const sun = lights(scene, { shadow: !lowEnd, mapSize: small ? 1024 : 2048, extent: 130 });
+  const sun = lights(scene, { shadow: SHADOWS, mapSize: 2048, extent: 130 });
   const camera = new THREE.PerspectiveCamera(32, 1, 1, 6000);
 
   const grid = gridPlane(); scene.add(grid);
   const shadowCatcher = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.ShadowMaterial({ opacity: .35 }));
   shadowCatcher.rotation.x = -Math.PI / 2; shadowCatcher.position.y = .01; shadowCatcher.receiveShadow = true; scene.add(shadowCatcher);
   const pin = pinModel(); scene.add(pin);
-  const site = buildSite({ trees: small ? 90 : 150, noShadow: lowEnd }); scene.add(site);
-  const towers = BLOCKS.map(b => { const t = buildTower(b.floors, { lowPoly: small, noShadow: lowEnd }); const [x, z] = TOWER_POS[b.id]; t.position.set(x, 0, z); scene.add(t); return t; });
+  const site = buildSite({ trees: touch ? 70 : 150, noShadow: !SHADOWS }); scene.add(site);
+  if (!SHADOWS) BLOCKS.forEach(b => { const [x, z] = TOWER_POS[b.id]; site.add(softShadow(x + 9, z - 8, 30 + b.floors * .6)); });
+  const towers = BLOCKS.map(b => { const t = buildTower(b.floors, { lowPoly: touch, noShadow: !SHADOWS }); const [x, z] = TOWER_POS[b.id]; t.position.set(x, 0, z); scene.add(t); return t; });
   const com = buildCommercial(); com.position.set(10, 0, 30); com.rotation.y = -.12; scene.add(com);
+  if (!SHADOWS) site.add(softShadow(16, 24, 46));
 
   // HTML labels A/B/C that follow the tower tops
   const labels = BLOCKS.map(b => { const d = document.createElement("div"); d.className = "t3label"; d.textContent = b.id; stage.insertBefore(d, stage.querySelector(".hero-layer")); return d; });
@@ -151,7 +166,7 @@ function initHero() {
     const gc = eback(range(p, .5, .64)); com.scale.y = Math.max(.001, gc); com.visible = p > .5;
     const gs = eo(range(p, .4, .55)); site.visible = gs > 0; site.scale.set(1, Math.max(.001, gs), 1);
     grid.material.uniforms.uFade.value = 1 - .55 * range(p, .45, .6);
-    shadowCatcher.visible = p > .42;
+    shadowCatcher.visible = SHADOWS && p > .42;
 
     const key = [p.toFixed(5), W, H].join();
     const animating = (pd > 0 && fadePin > 0) || adaptive(renderer, dt);
@@ -167,9 +182,10 @@ function initSelector() {
   const host = document.getElementById("sel3d");
   if (!host) return;
   const canvas = document.createElement("canvas"); canvas.className = "sel3d-canvas"; host.prepend(canvas);
-  const renderer = makeRenderer(canvas, { shadows: !lowEnd });
+  const renderer = makeRenderer(canvas, { shadows: SHADOWS });
   const scene = new THREE.Scene(); envFor(renderer, scene);
-  lights(scene, { shadow: !lowEnd, mapSize: 1024, extent: 40 });
+  lights(scene, { shadow: SHADOWS, mapSize: 1024, extent: 40 });
+  if (!SHADOWS) scene.add(softShadow(6, -4, 34));
   const camera = new THREE.PerspectiveCamera(30, 1, 1, 2000);
   const grid = gridPlane(700); grid.material.uniforms.uR.value = 260; scene.add(grid);
   const catcher = new THREE.Mesh(new THREE.CircleGeometry(80, 48), new THREE.ShadowMaterial({ opacity: .35 }));
@@ -182,7 +198,7 @@ function initSelector() {
     if (tower && tower.userData.block === id) return;
     if (tower) scene.remove(tower);
     const b = BLOCKS.find(x => x.id === id);
-    tower = cache[id] || (cache[id] = buildTower(b.floors, { lowPoly: small, noShadow: lowEnd }));
+    tower = cache[id] || (cache[id] = buildTower(b.floors, { lowPoly: touch, noShadow: !SHADOWS }));
     tower.userData.block = id; scene.add(tower); grow = reduce ? 1 : 0;
   }
   addEventListener("coord:sel", e => { state = { ...state, ...e.detail }; setBlock(state.block); bandTo = floorY(state.floor); dirty = true; });
@@ -225,7 +241,9 @@ function initSelector() {
 
 function boot() {
   try { initHero(); } catch (e) { console.error(e); document.documentElement.classList.add("no-webgl"); }
-  try { initSelector(); } catch (e) { console.error(e); }
+  const sel = document.getElementById("sel3d");
+  if (sel) new IntersectionObserver(([e], o) => { if (!e.isIntersecting) return; o.disconnect();
+    try { initSelector(); dispatchEvent(new CustomEvent("coord:selready")); } catch (err) { console.error(err); } }, { rootMargin: "600px" }).observe(sel);
 }
 // let the page paint first
 if (document.readyState === "complete") (window.requestIdleCallback ? requestIdleCallback(boot, { timeout: 600 }) : setTimeout(boot, 50));
