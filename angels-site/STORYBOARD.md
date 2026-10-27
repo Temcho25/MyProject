@@ -1,0 +1,13 @@
+# Angels Investment — scroll storyboard (vizavi-motion)
+
+Content source: the @angels.georgia Instagram profile only (bio, highlights, post covers, logo, contacts). No invented copy.
+
+**Through-line:** one continuous camera flight over a city at golden hour. It descends from the haze to the street, flies along the avenue to the hero tower, circles it, and rises over the city to the horizon. Scroll drives the camera; the camera's speed drives the blur, the sound filter and the typography.
+
+| # | Scene / content | Variants considered | Chosen | Camera / optics | Sound |
+|---|---|---|---|---|---|
+| 1 | Hero: logo, "ANGELS / INVESTMENT", "Investment \| Real Estate in Georgia", "Real Estate" | a) descend from clouds onto the city; b) rotating extruded 3D logo; c) tower assembling floor by floor; d) particle cloud forming the word | a + c: the camera descends while the central tower builds floor by floor; the letters of ANGELS close their tracking from wide to normal | high crane down, haze in the foreground, bloom on the tower edges | pad enters on the first chord when sound is turned on |
+| 2 | Terms: "Ипотека в Грузии от 6.5%", "Первый взнос от 0%", "Платежи от 600$ в месяц" | a) 3D numbers between the towers; b) window lights fill in proportion; c) cards on the façades; d) a ticker | a + b: a large numeral counts up for each line while the camera flies down the avenue and the city's windows light up | flight along the avenue with oncoming headlight streaks; radial blur scales with speed | chord change + bell on each new term |
+| 3 | Highlights: INVESTMENT, REAL ESTATE, RENOVATE, LEGAL SUPPORT, YOUTUBE | a) 3D ring of highlight circles; b) huge rows of type moving in opposite directions; c) orbit of labels; d) vertical list with masks | b: rows of type slide in opposite directions, skewed by scroll speed, and the active row lights up | arc around the tower, focus on the type, city defocused | filtered noise "whoosh" from scroll speed |
+| 4 | "Актуальные объекты": post covers and their text | a) 3D gallery in depth; b) horizontal carousel; c) stack of cards; d) cards on the façades | a: cards fly up from depth with tilt and a soft blur that clears as they land, and react to the pointer | calm readable drift, background in shallow depth of field | tick on hover |
+| 5 | Contacts: +995599128031, WhatsApp, Instagram, Threads, "Купить недвижимость" | a) rise above the city to the horizon; b) return to the logo; c) phone number as an object; d) static footer | a: the camera rises to the sunset; the phone number builds digit by digit; a calm final frame | slow rise, blur off | final chord resolves |

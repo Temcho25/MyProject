@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Angels Investment — Investment | Real Estate in Georgia</title>
+<meta name="description" content="Investment | Real Estate in Georgia. Ипотека в Грузии от 6.5%. Первый взнос от 0%. Платежи от 600$ в месяц.">
+<meta name="theme-color" content="#07090f">
+<link rel="icon" href="assets/logo-circle.png">
+<meta property="og:title" content="Angels Investment">
+<meta property="og:description" content="Investment | Real Estate in Georgia">
+<meta property="og:image" content="assets/logo-circle.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Manrope:wght@300;400;500;600;700;800&family=Oswald:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="loader" aria-hidden="true">
+  <img src="assets/logo-circle.png" alt="">
+  <div class="loader-bar"><span></span></div>
+</div>
+
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="top">
+  <a class="brand" href="#hero" aria-label="Angels Investment">
+    <img src="assets/logo-circle.png" alt="Angels Investment">
+    <span>angels.georgia</span>
+  </a>
+  <nav class="top-actions">
+    <a class="top-phone" href="tel:+995599128031">+995599128031</a>
+    <a class="pill pill-wa" href="https://wa.me/995599128031" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.2.1-.1 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4c1.7.7 2.3.8 3.2.7.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.5-.3Z"/></svg>
+      <span>WhatsApp</span>
+    </a>
+    <button class="sound" id="sound" aria-label="Sound" aria-pressed="false">
+      <i></i><i></i><i></i><i></i><i></i>
+    </button>
+  </nav>
+</header>
+
+<aside class="rail" aria-hidden="true">
+  <span class="rail-fill"></span>
+  <ol>
+    <li data-for="hero">01</li><li data-for="terms">02</li><li data-for="directions">03</li><li data-for="objects">04</li><li data-for="contact">05</li>
+  </ol>
+</aside>
+
+<main>
+  <!-- 1. HERO -->
+  <section id="hero" class="scene" data-scene>
+    <div class="stick">
+      <div class="hero-inner">
+        <p class="eyebrow reveal">Real Estate</p>
+        <h1 class="wordmark" aria-label="Angels Investment">
+          <span class="wm-main" data-split>ANGELS</span>
+          <span class="wm-sub">INVESTMENT</span>
+        </h1>
+        <p class="hero-line"><span>Investment</span><b>|</b><span>Real Estate in Georgia</span></p>
+      </div>
+      <div class="scroll-cue" aria-hidden="true"><span></span></div>
+    </div>
+  </section>
+
+  <!-- 2. TERMS -->
+  <section id="terms" class="scene" data-scene>
+    <div class="stick">
+      <div class="terms">
+        <article class="term" data-term="0">
+          <div class="term-num"><small>от</small><em data-count="6.5" data-dec="1">0</em><sup>%</sup></div>
+          <p class="term-line"><span class="flag" aria-hidden="true"></span>Ипотека в Грузии от 6.5%</p>
+        </article>
+        <article class="term" data-term="1">
+          <div class="term-num"><small>от</small><em data-count="0" data-dec="0">0</em><sup>%</sup></div>
+          <p class="term-line"><span class="bolt" aria-hidden="true">⚡</span>Первый взнос от 0%</p>
+        </article>
+        <article class="term" data-term="2">
+          <div class="term-num"><small>от</small><em data-count="600" data-dec="0">0</em><sup>$</sup></div>
+          <p class="term-line"><span class="bolt" aria-hidden="true">🗓</span>Платежи от 600$ в месяц</p>
+        </article>
+        <div class="term-steps" aria-hidden="true"><i></i><i></i><i></i></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. DIRECTIONS (highlights) -->
+  <section id="directions" class="scene" data-scene>
+    <div class="stick">
+      <div class="rows">
+        <div class="row" data-dir="1"><span>INVESTMENT</span><span>INVESTMENT</span><span>INVESTMENT</span></div>
+        <div class="row" data-dir="-1"><span>REAL ESTATE</span><span>REAL ESTATE</span><span>REAL ESTATE</span></div>
+        <div class="row" data-dir="1"><span>RENOVATE</span><span>RENOVATE</span><span>RENOVATE</span></div>
+        <div class="row" data-dir="-1"><span>LEGAL SUPPORT</span><span>LEGAL SUPPORT</span><span>LEGAL SUPPORT</span></div>
+        <div class="row" data-dir="1"><span>YOUTUBE</span><span>YOUTUBE</span><span>YOUTUBE</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. OBJECTS -->
+  <section id="objects" class="scene" data-scene>
+    <div class="objects-head">
+      <h2 class="h2" data-split>Актуальные объекты</h2>
+      <span class="down" aria-hidden="true">👇</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="https://www.instagram.com/angels.georgia/" target="_blank" rel="noopener">
+        <div class="card-media"><img src="assets/obj1.jpg" alt="Квартиры без первого взноса" loading="lazy"></div>
+        <div class="card-body">
+          <h3 class="c1-title">Квартиры</h3>
+          <p class="c1-sub">без первого взноса</p>
+          <div class="c1-chip"><small>ежемесячный платеж</small><b>$500</b></div>
+        </div>
+      </a>
+      <a class="card card-green" href="https://www.instagram.com/angels.georgia/" target="_blank" rel="noopener">
+        <div class="card-media"><img src="assets/obj2.jpg" alt="Тбилиси. Готовые квартиры с ипотекой" loading="lazy"></div>
+        <div class="card-body">
+          <h3 class="c2-title">Тбилиси</h3>
+          <p class="c2-sub">Готовые квартиры</p>
+          <p class="c2-main">с ипотекой<br>от $480</p>
+          <p class="c2-accent">в месяц</p>
+        </div>
+      </a>
+      <a class="card card-photo" href="https://www.instagram.com/angels.georgia/" target="_blank" rel="noopener">
+        <div class="card-media full"><img src="assets/obj3.jpg" alt="Angels Investment" loading="lazy"></div>
+      </a>
+      <a class="card card-type" href="https://www.instagram.com/angels.georgia/" target="_blank" rel="noopener">
+        <div class="card-body">
+          <small class="c4-kicker">Новый комплекс</small>
+          <h3 class="c4-title">в районе Вера</h3>
+          <p class="c4-city">Тбилиси</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- 5. CONTACT -->
+  <section id="contact" class="scene" data-scene>
+    <div class="stick">
+      <div class="contact">
+        <img class="contact-logo" src="assets/logo-circle.png" alt="Angels Investment">
+        <a class="phone" href="tel:+995599128031" aria-label="+995599128031"><span data-digits>+995599128031</span></a>
+        <ul class="facts">
+          <li>Ипотека в Грузии от 6.5%</li>
+          <li>Первый взнос от 0%</li>
+          <li>Платежи от 600$ в месяц</li>
+        </ul>
+        <div class="cta-row">
+          <a class="btn btn-gold" href="https://wa.me/995599128031" target="_blank" rel="noopener">Купить недвижимость</a>
+          <a class="btn" href="https://wa.me/995599128031" target="_blank" rel="noopener">WhatsApp</a>
+          <a class="btn" href="https://www.instagram.com/angels.georgia/" target="_blank" rel="noopener">Instagram</a>
+          <a class="btn" href="https://www.threads.net/@angels.georgia" target="_blank" rel="noopener">Threads</a>
+        </div>
+      </div>
+      <footer class="foot">
+        <span>Angels Investment</span>
+        <span>Investment | Real Estate in Georgia</span>
+      </footer>
+    </div>
+  </section>
+</main>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
