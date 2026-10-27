@@ -32,6 +32,7 @@ document.querySelector('.nav__lang').addEventListener('click', () => {
 const T = (ru, key) => (lang === 'en' && EN[key]) || ru;
 document.querySelector('.year').textContent = new Date().getFullYear();
 document.querySelector('[data-contact]').href = `mailto:${CONTACT.email}?subject=${encodeURIComponent(CONTACT.subject)}`;
+document.querySelector('.contact__mail').textContent = CONTACT.email;
 
 // ---------- Text splitting ----------
 function splitChars(el) {
@@ -86,7 +87,7 @@ PROJECTS.forEach((p) => {
     <div class="card__media">
       <div class="card__chrome"><i></i><i></i><i></i></div>
       <span class="card__tag ${p.is3d ? 'is-3d' : ''}">${p.is3d ? '3D' : p.live ? 'LIVE' : kinds}</span>
-      <img src="/work/${p.id}${p.size === 'wide' ? '' : '-sm'}.jpg" alt="${lang === 'en' ? 'Website for' : 'Сайт для'} ${p.name}" loading="lazy" decoding="async" />
+      <img src="${import.meta.env.BASE_URL}work/${p.id}${p.size === 'wide' ? '' : '-sm'}.jpg" alt="${lang === 'en' ? 'Website for' : 'Сайт для'} ${p.name}" loading="lazy" decoding="async" />
     </div>
     <div class="card__info">
       <div>
@@ -140,7 +141,7 @@ document.querySelectorAll('.marquee__track').forEach((track, r) => {
 // ---------- Textures (shared by both 3D scenes) ----------
 const loader = new THREE.TextureLoader();
 function loadTex(id) {
-  return new Promise((res) => loader.load(`/work/${id}-sm.jpg`, (t) => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; res(t); }, undefined, () => res(new THREE.Texture())));
+  return new Promise((res) => loader.load(`${import.meta.env.BASE_URL}work/${id}-sm.jpg`, (t) => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; res(t); }, undefined, () => res(new THREE.Texture())));
 }
 
 const loaderEl = document.querySelector('.loader');
