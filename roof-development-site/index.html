@@ -56,12 +56,6 @@ nav.links a:hover{opacity:1}nav.links a:hover::after{transform:scaleX(1);transfo
 .lang{display:flex;border:1px solid var(--line);border-radius:99px;padding:3px}
 .lang button{font-size:11px;letter-spacing:.08em;padding:6px 10px;border-radius:99px;opacity:.6;transition:.3s}
 .lang button.on{background:var(--gold);color:var(--ink);opacity:1;font-weight:700}
-.snd{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center}
-.snd i{display:flex;gap:2px;align-items:flex-end;height:12px}
-.snd i b{width:2px;background:var(--text);height:3px;transition:height .3s}
-.snd.on i b{animation:eq 1s ease-in-out infinite}
-.snd.on i b:nth-child(2){animation-delay:-.3s}.snd.on i b:nth-child(3){animation-delay:-.6s}
-@keyframes eq{0%,100%{height:3px}50%{height:12px}}
 .menu-btn{display:none;width:38px;height:38px;border:1px solid var(--line);border-radius:50%;place-items:center}
 .menu-btn span{width:14px;height:1.5px;background:var(--text);display:block;box-shadow:0 5px 0 var(--text),0 -5px 0 var(--text)}
 @media (max-width:900px){nav.links{display:none}.menu-btn{display:grid}}
@@ -297,7 +291,6 @@ body::after{content:"";position:fixed;inset:-50%;z-index:80;pointer-events:none;
     <div class="lang" role="group" aria-label="Language">
       <button data-lang="ka">ქარ</button><button data-lang="en">EN</button><button data-lang="ru">RU</button>
     </div>
-    <button class="snd" id="snd" aria-label="Sound"><i><b></b><b></b><b></b></i></button>
     <button class="menu-btn" id="menuBtn" aria-label="Menu"><span></span></button>
   </div>
 </header>
@@ -575,64 +568,7 @@ const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const tr=k=>T[LANG][k]??T.en[k]??k;
 const nm=o=>o[LANG]||o.en;
 
-/* ==========================================================
-   SOUND — synthesized with Web Audio (off until the user taps)
-   ========================================================== */
-const Sound = (()=>{
-  let ctx, master, on=false, pad=[];
-  function init(){
-    ctx = new (window.AudioContext||window.webkitAudioContext)();
-    master = ctx.createGain(); master.gain.value=0; master.connect(ctx.destination);
-    const rev = ctx.createConvolver(); const len=ctx.sampleRate*2.6, buf=ctx.createBuffer(2,len,ctx.sampleRate);
-    for(let c=0;c<2;c++){const d=buf.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.4)}
-    rev.buffer=buf; const wet=ctx.createGain(); wet.gain.value=.5; rev.connect(wet); wet.connect(master);
-    Sound.rev=rev;
-    // warm pad: A minor add9 voicing, slow filter drift
-    const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=900; lp.Q.value=.6; lp.connect(master); lp.connect(rev);
-    const lfo=ctx.createOscillator(); lfo.frequency.value=.05; const lg=ctx.createGain(); lg.gain.value=420; lfo.connect(lg); lg.connect(lp.frequency); lfo.start();
-    [110,164.81,220,246.94,329.63].forEach((f,i)=>{
-      const o=ctx.createOscillator(); o.type=i%2?'triangle':'sawtooth'; o.frequency.value=f; o.detune.value=(i-2)*4;
-      const g=ctx.createGain(); g.gain.value=i===0?.05:.022; o.connect(g); g.connect(lp); o.start(); pad.push(o);
-    });
-    // slow piano-like motif every 4.8s
-    setInterval(()=>{ if(!on) return; const notes=[440,523.25,659.25,587.33,493.88]; const n=notes[(Math.random()*notes.length)|0]; bell(n,.06,2.4) },4800);
-  }
-  function bell(f,vol=.08,dur=1.6){
-    if(!ctx||!on) return; const t=ctx.currentTime;
-    const o=ctx.createOscillator(), o2=ctx.createOscillator(), g=ctx.createGain();
-    o.type='sine'; o.frequency.value=f; o2.type='sine'; o2.frequency.value=f*2.01;
-    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+.01); g.gain.exponentialRampToValueAtTime(.0001,t+dur);
-    o.connect(g); o2.connect(g); g.connect(master); g.connect(Sound.rev); o.start(t); o2.start(t); o.stop(t+dur); o2.stop(t+dur);
-  }
-  function thud(vol=.25){ // concrete slab landing
-    if(!ctx||!on) return; const t=ctx.currentTime;
-    const o=ctx.createOscillator(), g=ctx.createGain(); o.type='sine';
-    o.frequency.setValueAtTime(120,t); o.frequency.exponentialRampToValueAtTime(42,t+.18);
-    g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.0001,t+.3);
-    o.connect(g); g.connect(master); o.start(t); o.stop(t+.32);
-    const nb=ctx.createBuffer(1,ctx.sampleRate*.08,ctx.sampleRate), d=nb.getChannelData(0); for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);
-    const n=ctx.createBufferSource(); n.buffer=nb; const hp=ctx.createBiquadFilter(); hp.type='bandpass'; hp.frequency.value=1800; const ng=ctx.createGain(); ng.gain.value=vol*.35;
-    n.connect(hp); hp.connect(ng); ng.connect(master); n.start(t);
-  }
-  function whoosh(vol=.12){
-    if(!ctx||!on) return; const t=ctx.currentTime, len=.7;
-    const nb=ctx.createBuffer(1,ctx.sampleRate*len,ctx.sampleRate), d=nb.getChannelData(0); for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
-    const n=ctx.createBufferSource(); n.buffer=nb; const bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=1.2;
-    bp.frequency.setValueAtTime(300,t); bp.frequency.exponentialRampToValueAtTime(2600,t+len*.6); bp.frequency.exponentialRampToValueAtTime(600,t+len);
-    const g=ctx.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+len*.5); g.gain.linearRampToValueAtTime(0,t+len);
-    n.connect(bp); bp.connect(g); g.connect(master); g.connect(Sound.rev); n.start(t);
-  }
-  function toggle(){
-    if(!ctx) init();
-    on=!on; ctx.resume();
-    master.gain.cancelScheduledValues(ctx.currentTime);
-    master.gain.linearRampToValueAtTime(on?.7:0, ctx.currentTime+1.2);
-    $('#snd').classList.toggle('on',on);
-    if(on) bell(659.25,.09,2.8);
-  }
-  return {toggle,bell,thud,whoosh,get on(){return on}};
-})();
-$('#snd').addEventListener('click',Sound.toggle);
+
 
 /* ==========================================================
    I18N
@@ -657,7 +593,7 @@ function applyLang(){
   buildProjects(); buildRows(); buildMarquee(); buildSelect();
   $$('.split').forEach(s=>io.observe(s));
 }
-$$('.lang button').forEach(b=>b.addEventListener('click',()=>{LANG=b.dataset.lang;try{localStorage.setItem('roof.lang',LANG)}catch(e){};applyLang();Sound.bell(523.25,.05,1.2)}));
+$$('.lang button').forEach(b=>b.addEventListener('click',()=>{LANG=b.dataset.lang;try{localStorage.setItem('roof.lang',LANG)}catch(e){};applyLang();}));
 
 /* ==========================================================
    SVG building generator (used in cards, rows, blueprint)
@@ -888,7 +824,7 @@ function drawTower(t){
     const drop=(1-e)*6;
     const y=towerY0+i*FH+drop;
     const alpha=clamp(p*3);
-    if(p>=1 && i>landed){landed=i; shake=Math.max(shake,1.2); if(i%3===0)Sound.thud(.12)}
+    if(p>=1 && i>landed){landed=i; shake=Math.max(shake,1.2); }
     const lit=clamp((t-2.6-i*.05)/2.4);
     fx.globalAlpha=alpha;
     box(fx,0,y,0,TW,TD,FH*.94,{top:i===FLOORS-1||p<1,edge:'rgba(255,255,255,.07)',
@@ -914,7 +850,7 @@ function drawTower(t){
   const rp=clamp((t-(.25+FLOORS*.13+.7))/.9);
   if(rp>0){
     const e=easeOutBack(rp), topY=towerY0+FLOORS*FH+.25+(1-e)*7;
-    if(rp>=1&&!roofLanded){roofLanded=true;shake=3;Sound.thud(.3);Sound.bell(659.25,.08,3);Sound.bell(987.77,.04,3.4);onRoofLanded()}
+    if(rp>=1&&!roofLanded){roofLanded=true;shake=3;onRoofLanded()}
     const zf=TD*.5+.05, zb=TD*.5-.55;
     const pts=[[-TW*.62,0],[-TW*.05,2.3],[TW*.5,.5]];
     const F=pts.map(([x,y])=>project(x,topY+y,zf)), B=pts.map(([x,y])=>project(x,topY+y,zb));
@@ -990,7 +926,7 @@ function updateBlueprint(p){
   const steps=$$('.step'), k=p<.33?0:p<.66?1:2;
   steps.forEach((s,i)=>{s.classList.toggle('on',i===k);s.classList.toggle('past',i<k)});
   $$('.prog b').forEach((b,i)=>b.style.transform=`scaleX(${clamp(p*3-i)})`);
-  if(k!==updateBlueprint.k){ if(updateBlueprint.k!==undefined) Sound.bell([440,523.25,659.25][k],.06,1.8); updateBlueprint.k=k }
+  
 }
 
 /* ==========================================================
@@ -1054,8 +990,7 @@ function frame(now){
     const rf=card.querySelector('.rf'); if(rf){const q=clamp(k*1.3-1);rf.style.opacity=q;rf.style.transform=`translateY(${(1-easeOutBack(q))*-24}px)`}
     const dist=Math.abs(c-.42); card.style.transform=`rotateY(${(c-.42)*-8}deg) scale(${1-dist*.06})`;
   });
-  if(pp>0&&pp<1){const idx=Math.round(pp*(PROJECTS_CURRENT.length));if(idx!==frame.pidx){frame.pidx=idx;Sound.whoosh(.06)}}
-
+  
   /* marquee with velocity */
   const mq=$('#marq'); frame.mx=(frame.mx||0)-(1.2+Math.abs(vel)*.08)*60*dt; const mw=mq.scrollWidth/3; if(-frame.mx>mw)frame.mx+=mw;
   mq.style.transform=`translate3d(${frame.mx}px,0,0) skewX(${clamp(-vel*.03,-8,8)}deg)`;
@@ -1086,7 +1021,7 @@ function intro(){
     roof.style.strokeDashoffset=80*(1-clamp(e*1.6-.6));
     roof.style.transform=`translateY(${(1-easeOutBack(clamp(e*1.6-.6)))*-14}px)`;
     if(p<1) return requestAnimationFrame(f);
-    L.classList.add('done'); Sound.whoosh(.08);
+    L.classList.add('done'); 
     setTimeout(()=>L.remove(),1200);
     introT0=performance.now();
     $$('#hTitle .ln>span').forEach((s,i)=>{s.style.transition=`transform 1.4s var(--ease) ${.35+i*.12}s`;s.style.transform='none'});
@@ -1111,7 +1046,7 @@ $('#lead').addEventListener('submit',e=>{
   const n=$('#fName').value.trim(), ph=$('#fPhone').value.trim(), pr=$('#fProj').value;
   if(!n||!ph){$('#fPhone').focus();return}
   const body=encodeURIComponent(`${n}\n${ph}\n${pr}`);
-  $('#lead button span').textContent=tr('ct.ok'); Sound.bell(783.99,.08,2);
+  $('#lead button span').textContent=tr('ct.ok'); 
   location.href=`mailto:info@roofdevelopment.ge?subject=${encodeURIComponent('Roof Development — '+pr)}&body=${body}`;
 });
 // smooth anchor scrolling
