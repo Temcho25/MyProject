@@ -15,6 +15,8 @@ const CONTACT = { email: 'hello@adscoba.com', subject: 'Проект сайта 
 
 const mobile = window.matchMedia('(max-width: 800px)').matches || navigator.maxTouchPoints > 1;
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Entrance animations are skipped entirely when the viewer asks for less motion.
+const reveal = (...a) => (reduced ? null : gsap.from(...a));
 
 // ---------- Language ----------
 let lang = 'ru';
@@ -159,12 +161,20 @@ Promise.all(allIds.map((id) => loadTex(id).then((t) => { texMap[id] = t; }))).th
 let hero, reel, lenis;
 
 function start() {
-  hero = createHero(document.querySelector('.hero-canvas'), { textures: heroIds.map((id) => texMap[id]), mobile });
   const reelProjects = reelIds.map((id) => PROJECTS.find((p) => p.id === id));
-  reel = createReel(document.querySelector('.reel__canvas'), {
-    textures: reelIds.map((id) => texMap[id]), mobile,
-    onActive: (i) => setReelLabel(reelProjects[i], i),
-  });
+  try {
+    hero = createHero(document.querySelector('.hero-canvas'), { textures: heroIds.map((id) => texMap[id]), mobile });
+    reel = createReel(document.querySelector('.reel__canvas'), {
+      textures: reelIds.map((id) => texMap[id]), mobile,
+      onActive: (i) => setReelLabel(reelProjects[i], i),
+    });
+  } catch (err) {
+    // No WebGL (old device, disabled GPU): keep the page fully usable without 3D.
+    console.warn('WebGL unavailable, showing the static version', err);
+    document.body.classList.add('no-webgl');
+    hero = { state: {} }; reel = { state: {} };
+    buildStaticReel(reelProjects);
+  }
 
   // Smooth scroll with inertia.
   lenis = new Lenis({ lerp: reduced ? 1 : 0.09, smoothWheel: true });
@@ -183,8 +193,18 @@ function start() {
   setupInteractions();
 }
 
+function buildStaticReel(list) {
+  const strip = document.createElement('div'); strip.className = 'reel__static';
+  strip.innerHTML = list.map((p) => `<a href="${p.url}" target="_blank" rel="noopener"><img src="${import.meta.env.BASE_URL}work/${p.id}-sm.jpg" alt="${p.name}" loading="lazy" /><b>${p.name}</b></a>`).join('');
+  document.querySelector('.reel__sticky').appendChild(strip);
+}
+
 // ---------- Intro ----------
 function intro() {
+  if (reduced) {
+    loaderEl.remove(); document.body.classList.remove('is-loading'); lenis.start();
+    hero.state.intro = 1; countUp(); return;
+  }
   const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
   tl.to('.loader__count, .loader__brand', { y: -40, opacity: 0, duration: 0.6, ease: 'power3.in' })
     .to(loaderEl, { clipPath: 'inset(0 0 100% 0)', duration: 1.1, ease: 'expo.inOut' }, '-=0.1')
@@ -260,9 +280,9 @@ function setupScroll() {
       const dir = +row.dataset.dir;
       const track = row.firstElementChild;
       const w = track.scrollWidth / 2;
-      xs[i] -= (0.6 + Math.abs(vel) * 0.25) * dir;
+      xs[i] -= (reduced ? 0.15 : 0.6 + Math.abs(vel) * 0.25) * dir;
       if (xs[i] < -w) xs[i] += w; if (xs[i] > 0) xs[i] -= w;
-      gsap.set(track, { x: xs[i], skewX: gsap.utils.clamp(-14, 14, -vel * 0.6 * dir) });
+      gsap.set(track, { x: xs[i], skewX: reduced ? 0 : gsap.utils.clamp(-14, 14, -vel * 0.6 * dir) });
     });
   });
 
@@ -273,28 +293,28 @@ function setupScroll() {
     onUpdate: (s) => { reel.state.progress = s.progress; bar.style.transform = `scaleX(${s.progress})`; },
   });
   ScrollTrigger.create({ trigger: '.reel', start: 'top bottom', end: 'bottom top', onToggle: (s) => { reel.state.visible = s.isActive; } });
-  gsap.from('.reel__title .w > span', { yPercent: 110, duration: 1.2, stagger: 0.06, ease: 'expo.out', scrollTrigger: { trigger: '.reel', start: 'top 60%' } });
-  gsap.from('.reel__now', { y: 40, opacity: 0, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: '.reel', start: 'top 40%' } });
+  reveal('.reel__title .w > span', { yPercent: 110, duration: 1.2, stagger: 0.06, ease: 'expo.out', scrollTrigger: { trigger: '.reel', start: 'top 60%' } });
+  reveal('.reel__now', { y: 40, opacity: 0, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: '.reel', start: 'top 40%' } });
 
   // Section titles: words rise from a mask.
   document.querySelectorAll('.section-title.split-words').forEach((el) => {
-    gsap.from(el.querySelectorAll('.w > span'), { yPercent: 115, rotate: 4, duration: 1.3, stagger: 0.07, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 85%' } });
+    reveal(el.querySelectorAll('.w > span'), { yPercent: 115, rotate: 4, duration: 1.3, stagger: 0.07, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 85%' } });
   });
   gsap.utils.toArray('.section-lead, .filters, .eyebrow').forEach((el) => {
     if (el.closest('.hero') || el.closest('.reel')) return;
-    gsap.from(el, { y: 30, opacity: 0, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 90%' } });
+    reveal(el, { y: 30, opacity: 0, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 90%' } });
   });
 
   // Cards: rise in 3D, inner image parallax.
   gsap.utils.toArray('.card').forEach((card) => {
-    gsap.from(card, { y: 120, rotateX: -18, opacity: 0, duration: 1.4, ease: 'expo.out', scrollTrigger: { trigger: card, start: 'top 92%' } });
+    reveal(card, { y: 120, rotateX: -18, opacity: 0, duration: 1.4, ease: 'expo.out', scrollTrigger: { trigger: card, start: 'top 92%' } });
     const img = card.querySelector('img');
     gsap.fromTo(img, { yPercent: -4 }, { yPercent: 4, ease: 'none', scrollTrigger: { trigger: card, start: 'top bottom', end: 'bottom top', scrub: true } });
   });
 
   // Bento cells
   gsap.utils.toArray('.cell').forEach((c, i) => {
-    gsap.from(c, { y: 80, opacity: 0, rotateY: i % 2 ? 10 : -10, duration: 1.3, ease: 'expo.out', scrollTrigger: { trigger: c, start: 'top 90%' } });
+    reveal(c, { y: 80, opacity: 0, rotateY: i % 2 ? 10 : -10, duration: 1.3, ease: 'expo.out', scrollTrigger: { trigger: c, start: 'top 90%' } });
   });
 
   // Process: horizontal track inside a sticky frame.
@@ -308,11 +328,11 @@ function setupScroll() {
   });
 
   // Finale title
-  gsap.from('.contact__title .ch', {
+  reveal('.contact__title .ch', {
     yPercent: 110, rotateX: -70, opacity: 0, duration: 1.3, stagger: 0.025, ease: 'expo.out',
     scrollTrigger: { trigger: '.contact', start: 'top 60%' },
   });
-  gsap.from('.contact__btn', { scale: 0, rotate: -90, duration: 1.4, ease: 'elastic.out(1, .6)', scrollTrigger: { trigger: '.contact__btn', start: 'top 90%' } });
+  reveal('.contact__btn', { scale: 0, rotate: -90, duration: 1.4, ease: 'elastic.out(1, .6)', scrollTrigger: { trigger: '.contact__btn', start: 'top 90%' } });
 
   // Nav: hide on scroll down, show on up.
   const nav = document.querySelector('.nav');
