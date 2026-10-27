@@ -10,4 +10,4 @@
 
 Локально: `python3 -m http.server` в этой папке. `?review` — режим проверки без сглаживания.
 
-3D-модель: Air Jordan 1 High — DeezVertz (Sketchfab), CC BY 4.0, взята из открытого проекта Shoe Forge (hardikverma22/shoe-forge); расцветки перекрашены по маскам деталей.
+3D-модели: Air Jordan 1 High — DeezVertz, Nike Dunk Low — kirilldrac78 (Sketchfab, CC BY 4.0), из открытого проекта Shoe Forge (hardikverma22/shoe-forge); расцветки изменены. Фото в assets/photos — из магазина.

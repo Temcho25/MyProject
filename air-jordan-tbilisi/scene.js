@@ -3,14 +3,25 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { MeshoptDecoder } from 'three/addons/meshopt_decoder.module.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
 export const COLORWAYS = [
+  { key: 'mocha', name: 'Mocha', sub: 'Travis Scott × Air Jordan 1', accent: '#b07a52', laces: '#2a1d16' },
+  { key: 'canary', name: 'Canary', sub: 'Travis Scott × Air Jordan 1', accent: '#f0c419', laces: '#f0cf2e' },
+  { key: 'pink', name: 'Pink', sub: 'Travis Scott × Air Jordan 1', accent: '#e88bb4', laces: '#ead9b2' },
+  { key: 'fragment', name: 'Fragment', sub: 'Travis Scott × Air Jordan 1', accent: '#3d7bd9', laces: '#f1f0ee' },
   { key: 'bred', name: 'Bred Toe', sub: 'Air Jordan 1 High OG', accent: '#e3141e', laces: '#111111' },
-  { key: 'mocha', name: 'Travis Scott', sub: 'Air Jordan 1 High · Mocha', accent: '#b07a52', laces: '#2a1d16' },
-  { key: 'royal', name: 'Royal Toe', sub: 'Air Jordan 1 High OG', accent: '#2f5bff', laces: '#111111' },
-  { key: 'fragment', name: 'TS × Fragment', sub: 'Air Jordan 1 High · Travis Scott', accent: '#3d7bd9', laces: '#f1f0ee' },
-  { key: 'shadow', name: 'Shadow', sub: 'Air Jordan 1 High OG', accent: '#9aa0aa', laces: '#111111' },
 ];
+
+// Nike Dunk Low «Grey Fog» — герой первого экрана и финала (как на фото магазина)
+const DUNK = { cx: -0.041, cy: 0.955, cz: -0.759, k: 0.573 };
+const GREY_FOG = {
+  Blue_Shammy_Leather: '#e4e4e0', Blue_Suede_Leather: '#8b8d89', Yellow_Shammy_Leather: '#858783',
+  'Material.003': '#8b8d89', 'Material.008': '#8e908b', 'Material.009': '#e6e6e2', 'Material.004': '#c9c9c5',
+  'Material.002': '#b9b9b5', 'Material.007': '#b9b9b5', Copper_Grid: '#d8d8d4', 'Material.005': '#a6a7a3',
+  'Material.001': '#8b8d89', 'Material.010': '#e4e4e0', Material: '#8b8d89',
+};
+const SWAP = 0.8;          // где Dunk превращается в AJ1 (в пике вращения)
 
 // исходная модель: носок по +Z, высота по Y → приводим к длине 2 и носку по +X
 const SRC = { cx: 0.0507, cy: 0.1912, cz: 0.0015, k: 7.0 };
@@ -93,20 +104,22 @@ export async function createScene(canvas, { onProgress = () => {}, capture = fal
   pm.dispose();
 
   // свет: ключевой, контровой цветной, холодная заливка
-  const key = new THREE.DirectionalLight(0xffffff, 2.4); key.position.set(-3, 5, 4); scene.add(key);
+  const key = new THREE.DirectionalLight(0xfff6ec, 2.4); key.position.set(-2.5, 6, 3.5); scene.add(key);
+  const top = new THREE.SpotLight(0xffffff, 60, 16, 0.5, 0.8, 1.6); top.position.set(0.4, 6, 1.5); scene.add(top); scene.add(top.target);
   const rim = new THREE.PointLight(0xe3141e, 40, 14, 1.6); rim.position.set(1.5, 1.6, -2.6); scene.add(rim);
   const rim2 = new THREE.PointLight(0xe3141e, 18, 12, 1.6); rim2.position.set(-2.6, -0.4, -1.8); scene.add(rim2);
   const fill = new THREE.DirectionalLight(0xbfd4ff, 0.5); fill.position.set(4, -1, 3); scene.add(fill);
 
   // ── загрузка
   const manager = new THREE.LoadingManager();
-  let loaded = 0; const total = 1 + COLORWAYS.length;
+  let loaded = 0; const total = 2 + COLORWAYS.length;
   const tick = () => onProgress(++loaded / total);
   const texLoader = new THREE.TextureLoader(manager);
   const loadTex = url => new Promise((res, rej) => texLoader.load(url, t => { t.colorSpace = THREE.SRGBColorSpace; t.flipY = false; t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy()); tick(); res(t); }, undefined, rej));
   const gl = new GLTFLoader(manager); gl.setMeshoptDecoder(MeshoptDecoder);
   const gltfP = new Promise((res, rej) => gl.load('assets/aj1.glb', g => { tick(); res(g); }, undefined, rej));
-  const [gltf, ...maps] = await Promise.all([gltfP, ...COLORWAYS.map(c => loadTex(`assets/aj-${c.key}.webp`))]);
+  const dunkP = new Promise((res, rej) => gl.load('assets/dunk-low.glb', g => { tick(); res(g); }, undefined, rej));
+  const [gltf, dunkG, ...maps] = await Promise.all([gltfP, dunkP, ...COLORWAYS.map(c => loadTex(`assets/aj-${c.key}.webp`))]);
 
   const src = {}; gltf.scene.traverse(o => { if (o.isMesh) src[o.name.split('_')[0]] = o; });
   gltf.scene.updateMatrixWorld(true);
@@ -164,6 +177,33 @@ export async function createScene(canvas, { onProgress = () => {}, capture = fal
     slices.push({ holder, mesh, mat, local: [lo, hi], recolor: pt.mesh === 'Shoe' });
   });
 
+  // Dunk Low Grey Fog
+  const dunk = new THREE.Group(); pivot.add(dunk);
+  {
+    const norm = new THREE.Group(); norm.scale.setScalar(DUNK.k);
+    norm.position.set(-DUNK.cx * DUNK.k, -DUNK.cy * DUNK.k, -DUNK.cz * DUNK.k);
+    dunkG.scene.updateMatrixWorld(true);
+    dunkG.scene.traverse(o => {
+      if (!o.isMesh) return;
+      const name = o.material.name, col = GREY_FOG[name] || '#d0d0cc';
+      const isLace = name === 'Material.005', isSole = name === 'Material.008' || name === 'Material.009';
+      const mat = new THREE.MeshPhysicalMaterial({
+        color: col, roughness: isSole ? 0.75 : isLace ? 0.9 : 0.5, metalness: 0,
+        clearcoat: isSole || isLace ? 0 : 0.25, clearcoatRoughness: 0.5, sheen: 0.3, sheenColor: new THREE.Color(0xffffff), sheenRoughness: 0.6,
+        side: THREE.DoubleSide,
+      });
+      const m = new THREE.Mesh(o.geometry, mat); m.matrixAutoUpdate = false; m.matrix.copy(o.matrixWorld); norm.add(m);
+    });
+    dunk.add(norm);
+  }
+
+  // матовый постамент, как в магазине
+  const pedestal = new THREE.Mesh(
+    new RoundedBoxGeometry(2.7, 3.2, 1.55, 4, 0.03),
+    new THREE.MeshPhysicalMaterial({ color: 0x232426, roughness: 0.86, metalness: 0, clearcoat: 0.08, clearcoatRoughness: 0.9 }),
+  );
+  scene.add(pedestal);
+
   // мягкая тень на «полу»
   const shadowTex = (() => {
     const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d');
@@ -197,7 +237,7 @@ export async function createScene(canvas, { onProgress = () => {}, capture = fal
 
   // ── состояние
   const st = {
-    s: 0, mouseX: 0, mouseY: 0, cw: 0, intro: 0, vel: 0,
+    s: 0, mouseX: 0, mouseY: 0, cw: 0, intro: 0, vel: 0, spinVel: 0,
     accent: new THREE.Color(0xe3141e), accentTarget: new THREE.Color(0xe3141e),
   };
   let cwCur = 0, cwNext = 0, mixT = 1, queued = null;
@@ -211,7 +251,7 @@ export async function createScene(canvas, { onProgress = () => {}, capture = fal
   }
   const lacesFrom = new THREE.Color(), lacesTo = new THREE.Color(0x111111);
 
-  const tmpM = new THREE.Matrix4(), tmpV = new THREE.Vector3();
+  const tmpM = new THREE.Matrix4(), tmpV = new THREE.Vector3(), tmpC = new THREE.Color();
   const anchorsLocal = [
     new THREE.Vector3(-0.45, -0.5, 0.36), new THREE.Vector3(0.1, -0.36, 0.0),
     new THREE.Vector3(-0.35, 0.05, 0.42), new THREE.Vector3(0.3, 0.3, 0.12),
@@ -229,20 +269,29 @@ export async function createScene(canvas, { onProgress = () => {}, capture = fal
   }
   resize();
 
-  let explodeOut = 0;
+  let explodeOut = 0, lastSpin = 0;
   function update(dt, time) {
     const asp = W / H, portrait = asp < 0.85;
     const k = sample(st.s);
     let [x, y, z, rx, ry, rz, sc, ex, az, el, dist, ty] = k;
     ex = clamp(ex); explodeOut = ex;
+    let lift = 0;
     if (portrait) {
       x *= 0.12;
       const sp = st.s;
-      if (sp < 1) y += 0.62 * (1 - smooth(clamp(sp)));
-      else if (sp > 3.9) y += 0.75 * smooth(clamp((sp - 3.9) / 0.5)) + 3.2 * smooth(clamp((sp - 4.5) / 0.45));
-      else if (sp > 1.95 && sp < 3) y += 0.25;
+      if (sp < 1) lift = 0.62 * (1 - smooth(clamp(sp)));
+      else if (sp > 3.9) lift = 0.75 * smooth(clamp((sp - 3.9) / 0.5)) + 3.2 * smooth(clamp((sp - 4.5) / 0.45));
+      else if (sp > 1.95 && sp < 3) lift = 0.25;
+      y += lift;
       x += 0.42 * ex;
     }
+    const yRest = y;
+    // «кручёная склейка»: Dunk раскручивается и в пике скорости становится AJ1
+    const spin = smooth(clamp((st.s - 0.6) / 0.42));
+    ry += spin * Math.PI * 2;
+    st.spinVel = Math.abs(spin - lastSpin) / Math.max(dt, 1e-3); lastSpin = spin;
+    const showDunk = st.s < SWAP || st.s > 3.6;
+    dunk.visible = showDunk; slices.forEach(sl => { sl.mesh.visible = !showDunk; });
     // вступление: пара «падает» в кадр с весом и оседает
     const it = st.intro, drop = 1 - it;
     const settle = Math.sin(it * Math.PI * 2.5) * Math.exp(-it * 4) * 0.12;
@@ -276,15 +325,24 @@ export async function createScene(canvas, { onProgress = () => {}, capture = fal
     camera.position.set(D * Math.sin(A) * Math.cos(B), ty + D * Math.sin(B), D * Math.cos(A) * Math.cos(B));
     camera.lookAt(0, ty, 0);
 
+    // постамент: выезжает снизу на первом экране и в финале
+    const pv = Math.max(1 - smooth(clamp((st.s - 0.4) / 0.35)), smooth(clamp((st.s - 4.05) / 0.4)));
+    const S = sc * (portrait ? 0.82 : 1) * 1.08;
+    const floorY = yRest - (dunk.visible ? 0.47 : 0.6) * S - 0.09;
+    pedestal.position.set(x, floorY - 1.6 - (1 - pv) * 4.2, z - 0.05);
+    pedestal.scale.setScalar(S / 1.08);
+    pedestal.rotation.y = -0.18;
+    pedestal.visible = pv > 0.001;
+    top.position.set(x + 0.4, 6, 1.5); top.target.position.set(x, floorY, z);
+
     // тень и свечение пола
-    const floorY = -0.98;
     const hgt = Math.max(0, y - 0.5 * sc - floorY);
     shadow.position.set(x, floorY, z); floorGlow.position.set(x, floorY + 0.001, z);
     const sw = 2.6 * sc * (1 + hgt * 0.5);
     shadow.scale.set(sw, sw * 0.42, 1); floorGlow.scale.set(sw * 1.5, sw * 0.6, 1);
     const vis = clamp(1 - Math.abs(y) / 2.2);
     shadow.material.opacity = vis * clamp(1 - hgt * 0.6) * (1 - ex * 0.6) * 0.9;
-    floorGlow.material.opacity = vis * 0.35 * (1 - ex * 0.5);
+    floorGlow.material.opacity = vis * 0.35 * (1 - ex * 0.5) * (1 - pv);
 
     // цвет: волна перекраски
     if (mixT < 1) {
@@ -297,7 +355,9 @@ export async function createScene(canvas, { onProgress = () => {}, capture = fal
       }
     }
     st.accent.lerp(st.accentTarget, 1 - Math.exp(-dt * 3));
-    U.uGlow.value.copy(st.accent); rim.color.copy(st.accent); rim2.color.copy(st.accent); floorGlow.material.color.copy(st.accent);
+    U.uGlow.value.copy(st.accent); floorGlow.material.color.copy(st.accent);
+    const studio = dunk.visible ? 1 : 0;
+    rim.color.copy(st.accent).lerp(tmpC.set(0xdfe6ff), studio * 0.85); rim2.color.copy(rim.color);
     U.uInner.value.copy(st.accent).multiplyScalar(0.55);
     rim.intensity = 40 + ex * 30; key.intensity = 2.4 * (0.25 + 0.75 * smooth(clamp(st.intro * 1.4)));
 
@@ -316,7 +376,7 @@ export async function createScene(canvas, { onProgress = () => {}, capture = fal
   renderer.compile(scene, camera);
   return {
     state: st, update, resize, setColorway, anchors: anchorsScreen,
-    get explode() { return explodeOut; }, get colorway() { return cwNext; },
+    get explode() { return explodeOut; }, get colorway() { return cwNext; }, get spinVel() { return st.spinVel; },
     snapshot(cwIndex, rotY, w, h) {           // для карточек
       slices.forEach(sl => { if (sl.recolor) sl.mat.map = maps[cwIndex]; }); lacesMat.color.set(COLORWAYS[cwIndex].laces); U.uMix.value = 0; cwCur = cwNext = cwIndex;
       st.accent.set(COLORWAYS[cwIndex].accent); st.accentTarget.copy(st.accent);
@@ -324,6 +384,7 @@ export async function createScene(canvas, { onProgress = () => {}, capture = fal
       st.s = 1; st.intro = 1;
       renderer.setPixelRatio(1); renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); W = w; H = h;
       update(0, 0);
+      dunk.visible = false; pedestal.visible = false; slices.forEach(sl => { sl.mesh.visible = true; });
       shoe.position.set(0, 0.05, 0); shoe.rotation.set(0.08, rotY, 0.12, 'YXZ'); shoe.updateMatrixWorld(true);
       slices.forEach(sl => { sl.mat.clippingPlanes[0].copy(sl.local[0]).applyMatrix4(sl.holder.matrixWorld); sl.mat.clippingPlanes[1].copy(sl.local[1]).applyMatrix4(sl.holder.matrixWorld); });
       camera.position.set(0.6, 1.2, 6.2); camera.lookAt(0, 0, 0);

@@ -111,6 +111,11 @@ swBtns.forEach(b => b.addEventListener('click', () => {
 }));
 
 // ── подписи анатомии
+const shots = $$('.shot__frame');
+shots.forEach(f => {
+  f.addEventListener('pointermove', e => { if (e.pointerType !== 'mouse') return; const r = f.getBoundingClientRect(); f.style.setProperty('--ry', `${((e.clientX - r.left) / r.width - 0.5) * 8}deg`); f.style.setProperty('--rx', `${(0.5 - (e.clientY - r.top) / r.height) * 6}deg`); });
+  f.addEventListener('pointerleave', () => { f.style.setProperty('--ry', '0deg'); f.style.setProperty('--rx', '0deg'); });
+});
 const tags = $$('.tag'), explodeNum = $('#explodeNum'), anaHead = $('.anatomy__head'), chapterEl = $('#chapter');
 
 // ── горизонтальная лента карточек
@@ -240,6 +245,19 @@ function frame(now) {
       c.style.opacity = 1 - k * 0.9;
     });
   }
+
+  // фото магазина: раскрытие маской + параллакс внутри рамки
+  shots.forEach(f => {
+    const r = f.getBoundingClientRect(), vh = innerHeight;
+    const enter = clamp((vh - r.top) / (vh * 0.55));
+    const mid = (r.top + r.height / 2 - vh / 2) / vh;
+    f.style.setProperty('--clip', `${(1 - smooth(enter)) * 100}%`);
+    f.style.setProperty('--py', `${mid * -60}px`);
+    f.style.setProperty('--sc', String(1.15 - smooth(enter) * 0.08));
+  });
+  // смаз при «кручёной склейке» Dunk → AJ1
+  if (scene) { const b = sSm > 0.55 && sSm < 1.05 ? Math.min(10, scene.spinVel * (reduced ? 0 : 2.2)) : 0; canvas.style.filter = b > 0.3 ? `blur(${b.toFixed(1)}px)` : ''; }
+  root.style.setProperty('--tint', sSm < 0.8 || sSm > 3.6 ? '0.25' : '1');
 
   sound.update(vel, sSm);
 
