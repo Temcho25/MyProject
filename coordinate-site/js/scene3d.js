@@ -3,7 +3,7 @@
    selector state through the `coord:sel` event ({block, floor}). */
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
-import { buildTower, buildCommercial, buildSite, floorBand, lights, TOWER_POS, LOBBY_H, FLOOR_H, towerHeight } from "./complex.js?v=20261028a";
+import { buildTower, buildCommercial, buildSite, floorBand, lights, TOWER_POS, LOBBY_H, FLOOR_H, towerHeight } from "./complex.js?v=20261028b";
 
 const C = window.COORD, BLOCKS = C.BLOCKS;
 const touch = matchMedia("(pointer:coarse)").matches;
@@ -151,7 +151,7 @@ function initHero() {
     // camera path (mirrors the old CSS timeline): top-down map → tilt → towers rise → orbit
     const tilt = lerp(.5, 64, eio(range(p, .03, .24))) - lerp(0, 8, eio(range(p, .5, .8)));
     const spin = -lerp(0, 18, eio(range(p, .1, .35))) + lerp(0, 70, eio(range(p, .38, .92)));
-    let dist = lerp(1900, 700, eo(range(p, 0, .2))) + lerp(0, 160, eio(range(p, .2, .34))) - lerp(0, 380, eio(range(p, .34, .58))) + lerp(0, 70, eio(range(p, .82, 1)));
+    let dist = lerp(1900, 700, eo(range(p, 0, .2))) + lerp(0, 120, eio(range(p, .2, .28))) - lerp(0, 380, eio(range(p, .28, .5))) + lerp(0, 70, eio(range(p, .82, 1)));
     // keep ~150 m of the complex in frame on narrow screens
     const hf = 2 * Math.atan(Math.tan(camera.fov * D2R / 2) * aspect), need = 95 / Math.tan(hf / 2);
     dist = Math.max(dist, need * lerp(.6, 1, range(p, .3, .5)));
@@ -186,7 +186,7 @@ function initHero() {
         y = (-v.y * .5 + .5) * H;
         lb.style.transform = `translate3d(${(v.x * .5 + .5) * W}px,${y}px,0) translate(-50%,-100%)`;
       }
-      lb.style.opacity = show && y > 150 ? 1 : 0;              // never under the header/logo
+      lb.style.opacity = show && y > (W > 700 ? 100 : 150) ? 1 : 0;              // never under the header/logo
     });
     const gc = eback(range(p, .5, .64)); com.scale.y = Math.max(.001, gc); com.visible = p > .5;
     const gs = eo(range(p, .4, .55)); site.visible = gs > 0; site.scale.set(1, Math.max(.001, gs), 1);

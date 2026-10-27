@@ -91,7 +91,7 @@ html.intro-on{overflow:hidden}
 @media (max-width:980px){.qbar{display:flex}}
 
 /* ---------- world (scroll-driven 3D scene) ---------- */
-.world-track{position:relative;height:640vh}
+.world-track{position:relative;height:460vh}
 .stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;perspective:1100px;perspective-origin:50% 42%}
 .stage-bg{position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 30%,var(--ink-3) 0%,var(--ink) 60%)}
 .stage-fade{position:absolute;inset:0;background:var(--ink);pointer-events:none;opacity:1}
@@ -233,7 +233,7 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
   .scroll-hint:after,.open i{animation:none}
 }
 </style>
-<link rel="stylesheet" href="css/gallery.css?v=20261028a"><link rel="stylesheet" href="css/finder.css?v=20261028a"><link rel="stylesheet" href="css/walk.css?v=20261028a"><link rel="stylesheet" href="css/live.css?v=20261028a">
+<link rel="stylesheet" href="css/gallery.css?v=20261028b"><link rel="stylesheet" href="css/finder.css?v=20261028b"><link rel="stylesheet" href="css/walk.css?v=20261028b"><link rel="stylesheet" href="css/live.css?v=20261028b">
 <script>
 /* Errors are kept in window.__errs; open the site with ?debug to see them on screen (helps diagnose a blank screen). */
 (function(){var E=window.__errs=[];function add(m){E.push(String(m).slice(0,300));if(window.__dbgBox)window.__dbgBox.textContent=E.join("\n");}
@@ -323,7 +323,7 @@ setInterval(function(){var C=window.COORD||{};b.textContent=E.join("\n")+"\nhero
     </div>
   </div>
 </div>
-<span id="location" style="position:absolute;top:220vh"></span>
+<span id="location" style="position:absolute;top:100vh"></span>
 
 <!-- ============ INFRASTRUCTURE RING ============ -->
 <section class="ring-track" id="infra">
@@ -406,12 +406,12 @@ setInterval(function(){var C=window.COORD||{};b.textContent=E.join("\n")+"\nhero
 </section>
 <footer><span>© Coordinate by Keystone</span><span>41° 40' 30.9" N · 44° 49' 37.4" E</span></footer>
 
-<script src="js/data.js?v=20261028a"></script>
-<script type="module" src="js/scene3d.js?v=20261028a"></script>
-<script type="module" src="js/gallery.js?v=20261028a"></script>
-<script type="module" src="js/finder.js?v=20261028a"></script>
-<script type="module" src="js/walk.js?v=20261028a"></script>
-<script type="module" src="js/live.js?v=20261028a"></script>
+<script src="js/data.js?v=20261028b"></script>
+<script type="module" src="js/scene3d.js?v=20261028b"></script>
+<script type="module" src="js/gallery.js?v=20261028b"></script>
+<script type="module" src="js/finder.js?v=20261028b"></script>
+<script type="module" src="js/walk.js?v=20261028b"></script>
+<script type="module" src="js/live.js?v=20261028b"></script>
 <script>
 /* =====================================================================
    DATA — edit here. Everything shown on the page comes from this block.
@@ -591,6 +591,8 @@ addEventListener("scroll",()=>{sy=scrollY},{passive:true});
 const qbar=$("#qbar"), walkSec=$("#walk"), heroLayer=$("#heroLayer"), coords=$("#heroCoords"), by=$("#heroBy"), hint=$("#hint"),
       stageFade=$("#stageFade"), capLoc=$("#capLoc"), factEls=$$("#facts .cap"), topBar=$("#top"), railbar=$("#railbar");
 let t0=performance.now();
+const HT=[[0,0],[.1,.16],[.13,.21],[.24,.42],[.46,.62],[1,1]];
+function heroTime(x){ for(let i=1;i<HT.length;i++){ const [a0,b0]=HT[i-1],[a1,b1]=HT[i]; if(x<=a1) return b0+(b1-b0)*(x-a0)/(a1-a0); } return 1; }
 addEventListener("coord:introdone",()=>{ t0=performance.now(); });
 
 function frame(now){
@@ -603,7 +605,8 @@ function frame(now){
 
   const intro=reduce?1:eo(clamp((now-t0-150)/1700));
   const rTrack=track.getBoundingClientRect();
-  const p=clamp(-(rTrack.top+(sy-ssy))/(rTrack.height-vh));
+  // scroll → story time. The old timeline had long empty stretches; this map reaches the pin and the towers much sooner.
+  const p=heroTime(clamp(-(rTrack.top+(sy-ssy))/(rTrack.height-vh)));
 
   const worldOn = rTrack.bottom>-50;
   if(worldOn){
@@ -653,9 +656,10 @@ function frame(now){
     c.classList.toggle("front",f<.06);});
   }
 
-  topBar.classList.toggle("solid",sy>vh*5.6);
+  const heroEnd=track.offsetHeight-vh*.4;
+  topBar.classList.toggle("solid",sy>heroEnd);
   { const over=el=>{ if(!el) return false; const r=el.getBoundingClientRect(); return r.top<vh*.5&&r.bottom>vh*.5; }, inWalk=over(walkSec);
-    qbar.classList.toggle("on",sy>vh*5.6 && !inWalk && document.documentElement.scrollHeight-sy-vh>vh*.6); }
+    qbar.classList.toggle("on",sy>heroEnd && !inWalk && document.documentElement.scrollHeight-sy-vh>vh*.6); }
   railbar.style.transform=`scaleY(${clamp(sy/(document.documentElement.scrollHeight-vh))})`;
   requestAnimationFrame(frame);
 }
