@@ -86,15 +86,15 @@ body:after{content:"";position:fixed;inset:-50%;pointer-events:none;z-index:100;
 #towers,#selWorld{position:absolute;left:0;top:0;transform-style:preserve-3d}
 .tower{position:absolute;transform-style:preserve-3d}
 .tower .z{position:absolute;left:0;top:0;transform-style:preserve-3d;transform-origin:0 0}
-.face{position:absolute;backface-visibility:visible;border:1px solid rgba(243,223,174,.55);
-  background-color:rgba(38,46,64,.82)}
-.face.f,.face.b{background-image:repeating-linear-gradient(to top,rgba(243,223,174,.42) 0 1px,transparent 1px var(--fh))}
-.face.l,.face.r{background-image:repeating-linear-gradient(to right,rgba(243,223,174,.42) 0 1px,transparent 1px var(--fh))}
-.face.t{background:rgba(216,196,154,.28)}
-.tower .label{position:absolute;left:50%;top:50%;transform-style:preserve-3d}
+.face{position:absolute;backface-visibility:visible;transform-origin:50% 100%}
+.face.g{background-image:repeating-linear-gradient(to top,rgba(243,223,174,.45) 0 1px,transparent 1px var(--fh))}
+.face.p{background-image:linear-gradient(to top,rgba(0,0,0,.18),transparent 30%)}
+.face.t{border-radius:50%;background:radial-gradient(circle,rgba(120,118,112,.95) 0 70%,rgba(216,196,154,.85) 72% 100%);border:1px solid rgba(243,223,174,.6)}
+.tower .label{position:absolute;transform-style:preserve-3d}
 .tower .label span{display:block;transform:translate(-50%,-100%);font:800 30px/1 "Unbounded",sans-serif;color:var(--paper);text-shadow:0 2px 20px rgba(0,0,0,.4);white-space:nowrap}
 .slab{position:absolute;transform-style:preserve-3d;pointer-events:none;transition:opacity .3s}
-.slab div{position:absolute;background:rgba(243,223,174,.85);box-shadow:0 0 30px rgba(243,223,174,.8)}
+.slab{left:0;top:0}
+.slab div{position:absolute;transform-origin:50% 100%;backface-visibility:visible;background:rgba(243,223,174,.9);box-shadow:0 0 22px rgba(243,223,174,.75)}
 
 /* hero letters */
 .hero-layer{position:absolute;inset:0;display:grid;place-items:center;transform-style:preserve-3d;pointer-events:none}
@@ -181,6 +181,11 @@ html[lang="ka"] .h2{font-weight:600;letter-spacing:0}
 .summary .big{font:500 clamp(24px,2.6vw,38px)/1.15 var(--display)}
 .plan-img{margin-top:16px;border:1px solid var(--line);background:#fff}
 .plan-img:empty{display:none}
+.plan-img{position:relative}
+.plan-tg{position:absolute;right:10px;top:10px;display:flex;border:1px solid #1a2130;background:#fff;z-index:1}
+.plan-tg button{font:600 11px/1 "Manrope",sans-serif;letter-spacing:.12em;padding:7px 10px;color:#1a2130;background:#fff;border:0;cursor:pointer}
+.plan-tg button[aria-pressed="true"]{background:#1a2130;color:#fff}
+.chip.off{opacity:.45}
 .plan-img img{width:100%;height:auto}
 .btn{display:inline-flex;align-items:center;gap:12px;padding:16px 26px;border-radius:999px;background:var(--paper);color:var(--ink);font-weight:700;letter-spacing:.02em;transition:transform .3s,box-shadow .3s}
 .btn:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(0,0,0,.35)}
@@ -357,19 +362,27 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
 /* =====================================================================
    DATA — edit here. Everything shown on the page comes from this block.
    ===================================================================== */
-// Blocks and floor counts (from public listings — please confirm with the developer).
+// Three round residential towers. x/y = centre on the site plan, r = radius (scene px).
+// Block A floors come from api.coordinate.ge; B and C are read off the official renders — please confirm with the developer.
 const BLOCKS = [
-  {id:"A", floors:31, x:-150, y:-40,  w:100, d:100},
-  {id:"B", floors:18, x:  20, y:-150, w:100, d:90},
-  {id:"C", floors:14, x: 120, y:  40, w:90,  d:100},
-  {id:"D", floors:11, x: -30, y: 110, w:110, d:80},
+  {id:"A", floors:31, x:-120, y:  50, r:58},
+  {id:"B", floors:18, x:  10, y:-110, r:56},
+  {id:"C", floors:14, x: 140, y: -20, r:56},
 ];
-// Layout types with area ranges in m². `plan` = path to a floor-plan image (e.g. "plans/3-rooms.jpg").
+// Layout types (block A, from api.coordinate.ge). `id` = position on the floor (apt 1803 → "03").
+// rooms = bedrooms + living room. floors = [first,last] floor with this layout. plan2d / plan3d = images in plans/.
 const LAYOUTS = [
-  {rooms:"2",  area:"62.6 – 68.9",   plan:""},
-  {rooms:"3",  area:"85.5 – 100.8",  plan:""},
-  {rooms:"4",  area:"125.3",         plan:""},
-  {rooms:"5+", area:"391.6 – 401.3", plan:""},
+  {id:"09",  rooms:"2", area:62.6,  floors:[3,28],  plan2d:"plans/09-2d.png",  plan3d:"plans/09-3d.webp"},
+  {id:"05",  rooms:"2", area:64.7,  floors:[3,28],  plan2d:"plans/05-2d.png",  plan3d:"plans/05-3d.webp"},
+  {id:"01",  rooms:"2", area:65.3,  floors:[3,28],  plan2d:"plans/01-2d.png",  plan3d:"plans/01-3d.webp"},
+  {id:"07",  rooms:"2", area:68.9,  floors:[3,28],  plan2d:"plans/07-2d.png",  plan3d:"plans/07-3d.webp"},
+  {id:"06",  rooms:"3", area:85.8,  floors:[3,28],  plan2d:"plans/06-2d.png",  plan3d:"plans/06-3d.webp"},
+  {id:"02",  rooms:"3", area:87.7,  floors:[3,28],  plan2d:"plans/02-2d.png",  plan3d:"plans/02-3d.webp"},
+  {id:"04",  rooms:"3", area:92.2,  floors:[3,28],  plan2d:"plans/04-2d.png",  plan3d:"plans/04-3d.webp"},
+  {id:"03",  rooms:"3", area:101.7, floors:[3,28],  plan2d:"plans/03-2d.png",  plan3d:"plans/03-3d.webp"},
+  {id:"08",  rooms:"4", area:125.3, floors:[3,28],  plan2d:"plans/08-2d.png",  plan3d:"plans/08-3d.webp"},
+  {id:"ph2", rooms:"6", area:391.6, floors:[29,30], plan2d:"plans/ph2-2d.png", plan3d:"plans/ph2-3d.webp"},
+  {id:"ph1", rooms:"5", area:401.3, floors:[29,30], plan2d:"plans/ph1-2d.png", plan3d:"plans/ph1-3d.webp"},
 ];
 // Photos at full resolution, e.g. ["photos/01.jpg", ...]. Gallery section appears automatically.
 const PHOTOS = ["photos/01-aerial-day.webp","photos/02-aerial-park.webp","photos/03-towers-sunset.webp","photos/04-street-evening.webp"];
@@ -402,8 +415,8 @@ const I18N = {
   market:"Супермаркет", food:"Фуд-корт", pharm:"Аптека", bank:"Банк", cowork:"Бизнес-центр и коворкинг", courts:"Корты для падела и бадминтона",
   choose_h:"Блок. Этаж. Планировка.", block:"Блок", floor:"Этаж", layout:"Планировка", drag:"Потяните, чтобы вращать",
   rooms:n=>`${n} ${n==="2"||n==="3"||n==="4"?"комнаты":"комнат"}`, m2:"м²", send:"Отправить запрос",
-  msg:(b,f,r)=>`Здравствуйте! Интересует Coordinate: блок ${b}, этаж ${f}, ${r} ${r==="5+"?"комнат":"комнаты"}.`,
-  sum:(b,f,r)=>`Блок ${b} · Этаж ${f} · ${r} ${r==="5+"?"комн.":"комн."}`,
+  msg:(b,f,r)=>`Здравствуйте! Интересует Coordinate: блок ${b}, этаж ${f}, ${r} ${+r>=5?"комнат":"комнаты"}.`,
+  sum:(b,f,r)=>`Блок ${b} · Этаж ${f} · ${r} комн.`,
   p_fin:"Финансовый партнёр", bog:"Банк Грузии", p_pay:"Оплата", install:"Внутренняя рассрочка и ипотека", p_sales:"Эксклюзивные продажи",
   addr_k:"Адрес", hours_k:"Часы работы", type_k:"Компания", type:"Девелопер недвижимости", call:"Позвонить"
  },
@@ -461,23 +474,32 @@ try{ const s=localStorage.getItem("coord-lang"); if(s&&I18N[s]) lang=s; else { c
 let L = I18N[lang];
 
 /* ---------- 3D tower builder ---------- */
+// Round tower = ring of N vertical strips around the axis. Even strips are light pilasters,
+// odd ones dark glass with floor lines — the striped facade from the renders. Shading is baked per strip.
+const SIDES=28;
 function makeTower(b, fh, opts={}){
-  const h=b.floors*fh, t=document.createElement("div");
-  t.className="tower"; t.style.left=(b.x-b.w/2)+"px"; t.style.top=(b.y-b.d/2)+"px"; t.style.width=b.w+"px"; t.style.height=b.d+"px";
+  const h=b.floors*fh, r=b.r, d=2*r, t=document.createElement("div");
+  t.className="tower"; t.style.left=(b.x-r)+"px"; t.style.top=(b.y-r)+"px"; t.style.width=d+"px"; t.style.height=d+"px";
   t.style.setProperty("--fh",fh+"px");
   const z=document.createElement("div"); z.className="z"; t.appendChild(z);
-  const f=(cls,css)=>{const e=document.createElement("div");e.className="face "+cls;e.style.cssText=css;z.appendChild(e);return e};
-  f("b",`left:0;top:${-h}px;width:${b.w}px;height:${h}px;transform-origin:50% 100%;transform:rotateX(-90deg)`);
-  f("l",`left:${-h}px;top:0;width:${h}px;height:${b.d}px;transform-origin:100% 50%;transform:rotateY(90deg)`);
-  f("r",`left:${b.w}px;top:0;width:${h}px;height:${b.d}px;transform-origin:0 50%;transform:rotateY(-90deg)`);
-  f("f",`left:0;top:${b.d-h}px;width:${b.w}px;height:${h}px;transform-origin:50% 100%;transform:rotateX(-90deg)`);
-  f("t",`left:0;top:0;width:${b.w}px;height:${b.d}px;transform:translateZ(${h}px)`);
-  if(opts.label){ const lb=document.createElement("div"); lb.className="label"; lb.style.transform=`translateZ(${h+26}px)`;
-    lb.innerHTML=`<span>${b.id}</span>`; z.appendChild(lb); t._label=lb; }
-  if(opts.slab){ const s=document.createElement("div"); s.className="slab"; s.style.cssText=`left:-6px;top:-6px;width:${b.w+12}px;height:${b.d+12}px`;
-    s.innerHTML=`<div style="inset:0;opacity:.35"></div>`+
-      `<div style="left:0;top:${b.d+12}px;width:${b.w+12}px;height:${fh}px;transform-origin:50% 0;transform:rotateX(90deg)"></div>`+
-      `<div style="left:${b.w+12}px;top:0;width:${fh}px;height:${b.d+12}px;transform-origin:0 50%;transform:rotateY(-90deg)"></div>`;
+  const sw=2*r*Math.tan(Math.PI/SIDES)+.6, ap=r*Math.cos(Math.PI/SIDES);
+  for(let i=0;i<SIDES;i++){
+    const a=i*360/SIDES, light=.5+.5*Math.cos((a-200)*Math.PI/180);    // key light from the south-west
+    const pil=i%2===0, e=document.createElement("div");
+    e.className="face "+(pil?"p":"g");
+    e.style.cssText=`left:${r-sw/2}px;top:${r-h}px;width:${sw}px;height:${h}px;transform:rotateZ(${a}deg) translateY(${ap}px) rotateX(-90deg);`+
+      (pil?`background-color:rgb(${Math.round(lerp(92,226,light))},${Math.round(lerp(90,212,light))},${Math.round(lerp(88,184,light))})`
+          :`background-color:rgba(${Math.round(lerp(18,44,light))},${Math.round(lerp(23,52,light))},${Math.round(lerp(34,70,light))},.9)`);
+    z.appendChild(e);
+  }
+  const top=document.createElement("div"); top.className="face t";
+  top.style.cssText=`left:0;top:0;width:${d}px;height:${d}px;transform:translateZ(${h}px)`; z.appendChild(top);
+  if(opts.label){ const lb=document.createElement("div"); lb.className="label"; lb.style.left=r+"px"; lb.style.top=r+"px";
+    lb.style.transform=`translateZ(${h+26}px)`; lb.innerHTML=`<span>${b.id}</span>`; z.appendChild(lb); t._label=lb; }
+  if(opts.slab){ // glowing band one floor high, wrapped just outside the facade
+    const s=document.createElement("div"); s.className="slab"; const bw=2*(r+4)*Math.tan(Math.PI/SIDES)+.6, ba=(r+4)*Math.cos(Math.PI/SIDES);
+    for(let i=0;i<SIDES;i++){ const e=document.createElement("div");
+      e.style.cssText=`left:${r-bw/2}px;top:${r-fh}px;width:${bw}px;height:${fh}px;transform:rotateZ(${i*360/SIDES}deg) translateY(${ba}px) rotateX(-90deg)`; s.appendChild(e); }
     z.appendChild(s); t._slab=s; }
   t._z=z; t._h=h; return t;
 }
@@ -519,34 +541,49 @@ function applyLang(){
 $$(".langs button").forEach(b=>b.onclick=()=>{lang=b.dataset.lang;applyLang();requestAnimationFrame(()=>$$(".rv").forEach(r=>{if(r.dataset.seen)r.classList.add("in")}))});
 
 /* ---------- selector ---------- */
-const sel={block:BLOCKS[0].id,floor:Math.ceil(BLOCKS[0].floors/2),layout:LAYOUTS[1].rooms};
+const sel={block:BLOCKS[0].id,floor:14,layout:"06",view:"2d"};
+const layOf=id=>LAYOUTS.find(x=>x.id===id);
+// Residential floors of a block that have at least one known layout
+const floorRange=b=>[Math.min(...LAYOUTS.map(l=>l.floors[0])), Math.min(b.floors,Math.max(...LAYOUTS.map(l=>l.floors[1])))];
+const layoutsFor=b=>LAYOUTS.filter(l=>l.floors[0]<=b.floors);
+const fits=(l,f)=>f>=l.floors[0]&&f<=l.floors[1];
 const SFH=14; let selTower=null, selRot=-28, selVel=.06, dragging=false;
 function buildSelTower(){
   const b=BLOCKS.find(x=>x.id===sel.block);
   const scale=Math.min(1, 470/(b.floors*SFH));
   if(selTower) selTower.remove();
-  selTower=makeTower({...b,x:0,y:0,w:150,d:150},SFH*scale,{slab:true});
+  selTower=makeTower({...b,x:0,y:0,r:78},SFH*scale,{slab:true});
   selTower._fh=SFH*scale; $("#selWorld").appendChild(selTower);
   selTower._z.style.transform="scaleZ(0)"; selTower._grow=0;
 }
 function renderSelector(){
-  const b=BLOCKS.find(x=>x.id===sel.block); if(sel.floor>b.floors) sel.floor=b.floors;
+  const b=BLOCKS.find(x=>x.id===sel.block), [f0,f1]=floorRange(b);
+  sel.floor=clamp(sel.floor,f0,f1);
+  if(!layoutsFor(b).includes(layOf(sel.layout))) sel.layout=layoutsFor(b)[0].id;
+  { const l=layOf(sel.layout); if(!fits(l,sel.floor)) sel.floor=clamp(sel.floor,l.floors[0],Math.min(l.floors[1],b.floors)); }
   $("#blocks").innerHTML=BLOCKS.map(x=>`<button class="chip" data-b="${x.id}" aria-pressed="${x.id===sel.block}">${x.id}<small>${x.floors} ${L.floor.toLowerCase()}</small></button>`).join("");
-  let fl=""; for(let i=b.floors;i>=1;i--) fl+=`<button class="chip" data-f="${i}" aria-pressed="${i===sel.floor}">${i}</button>`;
+  let fl=""; for(let i=f1;i>=f0;i--) fl+=`<button class="chip" data-f="${i}" aria-pressed="${i===sel.floor}">${i}</button>`;
   $("#floors").innerHTML=fl;
-  $("#layouts").innerHTML=LAYOUTS.map(x=>`<button class="chip" data-l="${x.rooms}" aria-pressed="${x.rooms===sel.layout}">${L.rooms(x.rooms)}<small>${x.area} ${L.m2}</small></button>`).join("");
-  const lay=LAYOUTS.find(x=>x.rooms===sel.layout);
-  $("#planImg").innerHTML=lay.plan?`<img src="${lay.plan}" alt="" decoding="async">`:"";
-  $("#summary").textContent=L.sum(sel.block,sel.floor,sel.layout);
-  $("#req").href=`https://wa.me/${PHONE}?text=${encodeURIComponent(L.msg(sel.block,sel.floor,sel.layout))}`;
+  $("#layouts").innerHTML=layoutsFor(b).map(x=>`<button class="chip${fits(x,sel.floor)?"":" off"}" data-l="${x.id}" aria-pressed="${x.id===sel.layout}">${L.rooms(x.rooms)}<small>${x.area} ${L.m2}</small></button>`).join("");
+  const lay=layOf(sel.layout), src=sel.view==="3d"?lay.plan3d:lay.plan2d;
+  const pi=$("#planImg"), img=pi.querySelector("img");
+  if(!img) pi.innerHTML=`<div class="plan-tg"><button data-v="2d">2D</button><button data-v="3d">3D</button></div><img alt="" decoding="async">`;
+  pi.querySelectorAll("[data-v]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.v===sel.view));
+  const im=pi.querySelector("img"); if(im.getAttribute("src")!==src){ im.src=src; }
+  im.alt=`${L.layout}: ${L.rooms(lay.rooms)}, ${lay.area} ${L.m2}`;
+  $("#summary").textContent=`${L.sum(sel.block,sel.floor,lay.rooms)} · ${lay.area} ${L.m2}`;
+  $("#req").href=`https://wa.me/${PHONE}?text=${encodeURIComponent(L.msg(sel.block,sel.floor,lay.rooms)+` — ${lay.area} ${L.m2}`)}`;
   placeSlab();
 }
-function placeSlab(){ if(!selTower) return; const s=selTower._slab; s.style.transform=`translateZ(${(sel.floor-1)*selTower._fh+selTower._fh}px)`; }
+function placeSlab(){ if(!selTower) return; selTower._slab.style.transform=`translateZ(${(sel.floor-1)*selTower._fh}px)`; }
 $("#blocks").onclick=e=>{const t=e.target.closest("[data-b]"); if(!t) return; sel.block=t.dataset.b; buildSelTower(); renderSelector();};
-$("#floors").onclick=e=>{const t=e.target.closest("[data-f]"); if(!t) return; sel.floor=+t.dataset.f; renderSelector();};
-$("#floors").onmouseover=e=>{const t=e.target.closest("[data-f]"); if(t&&selTower) selTower._slab.style.transform=`translateZ(${(+t.dataset.f)*selTower._fh}px)`;};
+$("#floors").onclick=e=>{const t=e.target.closest("[data-f]"); if(!t) return; sel.floor=+t.dataset.f;
+  if(!fits(layOf(sel.layout),sel.floor)) sel.layout=(LAYOUTS.find(l=>fits(l,sel.floor))||LAYOUTS[0]).id;
+  renderSelector();};
+$("#floors").onmouseover=e=>{const t=e.target.closest("[data-f]"); if(t&&selTower) selTower._slab.style.transform=`translateZ(${(+t.dataset.f-1)*selTower._fh}px)`;};
 $("#floors").onmouseleave=placeSlab;
 $("#layouts").onclick=e=>{const t=e.target.closest("[data-l]"); if(!t) return; sel.layout=t.dataset.l; renderSelector();};
+$("#planImg").onclick=e=>{const t=e.target.closest("[data-v]"); if(!t) return; sel.view=t.dataset.v; renderSelector();};
 (()=>{const el=$("#sel3d"); let lx=0;
   el.addEventListener("pointerdown",e=>{dragging=true;lx=e.clientX;el.setPointerCapture(e.pointerId);el.style.cursor="grabbing"});
   el.addEventListener("pointermove",e=>{if(!dragging)return;const dx=e.clientX-lx;lx=e.clientX;selRot+=dx*.4;selVel=dx*.4});
