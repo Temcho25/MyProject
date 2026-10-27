@@ -23,7 +23,7 @@ const pad2 = n => String(n).padStart(2, "0");
 const srcsetOf = p => p.srcset.map(([u, w]) => `${u} ${w}w`).join(", ");
 
 // Scroll budget in viewport heights
-const VH_SCATTER = 70, VH_PER_PHOTO = 52, VH_TAIL = 60;
+const VH_SCATTER = 60, VH_PER_PHOTO = 36, VH_TAIL = 40;
 
 async function mount() {
   const root = document.getElementById("gallery");

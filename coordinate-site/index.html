@@ -206,6 +206,7 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
   .scroll-hint:after,.open i{animation:none}
 }
 </style>
+<link rel="stylesheet" href="css/gallery.css"><link rel="stylesheet" href="css/finder.css"><link rel="stylesheet" href="css/walk.css">
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/addons/"}}</script>
 </head>
 <body>
@@ -275,7 +276,7 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
 </section>
 
 <!-- ============ GALLERY (js/gallery.js) ============ -->
-<section class="gal" id="gallery"></section>
+<section class="gal" id="gallery" hidden></section>
 
 <!-- ============ SELECTOR ============ -->
 <section class="sel" id="choose">
@@ -342,6 +343,8 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
 
 <script src="js/data.js"></script>
 <script type="module" src="js/scene3d.js"></script>
+<script type="module" src="js/gallery.js"></script>
+<script type="module" src="js/finder.js"></script>
 <script>
 /* =====================================================================
    DATA — edit here. Everything shown on the page comes from this block.

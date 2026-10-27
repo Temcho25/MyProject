@@ -526,5 +526,6 @@ function createEngine(THREE, RoomEnvironment) {
 
   function setVisible(v) { visible = v; if (v) kick(); else if (raf) { cancelAnimationFrame(raf); raf = 0; } }
 
+  if (/[?&]walkdebug/.test(location.search)) window.__walk = { THREE, scene, camera, renderer, group, doll, player, kick, get M() { return M; } };
   return { load: id => { load(id); }, setMode, zoom, resize, setVisible };
 }
