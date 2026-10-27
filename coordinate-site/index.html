@@ -130,14 +130,19 @@ html[lang="ka"] .h2{font-weight:600;letter-spacing:0}
 .ring-head{padding-top:clamp(88px,13vh,140px)}
 .ring-view{flex:1;position:relative;transform-style:preserve-3d}
 .ring{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
-.card{position:absolute;width:var(--cw);height:calc(var(--cw)*1.18);left:calc(var(--cw)/-2);top:calc(var(--cw)*-.59);
-  border:1px solid var(--line-2);background:linear-gradient(160deg,rgba(48,57,78,.95),rgba(29,36,51,.95));
-  padding:clamp(18px,2vw,28px);display:flex;flex-direction:column;justify-content:space-between;backface-visibility:hidden;will-change:filter,opacity}
-.card .ic{width:44px;height:44px;stroke:var(--accent);fill:none;stroke-width:1.3}
+.card{position:absolute;width:var(--cw);height:calc(var(--cw)*1.22);left:calc(var(--cw)/-2);top:calc(var(--cw)*-.61);overflow:hidden;isolation:isolate;
+  border:1px solid var(--line-2);background:var(--ink-3);box-shadow:0 30px 70px rgba(0,0,0,.45);
+  padding:clamp(16px,1.8vw,26px);display:flex;flex-direction:column;justify-content:space-between;backface-visibility:hidden;will-change:filter,opacity}
+.card .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transform:scale(1.06);transition:transform 1.4s cubic-bezier(.2,.8,.2,1)}
+.card.front .bg{transform:scale(1)}
+.card:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(17,22,33,.55) 0%,rgba(17,22,33,0) 30%,rgba(17,22,33,.15) 50%,rgba(17,22,33,.88) 100%)}
+.card .ic{width:44px;height:44px;padding:10px;stroke:var(--glow);fill:none;stroke-width:1.3;border-radius:50%;background:rgba(17,22,33,.45);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(239,232,216,.25)}
+.card .lbl{text-shadow:0 2px 14px rgba(0,0,0,.5)}
 .card .num{font:500 clamp(28px,3.2vw,46px)/1 "Unbounded",sans-serif;letter-spacing:-.02em}
 .card .num small{font-size:.45em;margin-left:4px;color:var(--accent)}
 .card .lbl{font-size:clamp(14px,1.25vw,18px);line-height:1.3;margin-top:10px}
-.card:before{content:"";position:absolute;inset:8px;border:1px solid var(--line);pointer-events:none}
+.card:before{content:"";position:absolute;inset:8px;border:1px solid rgba(239,232,216,.22);pointer-events:none;z-index:1}
 
 /* selector */
 .sel{padding:clamp(100px,16vh,180px) 0 clamp(80px,12vh,140px)}
@@ -207,7 +212,7 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
   .scroll-hint:after,.open i{animation:none}
 }
 </style>
-<link rel="stylesheet" href="css/gallery.css"><link rel="stylesheet" href="css/finder.css"><link rel="stylesheet" href="css/walk.css"><link rel="stylesheet" href="css/live.css">
+<link rel="stylesheet" href="css/reel.css"><link rel="stylesheet" href="css/finder.css"><link rel="stylesheet" href="css/walk.css"><link rel="stylesheet" href="css/live.css">
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/addons/"}}</script>
 </head>
 <body>
@@ -277,7 +282,7 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
   </div>
 </section>
 
-<!-- ============ GALLERY (js/gallery.js) ============ -->
+<!-- ============ GALLERY: cinematic reel (js/reel.js) ============ -->
 <section class="gal" id="gallery" hidden></section>
 
 <!-- ============ SELECTOR ============ -->
@@ -349,7 +354,7 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
 
 <script src="js/data.js"></script>
 <script type="module" src="js/scene3d.js"></script>
-<script type="module" src="js/gallery.js"></script>
+<script type="module" src="js/reel.js"></script>
 <script type="module" src="js/finder.js"></script>
 <script type="module" src="js/walk.js"></script>
 <script type="module" src="js/live.js"></script>
@@ -371,7 +376,7 @@ const I18N = {
   infra_h:"11 000 m² of infrastructure",
   c_infra:"m² of infrastructure", c_park:"m² two-level parking", c_ha:"ha park",
   ev:"EV chargers", power:"Backup power", play:"Playgrounds", sport:"Sports zones", pets:"Pet walking area",
-  market:"Supermarket", food:"Food court", pharm:"Pharmacy", bank:"Bank", cowork:"Business center & co-working", courts:"Padel & badminton courts",
+  market:"Supermarket", food:"Food court", pharm:"Pharmacy", bank:"Bank", cowork:"Business center & co-working", courts:"Padel & badminton courts", lobby:"Lobby & concierge", lounge:"Lounge with fireplace",
   choose_h:"Block. Floor. Layout.", block:"Block", floor:"Floor", layout:"Layout", drag:"Drag to rotate",
   rooms:n=>`${n} rooms`, m2:"m²", send:"Send request",
   msg:(b,f,r)=>`Hello! I'm interested in Coordinate: Block ${b}, floor ${f}, ${r} rooms.`,
@@ -386,7 +391,7 @@ const I18N = {
   infra_h:"11 000 м² инфраструктуры",
   c_infra:"м² инфраструктуры", c_park:"м² двухуровневый паркинг", c_ha:"га парк",
   ev:"Зарядки для электромобилей", power:"Резервное электропитание", play:"Детские площадки", sport:"Спортивные зоны", pets:"Зона выгула питомцев",
-  market:"Супермаркет", food:"Фуд-корт", pharm:"Аптека", bank:"Банк", cowork:"Бизнес-центр и коворкинг", courts:"Корты для падела и бадминтона",
+  market:"Супермаркет", food:"Фуд-корт", pharm:"Аптека", bank:"Банк", cowork:"Бизнес-центр и коворкинг", courts:"Корты для падела и бадминтона", lobby:"Лобби и консьерж", lounge:"Лаунж с камином",
   choose_h:"Блок. Этаж. Планировка.", block:"Блок", floor:"Этаж", layout:"Планировка", drag:"Потяните, чтобы вращать",
   rooms:n=>`${n} ${n==="2"||n==="3"||n==="4"?"комнаты":"комнат"}`, m2:"м²", send:"Отправить запрос",
   msg:(b,f,r)=>`Здравствуйте! Интересует Coordinate: блок ${b}, этаж ${f}, ${r} ${+r>=5?"комнат":"комнаты"}.`,
@@ -401,7 +406,7 @@ const I18N = {
   infra_h:"11 000 მ² ინფრასტრუქტურა",
   c_infra:"მ² ინფრასტრუქტურა", c_park:"მ² ორდონიანი პარკინგი", c_ha:"ჰა პარკი",
   ev:"ელექტრომობილების დამტენები", power:"სარეზერვო ელექტრომომარაგება", play:"საბავშვო მოედნები", sport:"სპორტული ზონები", pets:"შინაური ცხოველების სასეირნო ზონა",
-  market:"სუპერმარკეტი", food:"ფუდ-კორტი", pharm:"აფთიაქი", bank:"ბანკი", cowork:"ბიზნეს-ცენტრი და კოვორკინგი", courts:"პადელისა და ბადმინტონის კორტები",
+  market:"სუპერმარკეტი", food:"ფუდ-კორტი", pharm:"აფთიაქი", bank:"ბანკი", cowork:"ბიზნეს-ცენტრი და კოვორკინგი", courts:"პადელისა და ბადმინტონის კორტები", lobby:"ლობი და კონსიერჟი", lounge:"ლაუნჯი ბუხრით",
   choose_h:"ბლოკი. სართული. გეგმარება.", block:"ბლოკი", floor:"სართული", layout:"გეგმარება", drag:"გადაატრიალეთ",
   rooms:n=>`${n} ოთახი`, m2:"მ²", send:"მოთხოვნის გაგზავნა",
   msg:(b,f,r)=>`გამარჯობა! მაინტერესებს Coordinate: ბლოკი ${b}, სართული ${f}, ${r} ოთახი.`,
@@ -416,7 +421,7 @@ const RING_ITEMS = [
   {num:"1",      key:"c_ha",    ic:"tree"},
   {key:"ev",ic:"bolt"},{key:"power",ic:"plug"},{key:"play",ic:"play"},{key:"sport",ic:"ball"},
   {key:"pets",ic:"paw"},{key:"market",ic:"cart"},{key:"food",ic:"food"},{key:"pharm",ic:"cross"},
-  {key:"bank",ic:"bank"},{key:"cowork",ic:"desk"},{key:"courts",ic:"court"},
+  {key:"bank",ic:"bank"},{key:"cowork",ic:"desk"},{key:"courts",ic:"court"},{key:"lobby",ic:"door"},{key:"lounge",ic:"fire"},
 ];
 const ICONS = {
  grid:'<rect x="4" y="4" width="16" height="16"/><path d="M4 12h16M12 4v16"/>',
@@ -433,6 +438,8 @@ const ICONS = {
  bank:'<path d="M3 10 12 4l9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/>',
  desk:'<rect x="3" y="5" width="18" height="11"/><path d="M8 20h8M12 16v4"/>',
  court:'<rect x="3" y="5" width="18" height="14"/><path d="M12 5v14M3 12h18"/>',
+ door:'<path d="M5 21V4h14v17M3 21h18M15 12h.01"/>',
+ fire:'<path d="M12 3c1 3 5 5 5 10a5 5 0 0 1-10 0c0-3 2-4 2-6 1 1 2 2 2 3 0-3 0-5 1-7z"/>',
 };
 
 /* ===================================================================== */
@@ -455,7 +462,7 @@ const letters=[...word].map((c,i)=>{const s=document.createElement("span");s.tex
 /* ---------- ring cards ---------- */
 const ring=$("#ring"), N=RING_ITEMS.length;
 const cards=RING_ITEMS.map((it,i)=>{const c=document.createElement("div");c.className="card";
-  c.innerHTML=`<svg class="ic" viewBox="0 0 24 24">${ICONS[it.ic]}</svg><div>${it.num?`<div class="num">${it.num}</div>`:""}<div class="lbl" data-i="${it.key}"></div></div>`;
+  c.innerHTML=`<img class="bg" src="photos/infra/${it.key}.webp" alt="" loading="lazy" decoding="async"><svg class="ic" viewBox="0 0 24 24">${ICONS[it.ic]}</svg><div>${it.num?`<div class="num">${it.num}</div>`:""}<div class="lbl" data-i="${it.key}"></div></div>`;
   ring.appendChild(c);return c});
 
 /* ---------- i18n ---------- */
@@ -520,7 +527,7 @@ function prog(el){const r=el.getBoundingClientRect(); return clamp(-r.top/(r.hei
 addEventListener("resize",()=>{vw=innerWidth;vh=innerHeight});
 addEventListener("scroll",()=>{sy=scrollY},{passive:true});
 
-const qbar=$("#qbar"), walkSec=$("#walk"), heroLayer=$("#heroLayer"), coords=$("#heroCoords"), by=$("#heroBy"), hint=$("#hint"),
+const qbar=$("#qbar"), walkSec=$("#walk"), galSec=$("#gallery"), heroLayer=$("#heroLayer"), coords=$("#heroCoords"), by=$("#heroBy"), hint=$("#hint"),
       stageFade=$("#stageFade"), capLoc=$("#capLoc"), factEls=$$("#facts .cap"), topBar=$("#top"), railbar=$("#railbar");
 const t0=performance.now();
 
@@ -572,18 +579,19 @@ function frame(now){
   const rr=ringTrack.getBoundingClientRect();
   if(rr.top<vh&&rr.bottom>0){
   const rp2=prog(ringTrack), vmob=vw<700;
-  const cw=vmob?Math.min(220,vw*.56):Math.min(280,vw*.2);
+  const cw=vmob?Math.min(270,vw*.68):Math.min(300,vw*.21);
   const R=Math.max(cw*N/(2*Math.PI)*1.15, vmob?320:520);
   ring.style.setProperty("--cw",cw+"px");
   const rot=-eio(rp2)*360*(N-1)/N;
   ring.style.transform=`translateZ(${-R-(vmob?60:120)}px) rotateX(${-6+rp2*4}deg) rotateY(${rot}deg)`;
   cards.forEach((c,i)=>{const a=i*360/N; c.style.transform=`rotateY(${a}deg) translateZ(${R}px)`;
     const rel=(((a+rot)%360)+540)%360-180, f=Math.abs(rel)/180;
-    c.style.opacity=f>.5?0:1-f*1.4; c.style.visibility=f>.5?"hidden":"visible"; c.style.filter=f<.04?"none":`blur(${(f*8).toFixed(1)}px) brightness(${1-f*.6})`;});
+    c.style.opacity=f>.5?0:1-f*1.4; c.style.visibility=f>.5?"hidden":"visible"; c.style.filter=f<.04?"none":`blur(${(f*4).toFixed(1)}px) brightness(${1-f*.65})`;
+    c.classList.toggle("front",f<.06);});
   }
 
   topBar.classList.toggle("solid",sy>vh*5.6);
-  { const wr=walkSec.getBoundingClientRect(), inWalk=wr.top<vh*.5&&wr.bottom>vh*.5;
+  { const over=el=>{ if(!el) return false; const r=el.getBoundingClientRect(); return r.top<vh*.5&&r.bottom>vh*.5; }, inWalk=over(walkSec)||over(galSec);
     qbar.classList.toggle("on",sy>vh*5.6 && !inWalk && document.documentElement.scrollHeight-sy-vh>vh*.6); }
   railbar.style.transform=`scaleY(${clamp(sy/(document.documentElement.scrollHeight-vh))})`;
   requestAnimationFrame(frame);

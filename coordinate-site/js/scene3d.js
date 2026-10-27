@@ -17,12 +17,12 @@ const eback = t => { const c = 1.4; return 1 + (c + 1) * Math.pow(t - 1, 3) + c 
 const D2R = Math.PI / 180;
 
 function makeRenderer(canvas, { shadows }) {
-  const r = new THREE.WebGLRenderer({ canvas, antialias: !lowEnd, alpha: true, powerPreference: "high-performance" });
+  const r = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
   r.setClearColor(0x000000, 0);
   r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05;
   r.outputColorSpace = THREE.SRGBColorSpace;
   r.shadowMap.enabled = shadows; r.shadowMap.type = THREE.PCFSoftShadowMap;
-  r._maxDpr = Math.min(devicePixelRatio || 1, touch ? 1.5 : 2);
+  r._maxDpr = Math.min(devicePixelRatio || 1, 2);
   r._dpr = r._maxDpr; r.setPixelRatio(r._dpr);
   return r;
 }
@@ -34,7 +34,7 @@ function envFor(renderer, scene) {
 // Drop resolution when frames are slow, recover when fast.
 function adaptive(renderer, dt) {
   renderer._avg = lerp(renderer._avg || 16, dt, .05);
-  if (renderer._avg > 30 && renderer._dpr > .75) { renderer._dpr = Math.max(.75, renderer._dpr - .25); renderer.setPixelRatio(renderer._dpr); renderer._avg = 16; return true; }
+  if (renderer._avg > 40 && renderer._dpr > 1) { renderer._dpr = Math.max(1, renderer._dpr - .25); renderer.setPixelRatio(renderer._dpr); renderer._avg = 16; return true; }
   if (renderer._avg < 14 && renderer._dpr < renderer._maxDpr) { renderer._dpr = Math.min(renderer._maxDpr, renderer._dpr + .25); renderer.setPixelRatio(renderer._dpr); renderer._avg = 20; return true; }
   return false;
 }

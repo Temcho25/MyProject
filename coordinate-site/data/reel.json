@@ -25,35 +25,6 @@
   "full": "photos/01-aerial-day.webp"
  },
  {
-  "name": "02-aerial-park",
-  "w": 2800,
-  "h": 3500,
-  "alt": {
-   "ka": "კომპლექსი და პარკი",
-   "en": "The complex and its park",
-   "ru": "Комплекс и парк"
-  },
-  "srcset": [
-   [
-    "photos/w/02-aerial-park-640.webp",
-    640
-   ],
-   [
-    "photos/w/02-aerial-park-1280.webp",
-    1280
-   ],
-   [
-    "photos/w/02-aerial-park-1920.webp",
-    1920
-   ],
-   [
-    "photos/02-aerial-park.webp",
-    2800
-   ]
-  ],
-  "full": "photos/02-aerial-park.webp"
- },
- {
   "name": "03-towers-sunset",
   "w": 2742,
   "h": 1880,
@@ -83,33 +54,29 @@
   "full": "photos/03-towers-sunset.webp"
  },
  {
-  "name": "04-street-evening",
-  "w": 2867,
-  "h": 1612,
+  "name": "06-towers-park",
+  "w": 1592,
+  "h": 897,
   "alt": {
-   "ka": "საღამოს ქუჩა",
-   "en": "The street in the evening",
-   "ru": "Улица вечером"
+   "ka": "კოორდინატის მშენებარე ბინები ორთაჭალაში",
+   "en": "Three towers above the park",
+   "ru": "Три башни над парком"
   },
   "srcset": [
    [
-    "photos/w/04-street-evening-640.webp",
+    "photos/w/06-towers-park-640.webp",
     640
    ],
    [
-    "photos/w/04-street-evening-1280.webp",
+    "photos/w/06-towers-park-1280.webp",
     1280
    ],
    [
-    "photos/w/04-street-evening-1920.webp",
-    1920
-   ],
-   [
-    "photos/04-street-evening.webp",
-    2867
+    "photos/06-towers-park.webp",
+    1592
    ]
   ],
-  "full": "photos/04-street-evening.webp"
+  "full": "photos/06-towers-park.webp"
  },
  {
   "name": "05-street-dusk",
@@ -137,29 +104,29 @@
   "full": "photos/05-street-dusk.webp"
  },
  {
-  "name": "06-towers-park",
+  "name": "09-aerial-yard",
   "w": 1592,
-  "h": 897,
+  "h": 893,
   "alt": {
-   "ka": "კოორდინატის მშენებარე ბინები ორთაჭალაში",
-   "en": "Three towers above the park",
-   "ru": "Три башни над парком"
+   "ka": "კეთილმოწყობილი ეზოსა და ლანდშაფტის ხედი ზემოდან",
+   "en": "The landscaped courtyard from above",
+   "ru": "Благоустроенный двор сверху"
   },
   "srcset": [
    [
-    "photos/w/06-towers-park-640.webp",
+    "photos/w/09-aerial-yard-640.webp",
     640
    ],
    [
-    "photos/w/06-towers-park-1280.webp",
+    "photos/w/09-aerial-yard-1280.webp",
     1280
    ],
    [
-    "photos/06-towers-park.webp",
+    "photos/09-aerial-yard.webp",
     1592
    ]
   ],
-  "full": "photos/06-towers-park.webp"
+  "full": "photos/09-aerial-yard.webp"
  },
  {
   "name": "07-picnic",
@@ -187,6 +154,31 @@
   "full": "photos/07-picnic.webp"
  },
  {
+  "name": "15-garden",
+  "w": 1598,
+  "h": 902,
+  "alt": {
+   "en": "The garden and pet area",
+   "ru": "Сад и зона для питомцев",
+   "ka": "ბაღი და შინაური ცხოველების ზონა"
+  },
+  "srcset": [
+   [
+    "photos/w/15-garden-640.webp",
+    640
+   ],
+   [
+    "photos/w/15-garden-1280.webp",
+    1280
+   ],
+   [
+    "photos/15-garden.webp",
+    1598
+   ]
+  ],
+  "full": "photos/15-garden.webp"
+ },
+ {
   "name": "08-playground",
   "w": 1597,
   "h": 895,
@@ -212,54 +204,29 @@
   "full": "photos/08-playground.webp"
  },
  {
-  "name": "09-aerial-yard",
-  "w": 1592,
-  "h": 893,
-  "alt": {
-   "ka": "კეთილმოწყობილი ეზოსა და ლანდშაფტის ხედი ზემოდან",
-   "en": "The landscaped courtyard from above",
-   "ru": "Благоустроенный двор сверху"
-  },
-  "srcset": [
-   [
-    "photos/w/09-aerial-yard-640.webp",
-    640
-   ],
-   [
-    "photos/w/09-aerial-yard-1280.webp",
-    1280
-   ],
-   [
-    "photos/09-aerial-yard.webp",
-    1592
-   ]
-  ],
-  "full": "photos/09-aerial-yard.webp"
- },
- {
-  "name": "10-looking-up",
-  "w": 1587,
+  "name": "13-courts",
+  "w": 1616,
   "h": 896,
   "alt": {
-   "ka": "კოორდინატის საცხოვრებელი ბლოკები",
-   "en": "Looking up between the towers",
-   "ru": "Вид вверх между башнями"
+   "en": "Padel and tennis courts",
+   "ru": "Корты для падела и тенниса",
+   "ka": "პადელისა და ჩოგბურთის კორტები"
   },
   "srcset": [
    [
-    "photos/w/10-looking-up-640.webp",
+    "photos/w/13-courts-640.webp",
     640
    ],
    [
-    "photos/w/10-looking-up-1280.webp",
+    "photos/w/13-courts-1280.webp",
     1280
    ],
    [
-    "photos/10-looking-up.webp",
-    1587
+    "photos/13-courts.webp",
+    1616
    ]
   ],
-  "full": "photos/10-looking-up.webp"
+  "full": "photos/13-courts.webp"
  },
  {
   "name": "11-lobby",
@@ -287,6 +254,31 @@
   "full": "photos/11-lobby.webp"
  },
  {
+  "name": "14-lounge",
+  "w": 1783,
+  "h": 891,
+  "alt": {
+   "en": "Lounge with a fireplace",
+   "ru": "Лаунж с камином",
+   "ka": "ლაუნჯი ბუხრით"
+  },
+  "srcset": [
+   [
+    "photos/w/14-lounge-640.webp",
+    640
+   ],
+   [
+    "photos/w/14-lounge-1280.webp",
+    1280
+   ],
+   [
+    "photos/14-lounge.webp",
+    1783
+   ]
+  ],
+  "full": "photos/14-lounge.webp"
+ },
+ {
   "name": "12-cafe",
   "w": 1783,
   "h": 885,
@@ -310,5 +302,30 @@
    ]
   ],
   "full": "photos/12-cafe.webp"
+ },
+ {
+  "name": "10-looking-up",
+  "w": 1587,
+  "h": 896,
+  "alt": {
+   "ka": "კოორდინატის საცხოვრებელი ბლოკები",
+   "en": "Looking up between the towers",
+   "ru": "Вид вверх между башнями"
+  },
+  "srcset": [
+   [
+    "photos/w/10-looking-up-640.webp",
+    640
+   ],
+   [
+    "photos/w/10-looking-up-1280.webp",
+    1280
+   ],
+   [
+    "photos/10-looking-up.webp",
+    1587
+   ]
+  ],
+  "full": "photos/10-looking-up.webp"
  }
 ]

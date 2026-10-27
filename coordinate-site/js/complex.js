@@ -14,31 +14,6 @@ export const towerHeight = floors => LOBBY_H + (floors - 1) * FLOOR_H;
 const rnd = (seed => () => (seed = (seed * 16807) % 2147483647) / 2147483647)(7);
 
 /* ---------- textures (generated, no downloads) ---------- */
-function glassTexture(bays = 8, rows = 8) {
-  const cw = 64, ch = 96, c = document.createElement("canvas");
-  c.width = bays * cw; c.height = rows * ch;
-  const g = c.getContext("2d"), e = document.createElement("canvas");
-  e.width = c.width; e.height = c.height; const ge = e.getContext("2d");
-  ge.fillStyle = "#000"; ge.fillRect(0, 0, e.width, e.height);
-  for (let y = 0; y < rows; y++) for (let x = 0; x < bays; x++) {
-    const X = x * cw, Y = y * ch;
-    const grd = g.createLinearGradient(X, Y, X, Y + ch);
-    grd.addColorStop(0, "#2a3446"); grd.addColorStop(1, "#151b26");
-    g.fillStyle = grd; g.fillRect(X, Y, cw, ch);
-    // interior: some rooms lit warm, some with a curtain
-    const r = rnd();
-    if (r < .1) { ge.fillStyle = `rgba(255,${196 + (rnd() * 40) | 0},140,${.35 + rnd() * .4})`; ge.fillRect(X + 4, Y + 14, cw - 8, ch - 26); }
-    else if (r < .4) { g.fillStyle = "rgba(200,190,170,.18)"; g.fillRect(X + 4, Y + 14, cw - 8, ch - 26); }
-    // balcony railing glass + mullion + slab edge
-    g.fillStyle = "rgba(160,180,200,.10)"; g.fillRect(X, Y + ch - 34, cw, 22);
-    g.fillStyle = "#0d1118"; g.fillRect(X + cw / 2 - 1, Y, 2, ch); g.fillRect(X, Y + ch - 12, cw, 12);
-    g.fillStyle = "#3b3e44"; g.fillRect(X, Y + ch - 12, cw, 3);
-  }
-  const map = new THREE.CanvasTexture(c), emi = new THREE.CanvasTexture(e);
-  for (const t of [map, emi]) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4; t.colorSpace = THREE.SRGBColorSpace; }
-  return { map, emi, bays, rows };
-}
-
 function deckTexture() {
   const c = document.createElement("canvas"); c.width = c.height = 256; const g = c.getContext("2d");
   g.fillStyle = "#6b4a33"; g.fillRect(0, 0, 256, 256);
@@ -51,8 +26,7 @@ let shared = null;
 function materials() {
   if (shared) return shared;
   shared = {
-    glass: glassTexture(),
-    fin: new THREE.MeshStandardMaterial({ color: 0xcbc3b3, roughness: .55, metalness: .05 }),
+    fin: new THREE.MeshStandardMaterial({ color: 0xc2b9a8, roughness: .45, metalness: .1 }),
     finDark: new THREE.MeshStandardMaterial({ color: 0x2b2f36, roughness: .5, metalness: .2 }),
     slab: new THREE.MeshStandardMaterial({ color: 0x34373d, roughness: .8 }),
     deck: new THREE.MeshStandardMaterial({ map: deckTexture(), roughness: .9 }),
@@ -68,17 +42,39 @@ function materials() {
   return shared;
 }
 
-function glassMat(R, h) {
-  const m = materials(), circ = 2 * Math.PI * R, bayW = circ / 24;
-  const map = m.glass.map.clone(), emi = m.glass.emi.clone();
-  for (const t of [map, emi]) { t.needsUpdate = true; t.repeat.set(circ / (bayW * m.glass.bays), (h - LOBBY_H) / (FLOOR_H * m.glass.rows)); }
-  return new THREE.MeshStandardMaterial({ map, emissiveMap: emi, emissive: 0xffd9a0, emissiveIntensity: .55, roughness: .12, metalness: .55 });
+/* Facade texture drawn once per tower: one cell per bay × floor, so nothing repeats.
+   Mostly dark reflective glass, a few softly lit rooms, curtains, balcony railings and slab edges. */
+function facadeTexture(floors, bays, seed) {
+  const r = (s => () => (s = (s * 16807) % 2147483647) / 2147483647)(seed);
+  const cw = 24, ch = 36, W = bays * cw, H = floors * ch;
+  const c = document.createElement("canvas"); c.width = W; c.height = H;
+  const e = document.createElement("canvas"); e.width = W; e.height = H;
+  const g = c.getContext("2d"), ge = e.getContext("2d");
+  const sky = g.createLinearGradient(0, 0, 0, H); sky.addColorStop(0, "#3a4658"); sky.addColorStop(1, "#1a2130");
+  g.fillStyle = sky; g.fillRect(0, 0, W, H); ge.fillStyle = "#000"; ge.fillRect(0, 0, W, H);
+  for (let y = 0; y < floors; y++) for (let x = 0; x < bays; x++) {
+    const X = x * cw, Y = H - (y + 1) * ch, k = r();
+    g.fillStyle = `rgba(${10 + r() * 30 | 0},${16 + r() * 30 | 0},${28 + r() * 34 | 0},${.25 + r() * .3})`; g.fillRect(X, Y, cw, ch);
+    if (k < .055) { const a = .45 + r() * .4; ge.fillStyle = `rgba(255,${200 + r() * 30 | 0},150,${a})`; ge.fillRect(X + 2, Y + 6, cw - 4, ch - 14);
+                    g.fillStyle = `rgba(255,214,160,${a * .5})`; g.fillRect(X + 2, Y + 6, cw - 4, ch - 14); }
+    else if (k < .2) { g.fillStyle = "rgba(220,210,190,.14)"; g.fillRect(X + 2, Y + 6, cw - 4, ch - 14); }
+    g.fillStyle = "rgba(170,190,210,.10)"; g.fillRect(X, Y + ch - 13, cw, 8);   // glass railing
+    g.fillStyle = "#11151d"; g.fillRect(X, Y + ch - 4, cw, 4);                   // slab edge
+  }
+  const map = new THREE.CanvasTexture(c), emi = new THREE.CanvasTexture(e);
+  for (const t of [map, emi]) { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; t.wrapS = THREE.RepeatWrapping; }
+  return { map, emi };
+}
+function glassMat(floors, bays, seed) {
+  const { map, emi } = facadeTexture(Math.max(1, floors - 1), bays, seed);
+  return new THREE.MeshStandardMaterial({ map, emissiveMap: emi, emissive: 0xffd9a8, emissiveIntensity: .45, roughness: .16, metalness: .45 });
 }
 
-/* One fin: a slab bent inward over the bottom few metres (the vase-shaped base in the renders). */
+/* One fin: a rounded vertical blade (elliptic section), bent inward over the bottom few metres
+   — the vase-shaped base in the renders. */
 function finGeometry(h, width, depth, flareH = 8, flare = 3.2) {
-  const g = new THREE.BoxGeometry(depth, h, width, 1, 24, 1);
-  g.translate(0, h / 2, 0);
+  const g = new THREE.CylinderGeometry(.5, .5, h, 12, 28);
+  g.scale(depth, 1, width); g.translate(0, h / 2, 0);
   const p = g.attributes.position;
   for (let i = 0; i < p.count; i++) {
     const y = p.getY(i);
@@ -87,7 +83,6 @@ function finGeometry(h, width, depth, flareH = 8, flare = 3.2) {
   g.computeVertexNormals();
   return g;
 }
-
 /* ---------- tower ---------- */
 export function buildTower(floors, opts = {}) {
   const m = materials(), R = opts.r || TOWER_R, H = towerHeight(floors), crown = 4.2;
@@ -99,7 +94,7 @@ export function buildTower(floors, opts = {}) {
   lobby.position.y = LOBBY_H / 2; grp.add(lobby);
   // glass core with window texture
   const coreH = H - LOBBY_H;
-  const core = new THREE.Mesh(new THREE.CylinderGeometry(R - 1.3, R - 1.3, coreH, seg, 1, true), glassMat(R, H));
+  const core = new THREE.Mesh(new THREE.CylinderGeometry(R - 1.3, R - 1.3, coreH, seg, 1, true), glassMat(floors, 48, 11 + floors));
   core.position.y = LOBBY_H + coreH / 2; grp.add(core);
   // floor slabs (balcony edges)
   const slabs = new THREE.InstancedMesh(new THREE.CylinderGeometry(R - .25, R - .25, .28, seg), m.slab, floors);
@@ -112,17 +107,16 @@ export function buildTower(floors, opts = {}) {
   const plant = new THREE.Mesh(new THREE.BoxGeometry(9, 2.6, 7), m.finDark); plant.position.set(-2, H + 1.5, 1); grp.add(plant);
 
   // fins: alternating wide light / narrow dark (as in the renders)
-  const N = opts.fins || 48, finH = H + crown;
-  const iw = new THREE.InstancedMesh(finGeometry(finH, 1.05, 1.0), m.fin, N / 2);
-  const inn = new THREE.InstancedMesh(finGeometry(finH, .42, 1.0), m.finDark, N / 2);
+  const N = opts.fins || 36, finH = H + crown;
+  const iw = new THREE.InstancedMesh(finGeometry(finH, 1.0, .75), m.fin, N);
   const q = new THREE.Quaternion(), s = new THREE.Vector3(1, 1, 1), up = new THREE.Vector3(0, 1, 0), v = new THREE.Vector3();
   for (let i = 0; i < N; i++) {
     const a = i / N * Math.PI * 2;
     q.setFromAxisAngle(up, -a);
     M.compose(v.set(Math.cos(a) * (R - .2), 0, Math.sin(a) * (R - .2)), q, s);
-    (i % 2 ? inn : iw).setMatrixAt(i >> 1, M);
+    iw.setMatrixAt(i, M);
   }
-  grp.add(iw, inn);
+  grp.add(iw);
   grp.traverse(o => { if (o.isMesh) { o.castShadow = !opts.noShadow; o.receiveShadow = true; } });
   grp.userData = { height: H, crown, R, floors };
   return grp;
