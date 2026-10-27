@@ -49,6 +49,22 @@ body:after{content:"";position:fixed;inset:-50%;pointer-events:none;z-index:100;
   padding:14px var(--gutter);padding-top:max(14px,env(safe-area-inset-top));
   background:linear-gradient(var(--ink) 0%,rgba(29,36,51,.0) 100%);transition:background .4s}
 .top.solid{background:rgba(29,36,51,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.intro{position:fixed;inset:0;z-index:300;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;
+  transition:transform .85s cubic-bezier(.7,0,.2,1),opacity .85s ease}
+.intro.out{transform:translateY(-100%);opacity:.6;pointer-events:none}
+html.intro-on{overflow:hidden}
+.in-mark{display:flex;flex-direction:column;line-height:1;color:var(--paper)}
+.in-mark small{font:500 9px/1 var(--text);letter-spacing:.16em;opacity:0;margin-bottom:8px;animation:inFade .8s .5s forwards}
+.in-mark b{font:500 clamp(30px,8vw,64px)/1 "Unbounded",sans-serif;letter-spacing:.02em;display:flex;overflow:hidden}
+.in-mark b span{display:inline-block;transform:translateY(110%);animation:inUp .9s cubic-bezier(.2,.8,.2,1) forwards}
+.in-mark b span:nth-child(2){animation-delay:.04s}.in-mark b span:nth-child(3){animation-delay:.08s}.in-mark b span:nth-child(4){animation-delay:.12s}
+.in-mark b span:nth-child(5){animation-delay:.16s}.in-mark b span:nth-child(6){animation-delay:.2s}.in-mark b span:nth-child(7){animation-delay:.24s}
+.in-mark b span:nth-child(8){animation-delay:.28s}.in-mark b span:nth-child(9){animation-delay:.32s}.in-mark b span:nth-child(10){animation-delay:.36s}
+.in-mark i{font:500 clamp(8px,1.6vw,12px)/1 var(--text);font-style:normal;letter-spacing:.34em;align-self:flex-end;margin-top:10px;opacity:0;animation:inFade .8s .6s forwards}
+.in-bar{width:min(220px,50vw);height:1px;background:var(--line)}
+.in-bar i{display:block;height:100%;background:var(--glow);transform:scaleX(.08);transform-origin:left;transition:transform .6s ease}
+@keyframes inUp{to{transform:none}}
+@keyframes inFade{to{opacity:.8}}
 .mark{display:flex;flex-direction:column;line-height:1}
 .mark small{font:500 6.5px/1 "Manrope",sans-serif;letter-spacing:.14em;opacity:.7;margin-bottom:3px}
 .mark b{font:500 17px/1 "Unbounded",sans-serif;letter-spacing:.02em}
@@ -220,6 +236,27 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/addons/"}}</script>
 </head>
 <body>
+<div class="intro" id="intro" aria-hidden="true">
+  <div class="in-mark"><small>41° 40' 30.9" N · 44° 49' 37.4" E</small><b><span>C</span><span>O</span><span>O</span><span>R</span><span>D</span><span>I</span><span>N</span><span>A</span><span>T</span><span>E</span></b><i>BY KEYSTONE</i></div>
+  <div class="in-bar"><i id="introBar"></i></div>
+</div>
+<script>
+/* Intro: shows the logo while the 3D scene, fonts and first images get ready (max ~4 s), then lifts. */
+(function(){
+  var el=document.getElementById("intro"), bar=document.getElementById("introBar"), html=document.documentElement;
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches){ el.remove(); return; }
+  html.classList.add("intro-on");
+  var t0=Date.now(), steps={fonts:0,hero:0}, shown=0, done=false;
+  function prog(){ var n=(steps.fonts+steps.hero)/2; shown=Math.max(shown,n); bar.style.transform="scaleX("+(.08+shown*.92)+")"; if(n>=1) finish(); }
+  function finish(){ if(done) return; done=true; var wait=Math.max(0,1100-(Date.now()-t0));
+    setTimeout(function(){ bar.style.transform="scaleX(1)"; el.classList.add("out"); html.classList.remove("intro-on");
+      dispatchEvent(new CustomEvent("coord:introdone")); setTimeout(function(){ el.remove(); },900); },wait); }
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(function(){ steps.fonts=1; prog(); }); else steps.fonts=1;
+  addEventListener("coord:heroready",function(){ steps.hero=1; prog(); });
+  setTimeout(finish,4200);                       // never hold the visitor longer than this
+  requestAnimationFrame(prog);
+})();
+</script>
 
 <header class="top" id="top">
   <a class="mark" href="#home" aria-label="Coordinate by Keystone">
@@ -429,9 +466,7 @@ const RING_ITEMS = [
   {num:"11 000", key:"c_infra", ic:"grid"},
   {num:"7 000",  key:"c_park",  ic:"car"},
   {num:"1",      key:"c_ha",    ic:"tree"},
-  {key:"ev",ic:"bolt"},{key:"power",ic:"plug"},{key:"play",ic:"play"},{key:"sport",ic:"ball"},
-  {key:"pets",ic:"paw"},{key:"market",ic:"cart"},{key:"food",ic:"food"},{key:"pharm",ic:"cross"},
-  {key:"bank",ic:"bank"},{key:"cowork",ic:"desk"},{key:"courts",ic:"court"},{key:"lobby",ic:"door"},{key:"lounge",ic:"fire"},
+  {key:"ev",ic:"bolt"},{key:"play",ic:"play"},{key:"courts",ic:"court"},{key:"cowork",ic:"desk"},{key:"lounge",ic:"fire"},
 ];
 const ICONS = {
  grid:'<rect x="4" y="4" width="16" height="16"/><path d="M4 12h16M12 4v16"/>',
@@ -542,7 +577,8 @@ addEventListener("scroll",()=>{sy=scrollY},{passive:true});
 
 const qbar=$("#qbar"), walkSec=$("#walk"), heroLayer=$("#heroLayer"), coords=$("#heroCoords"), by=$("#heroBy"), hint=$("#hint"),
       stageFade=$("#stageFade"), capLoc=$("#capLoc"), factEls=$$("#facts .cap"), topBar=$("#top"), railbar=$("#railbar");
-const t0=performance.now();
+let t0=performance.now();
+addEventListener("coord:introdone",()=>{ t0=performance.now(); });
 
 function frame(now){
   const dt=Math.min(64,now-(frame.last||now)); frame.last=now;
@@ -568,7 +604,7 @@ function frame(now){
     const z=zIn+f*(900+seed[0]*700), x=f*(i-4.5)*120*(1+seed[1]), y=yIn+f*(seed[2]-.5)*500;
     el.style.transform=`translate3d(${x}px,${y}px,${z}px) rotateY(${rIn+f*(i-4.5)*14}deg) rotateX(${f*(seed[1]-.5)*60}deg)`;
     el.style.opacity=clamp(inP*1.4)*(1-clamp((f-.55)/.45));
-    el.style.filter=(blur>.4||f>0&&f<1)?`blur(${(blur+f*(1-f)*10).toFixed(1)}px)`:"none";
+    el.style.filter=(!coarse&&(blur>.4||f>0&&f<1))?`blur(${(blur+f*(1-f)*10).toFixed(1)}px)`:"none";
   });
   coords.style.opacity=intro*(1-range(p,0,.05)); coords.style.transform=`translateY(${-range(p,0,.08)*60}px)`;
   coords.style.letterSpacing=lerp(.9,.32,intro)+"em";
@@ -586,7 +622,7 @@ function frame(now){
 
   /* facts float in with depth */
   factEls.forEach((el,i)=>{const a=range(p,.6+i*.05,.7+i*.05), o=a*(1-range(p,.92,.98));
-    el.style.opacity=o; el.style.transform=`translate3d(${(1-eo(a))*80}px,0,0)`; el.style.filter=a<1?`blur(${(1-a)*6}px)`:"none";});
+    el.style.opacity=o; el.style.transform=`translate3d(${(1-eo(a))*(coarse?30:80)}px,0,0)`; el.style.filter=(!coarse&&a<1)?`blur(${(1-a)*6}px)`:"none";});
 
   }
   /* infrastructure ring */

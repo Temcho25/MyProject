@@ -1,13 +1,13 @@
 /* Coordinate — light gallery (#gallery): six renders, no scroll-jacking.
    Desktop: an airy editorial layout; each photo is revealed once with a soft wipe when it comes into view.
-   Phones: a native swipe rail (scroll-snap) with a counter. Tap opens a simple full-screen viewer.
+   Phones: the section pins and the photos slide sideways as you scroll down. Tap opens a simple full-screen viewer.
    Nothing is downloaded until the section gets close. Data: data/gallery.json. */
 const root = document.getElementById("gallery");
 const lang = () => (["ka", "en", "ru"].includes(document.documentElement.lang) ? document.documentElement.lang : "en");
 const T = {
-  en: { eyebrow: "Gallery", title: "Life at Coordinate", close: "Close", prev: "Previous", next: "Next", swipe: "Swipe to see more" },
-  ru: { eyebrow: "Галерея", title: "Жизнь в Coordinate", close: "Закрыть", prev: "Назад", next: "Вперёд", swipe: "Листайте, чтобы увидеть больше" },
-  ka: { eyebrow: "გალერეა", title: "ცხოვრება Coordinate-ში", close: "დახურვა", prev: "წინა", next: "შემდეგი", swipe: "გადაფურცლეთ მეტის სანახავად" },
+  en: { eyebrow: "Gallery", title: "Life at Coordinate", close: "Close", prev: "Previous", next: "Next", swipe: "Keep scrolling" },
+  ru: { eyebrow: "Галерея", title: "Жизнь в Coordinate", close: "Закрыть", prev: "Назад", next: "Вперёд", swipe: "Листайте вниз" },
+  ka: { eyebrow: "გალერეა", title: "ცხოვრება Coordinate-ში", close: "დახურვა", prev: "წინა", next: "შემდეგი", swipe: "გადაახვიეთ ქვემოთ" },
 };
 const pad = n => String(n).padStart(2, "0");
 let P = [];
@@ -18,7 +18,7 @@ async function boot() {
   try { P = await (await fetch("data/gallery.json")).json(); } catch (e) { return; }
   if (!P.length) return;
   root.classList.add("glite");
-  root.innerHTML = `
+  root.innerHTML = `<div class="gl-stick">
     <div class="wrap">
       <div class="gl-head"><div><div class="eyebrow" data-g="eyebrow"></div><h2 class="h2" data-g="title"></h2></div>
         <div class="gl-count" aria-hidden="true"><b id="glNow">01</b> / ${pad(P.length)}</div></div>
@@ -30,19 +30,36 @@ async function boot() {
             <figcaption><span>${pad(i + 1)}</span><em></em></figcaption></figure>`).join("")}
       </div>
       <div class="gl-hint" data-g="swipe"></div>
-    </div>`;
+    </div></div>`;
   relang();
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .15 });
   root.querySelectorAll(".gl-item").forEach(f => io.observe(f));
   const grid = root.querySelector("#glGrid"), now = root.querySelector("#glNow");
   grid.addEventListener("click", e => { const f = e.target.closest(".gl-item"); if (f) openLb(+f.dataset.i); });
-  // phone rail: the counter follows the swipe
-  grid.addEventListener("scroll", () => {
-    const items = grid.children, mid = grid.scrollLeft + grid.clientWidth / 2;
-    let best = 0, bd = 1e9;
-    for (let i = 0; i < items.length; i++) { const d = Math.abs(items[i].offsetLeft + items[i].offsetWidth / 2 - mid); if (d < bd) { bd = d; best = i; } }
-    now.textContent = pad(best + 1);
-  }, { passive: true });
+  pin(grid, now);
+}
+// Phones: pin the section and move the row sideways with the vertical scroll (1 px down = 1 px across).
+const PHONE = matchMedia("(max-width: 800px)");
+function pin(grid, now) {
+  let maxX = 0, vis = false, raf = 0;
+  const update = () => {
+    raf = 0; if (!PHONE.matches) return;
+    const r = root.getBoundingClientRect(), span = r.height - innerHeight;
+    const p = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0;
+    grid.style.transform = `translate3d(${(-p * maxX).toFixed(1)}px,0,0)`;
+    now.textContent = pad(Math.round(p * (P.length - 1)) + 1);
+  };
+  const measure = () => {
+    if (!PHONE.matches) { root.classList.remove("gl-pinned"); root.style.height = ""; grid.style.transform = ""; return; }
+    root.classList.add("gl-pinned"); grid.style.transform = "";
+    maxX = Math.max(0, grid.scrollWidth - grid.clientWidth);
+    root.style.height = `calc(100svh + ${Math.round(maxX)}px)`;
+    update();
+  };
+  addEventListener("scroll", () => { if (vis && !raf) raf = requestAnimationFrame(update); }, { passive: true });
+  new IntersectionObserver(([e]) => { vis = e.isIntersecting; if (vis) update(); }).observe(root);
+  addEventListener("resize", measure); PHONE.addEventListener("change", measure);
+  measure();
 }
 function relang() {
   if (!root.classList.contains("glite")) return;

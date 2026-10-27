@@ -45,3 +45,13 @@ html.lb-open{overflow:hidden}
 .rlb-p{left:16px;top:50%;margin-top:-24px}.rlb-n{right:16px;top:50%;margin-top:-24px}
 @media (pointer:coarse){.rlb-p,.rlb-n{display:none}}
 @media (min-width:801px){.gl-count{display:none}}
+
+/* phones: pinned section, the row slides sideways while scrolling down */
+@media (max-width:800px){
+  #gallery.gl-pinned{padding:0}
+  .gl-pinned .gl-stick{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding-top:56px}
+  .gl-pinned .gl-grid{overflow:visible;scroll-snap-type:none;will-change:transform}
+  .gl-pinned .gl-item{height:min(56svh,500px)}
+  .gl-pinned .gl-head .h2{font-size:clamp(28px,8vw,40px)}
+  .gl-hint:after{content:" ↓"}
+}

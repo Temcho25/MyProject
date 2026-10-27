@@ -126,7 +126,7 @@ function initHero() {
   }
   resize(); addEventListener("resize", resize);
   camera.position.set(200, 260, 260); camera.lookAt(0, 30, 0);
-  warmUp(renderer, scene, camera);
+  warmUp(renderer, scene, camera).then(() => dispatchEvent(new CustomEvent("coord:heroready")));
 
   const v = new THREE.Vector3(), target = new THREE.Vector3();
   let lastKey = "", last = performance.now(), visible = true;
@@ -154,7 +154,7 @@ function initHero() {
     camera.lookAt(target);
     // shift the composition so captions/facts have room
     const offX = wide ? (lerp(0, -.1, eio(range(p, .2, .3))) * (1 - eio(range(p, .38, .5))) + lerp(0, .13, eio(range(p, .5, .68)))) : 0;
-    const offY = wide ? 0 : lerp(0, .14, eio(range(p, .55, .68)));
+    const offY = wide ? 0 : lerp(0, .05, eio(range(p, .55, .68)));
     camera.setViewOffset(W, H, offX * W, offY * H, W, H);
 
     // pin drop + ripple
@@ -171,11 +171,13 @@ function initHero() {
       const g = eback(range(p, .42 + i * .04, .56 + i * .04));
       t.scale.y = Math.max(.001, g); t.visible = p > .415 + i * .04;
       const lb = labels[i], show = p > .52 + i * .04 && p < .97;
-      lb.style.opacity = show ? 1 : 0;
+      let y = 0;
       if (show) {
         v.set(t.position.x, t.userData.height * t.scale.y + 16, t.position.z).project(camera);
-        lb.style.transform = `translate3d(${(v.x * .5 + .5) * W}px,${(-v.y * .5 + .5) * H}px,0) translate(-50%,-100%)`;
+        y = (-v.y * .5 + .5) * H;
+        lb.style.transform = `translate3d(${(v.x * .5 + .5) * W}px,${y}px,0) translate(-50%,-100%)`;
       }
+      lb.style.opacity = show && y > 150 ? 1 : 0;              // never under the header/logo
     });
     const gc = eback(range(p, .5, .64)); com.scale.y = Math.max(.001, gc); com.visible = p > .5;
     const gs = eo(range(p, .4, .55)); site.visible = gs > 0; site.scale.set(1, Math.max(.001, gs), 1);
@@ -257,7 +259,7 @@ function initSelector() {
 }
 
 function boot() {
-  try { initHero(); } catch (e) { console.error(e); document.documentElement.classList.add("no-webgl"); }
+  try { initHero(); } catch (e) { console.error(e); document.documentElement.classList.add("no-webgl"); dispatchEvent(new CustomEvent("coord:heroready")); }
   const sel = document.getElementById("sel3d");
   if (sel) {
     let done = false;
@@ -268,5 +270,5 @@ function boot() {
   }
 }
 // let the page paint first
-if (document.readyState === "complete") (window.requestIdleCallback ? requestIdleCallback(boot, { timeout: 600 }) : setTimeout(boot, 50));
-else addEventListener("load", () => (window.requestIdleCallback ? requestIdleCallback(boot, { timeout: 600 }) : setTimeout(boot, 50)));
+// start right away: the intro screen covers the preparation time
+boot();
