@@ -16,6 +16,9 @@ const range = (v, a, b) => clamp((v - a) / (b - a));
 
 const isMobile = matchMedia('(max-width: 760px)').matches || /Mobi|Android/i.test(navigator.userAgent);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+// ?render=<0..1> renders a clean still of the scene at that scroll point (used to make card images)
+const RENDER = new URLSearchParams(location.search).get('render');
+if (RENDER !== null) document.documentElement.classList.add('render');
 
 /* ------------------------------------------------------------------ */
 /* Split text into characters                                          */
@@ -45,8 +48,8 @@ const phoneChars = split($('[data-digits]'));
 /* Renderer / scene                                                    */
 /* ------------------------------------------------------------------ */
 const canvas = $('#gl');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
-const DPR = Math.min(devicePixelRatio, isMobile ? 1.5 : 1.75);
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance', preserveDrawingBuffer: RENDER !== null });
+const DPR = RENDER !== null ? devicePixelRatio : Math.min(devicePixelRatio, isMobile ? 1.5 : 1.75);
 renderer.setPixelRatio(DPR);
 renderer.setSize(innerWidth, innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -709,13 +712,13 @@ soundBtn.addEventListener('click', async () => { const on = await audio.toggle()
 let loaded = false, loadedAt = 0;
 const clock = new THREE.Clock();
 const camPos = new THREE.Vector3(), look = new THREE.Vector3(), lookSm = new THREE.Vector3();
-let first = true;
+let first = true, renderFrames = 0;
 
 function frame() {
   const dt = Math.min(clock.getDelta(), 1 / 20);
   const time = clock.elapsedTime;
-  target = docProgress();
-  const k = 1 - Math.exp(-dt * (reduced ? 20 : 3.2));   // inertia on the camera
+  target = RENDER !== null ? +RENDER : docProgress();
+  const k = RENDER !== null ? 1 : 1 - Math.exp(-dt * (reduced ? 20 : 3.2));   // inertia on the camera
   prog += (target - prog) * k;
   vel = lerp(vel, (prog - lastProg) / Math.max(dt, 1e-3) * .016, .2);
   lastProg = prog;
@@ -751,11 +754,13 @@ function frame() {
   const dofDirections = range(prog, .45, .5) * (1 - range(prog, .6, .64));
   lens.uniforms.uDof.value = reduced ? 0 : (dofObjects * 1.0 + dofDirections * .7 + (1 - intro) * .8) * (isMobile ? 1.6 : 2.6);
   lens.uniforms.uTime.value = time;
+  if (RENDER !== null) { lens.uniforms.uSpeed.value = 0; lens.uniforms.uDof.value = 0; }
   bloom.strength = .38 + U.uLights.value * .3;
 
   updateDOM(dt, time);
   audio.update(speed, U.uDusk.value);
   composer.render();
+  if (RENDER !== null && ++renderFrames > 12) { document.title = 'rendered'; return; }
   requestAnimationFrame(frame);
 }
 
