@@ -146,6 +146,7 @@ html[lang="ka"] .h2{font-weight:600;letter-spacing:0}
 .sel-3d{position:relative;height:clamp(380px,68vh,720px);border:1px solid var(--line);overflow:hidden;
   background:radial-gradient(80% 70% at 50% 40%,var(--ink-3),var(--ink));touch-action:pan-y;cursor:grab}
 .sel-3d.grabbing{cursor:grabbing}
+@media (min-width:901px){.sel-3d{position:sticky;top:84px}}
 @media (max-width:600px){.sel-3d{height:min(62svh,520px)}}
 .sel-3d .hint{position:absolute;left:16px;bottom:14px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--paper-dim)}
 .ctl h3{font:500 11px/1 "Manrope","Noto Sans Georgian",sans-serif;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
@@ -173,7 +174,7 @@ html[lang="ka"] .h2{font-weight:600;letter-spacing:0}
 .btn svg{width:18px;height:18px}
 
 /* partners */
-.partners{padding:clamp(60px,10vh,120px) 0}
+.partners{padding:clamp(20px,4vh,40px) 0 0}
 .p-row{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line-2);margin-top:40px}
 .p-row>div{padding:30px 24px 30px 0;border-right:1px solid var(--line)}
 .p-row>div:last-child{border-right:0}
@@ -181,7 +182,7 @@ html[lang="ka"] .h2{font-weight:600;letter-spacing:0}
 @media (max-width:800px){.p-row{grid-template-columns:1fr}.p-row>div{border-right:0;border-bottom:1px solid var(--line)}}
 
 /* contact */
-.contact{padding:clamp(90px,14vh,170px) 0 60px;overflow:hidden}
+.contact{padding:clamp(70px,11vh,130px) 0 60px;overflow:hidden}
 .c-big{font:500 clamp(34px,7.4vw,124px)/1 "Unbounded",sans-serif;letter-spacing:-.03em;display:block;margin-top:26px;white-space:nowrap;transition:color .3s}
 .c-big:hover{color:var(--accent)}
 .c-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:clamp(40px,8vh,90px);border-top:1px solid var(--line-2);padding-top:30px}
@@ -206,7 +207,7 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
   .scroll-hint:after,.open i{animation:none}
 }
 </style>
-<link rel="stylesheet" href="css/gallery.css"><link rel="stylesheet" href="css/finder.css"><link rel="stylesheet" href="css/walk.css">
+<link rel="stylesheet" href="css/gallery.css"><link rel="stylesheet" href="css/finder.css"><link rel="stylesheet" href="css/walk.css"><link rel="stylesheet" href="css/live.css">
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/addons/"}}</script>
 </head>
 <body>
@@ -223,6 +224,7 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
     <a href="#choose" data-i="nav_choose"></a>
     <a href="#find" data-i="nav_find"></a>
     <a href="#walk" data-i="nav_walk"></a>
+    <a href="#progress" data-i="nav_prog"></a>
     <a href="#contact" data-i="nav_contact"></a>
   </nav>
   <div class="langs" role="group" aria-label="Language">
@@ -311,12 +313,16 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
 <!-- ============ 3D APARTMENT WALKTHROUGH (js/walk.js) ============ -->
 <section class="walk" id="walk"></section>
 
+<!-- ============ CONSTRUCTION PROGRESS (js/live.js) ============ -->
+<section class="prog" id="progress"></section>
+
 <section class="partners">
+  <div class="marquee" id="marquee"></div>
   <div class="wrap">
     <div class="p-row fade">
-      <div><div class="eyebrow" data-i="p_fin"></div><b data-i="bog"></b></div>
-      <div><div class="eyebrow" data-i="p_pay"></div><b data-i="install"></b></div>
-      <div><div class="eyebrow" data-i="p_sales"></div><b>Georgian Real Estate Agency</b></div>
+      <div style="--n:0"><div class="eyebrow" data-i="p_fin"></div><b data-i="bog"></b></div>
+      <div style="--n:1"><div class="eyebrow" data-i="p_pay"></div><b data-i="install"></b></div>
+      <div style="--n:2"><div class="eyebrow" data-i="p_sales"></div><b>Georgian Real Estate Agency</b></div>
     </div>
   </div>
 </section>
@@ -345,6 +351,8 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
 <script type="module" src="js/scene3d.js"></script>
 <script type="module" src="js/gallery.js"></script>
 <script type="module" src="js/finder.js"></script>
+<script type="module" src="js/walk.js"></script>
+<script type="module" src="js/live.js"></script>
 <script>
 /* =====================================================================
    DATA — edit here. Everything shown on the page comes from this block.
@@ -357,7 +365,7 @@ const PHONE = "995596207474";
 
 const I18N = {
  en:{
-  nav_loc:"Location", nav_infra:"Infrastructure", nav_choose:"Choose an apartment", nav_contact:"Contact", nav_find:"Layouts", nav_walk:"3D tour", q_find:"Layouts", q_walk:"3D tour", q_choose:"Floors",
+  nav_loc:"Location", nav_infra:"Infrastructure", nav_choose:"Choose an apartment", nav_contact:"Contact", nav_find:"Layouts", nav_walk:"3D tour", nav_prog:"Construction", q_find:"Layouts", q_walk:"3D tour", q_choose:"Floors",
   address:"73 Vakhtang Gorgasali St, Tbilisi, Georgia", district:"Ortachala, Old Tbilisi",
   f_floors:"Floors", upto:"up to", f_park:"Park", ha:"1 ha", f_done:"Completion", q2028:"Q4 2028",
   infra_h:"11 000 m² of infrastructure",
@@ -372,7 +380,7 @@ const I18N = {
   addr_k:"Address", hours_k:"Hours", type_k:"Company", type:"Real Estate Developer", call:"Call"
  },
  ru:{
-  nav_loc:"Локация", nav_infra:"Инфраструктура", nav_choose:"Выбор квартиры", nav_contact:"Контакты", nav_find:"Планировки", nav_walk:"3D-тур", q_find:"Планировки", q_walk:"3D-тур", q_choose:"Этажи",
+  nav_loc:"Локация", nav_infra:"Инфраструктура", nav_choose:"Выбор квартиры", nav_contact:"Контакты", nav_find:"Планировки", nav_walk:"3D-тур", nav_prog:"Стройка", q_find:"Планировки", q_walk:"3D-тур", q_choose:"Этажи",
   address:"ул. Вахтанга Горгасали 73, Тбилиси, Грузия", district:"Ортачала, Старый Тбилиси",
   f_floors:"Этажность", upto:"до", f_park:"Парк", ha:"1 га", f_done:"Завершение", q2028:"IV кв. 2028",
   infra_h:"11 000 м² инфраструктуры",
@@ -387,7 +395,7 @@ const I18N = {
   addr_k:"Адрес", hours_k:"Часы работы", type_k:"Компания", type:"Девелопер недвижимости", call:"Позвонить"
  },
  ka:{
-  nav_loc:"ლოკაცია", nav_infra:"ინფრასტრუქტურა", nav_choose:"ბინის არჩევა", nav_contact:"კონტაქტი", nav_find:"გეგმარებები", nav_walk:"3D ტური", q_find:"გეგმარება", q_walk:"3D ტური", q_choose:"სართული",
+  nav_loc:"ლოკაცია", nav_infra:"ინფრასტრუქტურა", nav_choose:"ბინის არჩევა", nav_contact:"კონტაქტი", nav_find:"გეგმარებები", nav_walk:"3D ტური", nav_prog:"მშენებლობა", q_find:"გეგმარება", q_walk:"3D ტური", q_choose:"სართული",
   address:"ვახტანგ გორგასლის ქ. 73, თბილისი, საქართველო", district:"ორთაჭალა, ძველი თბილისი",
   f_floors:"სართულიანობა", upto:"", f_park:"პარკი", ha:"1 ჰა", f_done:"დასრულება", q2028:"2028 IV კვ.",
   infra_h:"11 000 მ² ინფრასტრუქტურა",
@@ -512,7 +520,7 @@ function prog(el){const r=el.getBoundingClientRect(); return clamp(-r.top/(r.hei
 addEventListener("resize",()=>{vw=innerWidth;vh=innerHeight});
 addEventListener("scroll",()=>{sy=scrollY},{passive:true});
 
-const qbar=$("#qbar"), heroLayer=$("#heroLayer"), coords=$("#heroCoords"), by=$("#heroBy"), hint=$("#hint"),
+const qbar=$("#qbar"), walkSec=$("#walk"), heroLayer=$("#heroLayer"), coords=$("#heroCoords"), by=$("#heroBy"), hint=$("#hint"),
       stageFade=$("#stageFade"), capLoc=$("#capLoc"), factEls=$$("#facts .cap"), topBar=$("#top"), railbar=$("#railbar");
 const t0=performance.now();
 
@@ -575,10 +583,23 @@ function frame(now){
   }
 
   topBar.classList.toggle("solid",sy>vh*5.6);
-  qbar.classList.toggle("on",sy>vh*5.6 && document.documentElement.scrollHeight-sy-vh>vh*.6);
+  { const wr=walkSec.getBoundingClientRect(), inWalk=wr.top<vh*.5&&wr.bottom>vh*.5;
+    qbar.classList.toggle("on",sy>vh*5.6 && !inWalk && document.documentElement.scrollHeight-sy-vh>vh*.6); }
   railbar.style.transform=`scaleY(${clamp(sy/(document.documentElement.scrollHeight-vh))})`;
   requestAnimationFrame(frame);
 }
+
+/* ---------- in-page links: sections below load lazily and change height, so re-aim after the scroll ---------- */
+function goTo(id){
+  const el=document.getElementById(id); if(!el) return;
+  const y=()=>el.getBoundingClientRect().top+scrollY-62;
+  scrollTo({top:y(),behavior:reduce?"auto":"smooth"});
+  let n=0; const fix=()=>{ if(++n>12) return; const d=Math.abs(y()-scrollY); if(d>4) scrollTo({top:y(),behavior:d>innerHeight*2?"smooth":"auto"}); setTimeout(fix,250); };
+  setTimeout(fix,700);
+}
+document.addEventListener("click",e=>{const a=e.target.closest('a[href^="#"]'); if(!a||a.getAttribute("href").length<2) return;
+  e.preventDefault(); goTo(a.getAttribute("href").slice(1)); history.replaceState(null,"",a.getAttribute("href"));});
+if(location.hash.length>1) addEventListener("load",()=>setTimeout(()=>goTo(location.hash.slice(1)),300));
 
 /* ---------- boot ---------- */
 applyLang();

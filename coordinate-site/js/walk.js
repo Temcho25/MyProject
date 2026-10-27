@@ -65,7 +65,7 @@ ROOT.innerHTML = `
   <div class="walk-view" id="walkView" data-mode="over">
     <canvas class="walk-cv" id="walkCv" aria-label="3D"></canvas>
     <div class="walk-top">
-      <div class="walk-info"><b id="walkName"></b><span data-w="note"></span></div>
+      <div class="walk-info"><b id="walkName"></b></div>
       <div class="walk-tools">
         <div class="walk-seg" role="group">
           <button type="button" data-mode="over" data-w="over"></button>
@@ -82,6 +82,7 @@ ROOT.innerHTML = `
     <div class="walk-hint" id="walkHint"></div>
     <div class="walk-load" id="walkLoad"><span></span><em data-w="loading"></em></div>
   </div>
+  <p class="walk-note" data-w="note"></p>
 </div>`;
 const $ = s => ROOT.querySelector(s);
 const view = $('#walkView'), cv = $('#walkCv'), picker = $('#walkPicker'), joy = $('#walkJoy');
@@ -97,12 +98,19 @@ function renderText() {
   $('[data-zoom="-1"]').setAttribute('aria-label', L.zin);
   $('[data-zoom="1"]').setAttribute('aria-label', L.zout);
   $('#walkHint').textContent = mode === 'walk' ? L.hWalk : L.hDoll;
+  showHint();
   picker.innerHTML = LAYOUTS.map(l =>
     `<button type="button" class="chip" data-l="${l.id}" aria-pressed="${l.id === current}">${L.rooms(l.rooms)}<small>${l.area} ${L.m2}</small></button>`).join('');
+  { // keep the active chip visible in the horizontally scrolling strip (phones)
+    const on = picker.querySelector('[aria-pressed="true"]');
+    if (on) { const a = on.getBoundingClientRect(), b = picker.getBoundingClientRect(); picker.scrollLeft += a.left - b.left - (b.width - a.width) / 2; }
+  }
   const l = LAYOUTS.find(x => x.id === current);
   $('#walkName').textContent = l ? `${L.rooms(l.rooms)} · ${l.area} ${L.m2}` : '';
   view.querySelectorAll('.walk-seg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === mode));
 }
+let hintT = 0;
+function showHint() { const h = $('#walkHint'); h.classList.remove('off'); clearTimeout(hintT); hintT = setTimeout(() => h.classList.add('off'), 7000); }
 function setLang(l) { if (T[l] && l !== lang) { lang = l; renderText(); } }
 new MutationObserver(() => setLang(document.documentElement.lang)).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
 addEventListener('coord:lang', e => setLang(e.detail && e.detail.lang));
@@ -248,7 +256,7 @@ function createEngine(THREE, RoomEnvironment) {
 
     // ceiling (walk mode only): faces down, does not block the sun
     const ceilAlpha = new THREE.Texture(maskImg); ceilAlpha.flipY = false; ceilAlpha.needsUpdate = true;   // plane faces down -> mirrored UVs
-    const ceilMat = new THREE.MeshStandardMaterial({ color: '#f6f3ee', roughness: 1, alphaMap: ceilAlpha, alphaTest: 0.5 }); ceilMat.userData.own = true;
+    const ceilMat = new THREE.MeshStandardMaterial({ color: '#f6f3ee', emissive: '#bdb6aa', roughness: 1, alphaMap: ceilAlpha, alphaTest: 0.5 }); ceilMat.userData.own = true;
     const ceil = new THREE.Mesh(new THREE.PlaneGeometry(W, H), ceilMat);
     ceil.rotation.x = Math.PI / 2; ceil.position.set(ox, WALL_H, oz); ceil.visible = false; group.add(ceil);
 
@@ -343,7 +351,7 @@ function createEngine(THREE, RoomEnvironment) {
   const player = { x: 0, z: 0, yaw: 0, pitch: 0, vyaw: 0, vpitch: 0, goal: null, stuck: 0 };
   function fitRadius() {
     const vf = THREE.MathUtils.degToRad(camera.fov) / 2, hf = Math.atan(Math.tan(vf) * camera.aspect);
-    return (M.size * 0.5) / Math.sin(Math.min(vf, hf));
+    return (M.size * (camera.aspect < 1 ? 0.6 : 0.5)) / Math.sin(Math.min(vf, hf));
   }
   function dollPose(out = camera) {
     const { theta, phi, radius, target } = doll;

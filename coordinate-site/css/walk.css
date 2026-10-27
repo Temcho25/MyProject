@@ -26,7 +26,10 @@
 .walk-ic svg{width:18px;height:18px;fill:none;stroke:var(--paper);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .walk-zoom{position:absolute;right:14px;bottom:14px;display:flex;flex-direction:column;gap:6px;transition:opacity .3s}
 .walk-view[data-mode="walk"] .walk-zoom{opacity:0;pointer-events:none}
-.walk-hint{position:absolute;left:14px;bottom:16px;right:70px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--paper-dim);pointer-events:none;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.walk-hint{position:absolute;left:14px;bottom:16px;right:70px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--paper-dim);pointer-events:none;text-shadow:0 1px 8px rgba(0,0,0,.6);transition:opacity .6s}
+.walk-hint.off{opacity:0}
+.walk-view[data-mode="walk"] .walk-hint{color:var(--paper);text-shadow:0 1px 6px rgba(0,0,0,.85)}
+.walk-note{margin-top:10px;font-size:12px;color:var(--paper-dim)}
 
 /* joystick: touch devices, walk mode */
 .walk-joy{position:absolute;left:18px;bottom:46px;width:116px;height:116px;border-radius:50%;border:1px solid var(--line-2);
@@ -34,7 +37,7 @@
 .walk-joy i{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:var(--paper);box-shadow:0 4px 18px rgba(0,0,0,.4)}
 @media (pointer:coarse){
   .walk-view[data-mode="walk"] .walk-joy{display:block}
-  .walk-view[data-mode="walk"] .walk-hint{left:150px;right:14px}
+  .walk-view[data-mode="walk"] .walk-hint{left:14px;right:14px;bottom:auto;top:auto;bottom:174px}
 }
 
 /* loader */
@@ -56,7 +59,8 @@ html.walk-lock,html.walk-lock body{overflow:hidden}
   .walk-picker .chip{flex:0 0 auto;scroll-snap-align:start}
   .walk-top{padding:10px;flex-direction:column-reverse;align-items:stretch}
   .walk-tools{justify-content:space-between}
-  .walk-info{max-width:none;padding:8px 12px}
+  .walk-info{max-width:none;padding:8px 12px;align-self:flex-start}
+  .walk-note{padding:0 2px}
   .walk-seg button{padding:10px 12px}
   .walk-hint{font-size:10px;letter-spacing:.1em;bottom:12px}
 }
