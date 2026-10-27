@@ -1,0 +1,15 @@
+{
+  "name": "mgrand-design-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "find assets/js -name '*.js' -delete && esbuild src/main.js --bundle --format=esm --splitting --minify --target=es2020 --outdir=assets/js --entry-names=app --chunk-names=[name]-[hash] --legal-comments=none",
+    "dev": "npx serve ."
+  },
+  "devDependencies": {
+    "esbuild": "0.24.0",
+    "three": "0.169.0",
+    "gsap": "3.13.0",
+    "lenis": "1.1.13"
+  }
+}
