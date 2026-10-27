@@ -10,6 +10,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700&family=Noto+Sans+Georgian:wght@300;400;600;800&family=Unbounded:wght@300;500;800&display=swap" rel="stylesheet">
 <style>
+html{scroll-behavior:smooth}
+section[id],#location{scroll-margin-top:64px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 :root{
   --ink:#1d2433;          /* navy from the logo */
   --ink-2:#262e40;
@@ -54,47 +57,30 @@ body:after{content:"";position:fixed;inset:-50%;pointer-events:none;z-index:100;
 .langs{display:flex;border:1px solid var(--line-2);border-radius:999px;padding:3px;font:600 11px/1 "Manrope",sans-serif;letter-spacing:.08em}
 .langs button{padding:7px 10px;border-radius:999px;opacity:.6;transition:all .3s}
 .langs button[aria-pressed="true"]{background:var(--paper);color:var(--ink);opacity:1}
-@media (max-width:900px){.nav{display:none}}
+@media (max-width:1180px){.nav{gap:18px;font-size:12px}}
+@media (max-width:980px){.nav{display:none}}
+@media (min-width:1900px){.wrap{max-width:1760px}.nav{font-size:15px;gap:34px}}
+/* phone: bottom quick bar */
+.qbar{position:fixed;left:50%;bottom:max(12px,env(safe-area-inset-bottom));z-index:60;display:none;gap:2px;padding:4px;border-radius:999px;
+  background:rgba(29,36,51,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line-2);
+  transform:translate(-50%,140%);transition:transform .45s cubic-bezier(.2,.8,.2,1);max-width:calc(100vw - 24px)}
+.qbar.on{transform:translate(-50%,0)}
+.qbar a{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 12px;border-radius:999px;font:600 10px/1 var(--text);letter-spacing:.04em;white-space:nowrap;color:var(--paper)}
+.qbar a svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.5}
+.qbar a.wa{background:var(--paper);color:var(--ink)}
+@media (max-width:980px){.qbar{display:flex}}
 
 /* ---------- world (scroll-driven 3D scene) ---------- */
 .world-track{position:relative;height:640vh}
 .stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;perspective:1100px;perspective-origin:50% 42%}
 .stage-bg{position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 30%,var(--ink-3) 0%,var(--ink) 60%)}
 .stage-fade{position:absolute;inset:0;background:var(--ink);pointer-events:none;opacity:1}
-.cam{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
-.world{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d}
-.grid{position:absolute;left:-1300px;top:-1300px;width:2600px;height:2600px;
-  background-image:
-    linear-gradient(var(--line-2) 1px,transparent 1px),
-    linear-gradient(90deg,var(--line-2) 1px,transparent 1px),
-    linear-gradient(var(--line) 1px,transparent 1px),
-    linear-gradient(90deg,var(--line) 1px,transparent 1px);
-  background-size:200px 200px,200px 200px,40px 40px,40px 40px;
-  background-position:-1px -1px;
-  -webkit-mask-image:radial-gradient(closest-side,#000 30%,transparent 100%);mask-image:radial-gradient(closest-side,#000 30%,transparent 100%)}
-.axis{position:absolute;background:var(--accent);opacity:.75}
-.axis.x{left:-1300px;width:2600px;top:0;height:1px}
-.axis.y{top:-1300px;height:2600px;left:0;width:1px}
-.tick{position:absolute;font:500 13px/1 "Manrope",sans-serif;letter-spacing:.12em;color:var(--accent);white-space:nowrap}
-.pin{position:absolute;left:0;top:0;transform-style:preserve-3d}
-.pin .ring{position:absolute;left:-60px;top:-60px;width:120px;height:120px;border:1px solid var(--glow);border-radius:50%}
-.pin .ring.r2{left:-110px;top:-110px;width:220px;height:220px;opacity:.5}
-.pin .dot{position:absolute;left:-5px;top:-5px;width:10px;height:10px;border-radius:50%;background:var(--glow);box-shadow:0 0 24px 6px rgba(243,223,174,.6)}
-.pin .needle{position:absolute;left:0;top:0;width:1px;height:260px;background:linear-gradient(var(--glow),transparent);transform-origin:0 0;transform:rotateX(-90deg)}
-
-/* towers */
-#towers,#selWorld{position:absolute;left:0;top:0;transform-style:preserve-3d}
-.tower{position:absolute;transform-style:preserve-3d}
-.tower .z{position:absolute;left:0;top:0;transform-style:preserve-3d;transform-origin:0 0}
-.face{position:absolute;backface-visibility:visible;transform-origin:50% 100%}
-.face.g{background-image:repeating-linear-gradient(to top,rgba(243,223,174,.45) 0 1px,transparent 1px var(--fh))}
-.face.p{background-image:linear-gradient(to top,rgba(0,0,0,.18),transparent 30%)}
-.face.t{border-radius:50%;background:radial-gradient(circle,rgba(120,118,112,.95) 0 70%,rgba(216,196,154,.85) 72% 100%);border:1px solid rgba(243,223,174,.6)}
-.tower .label{position:absolute;transform-style:preserve-3d}
-.tower .label span{display:block;transform:translate(-50%,-100%);font:800 30px/1 "Unbounded",sans-serif;color:var(--paper);text-shadow:0 2px 20px rgba(0,0,0,.4);white-space:nowrap}
-.slab{position:absolute;transform-style:preserve-3d;pointer-events:none;transition:opacity .3s}
-.slab{left:0;top:0}
-.slab div{position:absolute;transform-origin:50% 100%;backface-visibility:visible;background:rgba(243,223,174,.9);box-shadow:0 0 22px rgba(243,223,174,.75)}
+/* WebGL scenes (js/scene3d.js) */
+.no-webgl .stage-bg{background:linear-gradient(rgba(29,36,51,.55),rgba(29,36,51,.85)),url(photos/01-aerial-day.webp) center/cover}
+.hero3d,.sel3d-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.t3label{position:absolute;left:0;top:0;font:800 clamp(18px,2.2vw,30px)/1 "Unbounded",sans-serif;color:var(--paper);
+  text-shadow:0 2px 20px rgba(0,0,0,.5);pointer-events:none;transition:opacity .4s;opacity:0;will-change:transform}
+.t3label:after{content:"";display:block;width:1px;height:14px;margin:6px auto 0;background:var(--glow)}
 
 /* hero letters */
 .hero-layer{position:absolute;inset:0;display:grid;place-items:center;transform-style:preserve-3d;pointer-events:none}
@@ -153,20 +139,14 @@ html[lang="ka"] .h2{font-weight:600;letter-spacing:0}
 .card .lbl{font-size:clamp(14px,1.25vw,18px);line-height:1.3;margin-top:10px}
 .card:before{content:"";position:absolute;inset:8px;border:1px solid var(--line);pointer-events:none}
 
-/* gallery depth tunnel */
-.gal-track{height:520vh}
-.gal-stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;perspective:900px}
-.gal-stage .ph{position:absolute;left:50%;top:50%;transform-style:preserve-3d;will-change:transform,opacity,filter}
-.gal-stage .ph img{width:100%;height:100%;object-fit:contain;box-shadow:0 30px 80px rgba(0,0,0,.45)}
-.gal-full{display:none}
-
 /* selector */
 .sel{padding:clamp(100px,16vh,180px) 0 clamp(80px,12vh,140px)}
 .sel-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(24px,5vw,80px);margin-top:clamp(36px,6vh,70px);align-items:start}
 @media (max-width:900px){.sel-grid{grid-template-columns:1fr}}
-.sel-3d{position:relative;height:clamp(420px,68vh,720px);perspective:1200px;border:1px solid var(--line);overflow:hidden;
+.sel-3d{position:relative;height:clamp(380px,68vh,720px);border:1px solid var(--line);overflow:hidden;
   background:radial-gradient(80% 70% at 50% 40%,var(--ink-3),var(--ink));touch-action:pan-y;cursor:grab}
-.sel-3d .grid{left:-700px;top:-700px;width:1400px;height:1400px;background-size:100px 100px,100px 100px,20px 20px,20px 20px}
+.sel-3d.grabbing{cursor:grabbing}
+@media (max-width:600px){.sel-3d{height:min(62svh,520px)}}
 .sel-3d .hint{position:absolute;left:16px;bottom:14px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--paper-dim)}
 .ctl h3{font:500 11px/1 "Manrope","Noto Sans Georgian",sans-serif;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
 .ctl .grp{margin-bottom:34px}
@@ -226,6 +206,7 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
   .scroll-hint:after,.open i{animation:none}
 }
 </style>
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/addons/"}}</script>
 </head>
 <body>
 
@@ -239,29 +220,26 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
     <a href="#location" data-i="nav_loc"></a>
     <a href="#infra" data-i="nav_infra"></a>
     <a href="#choose" data-i="nav_choose"></a>
+    <a href="#find" data-i="nav_find"></a>
+    <a href="#walk" data-i="nav_walk"></a>
     <a href="#contact" data-i="nav_contact"></a>
   </nav>
   <div class="langs" role="group" aria-label="Language">
     <button data-lang="ka">ქარ</button><button data-lang="en">EN</button><button data-lang="ru">RU</button>
   </div>
 </header>
+<nav class="qbar" id="qbar" aria-label="quick">
+  <a href="#find"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16"/><path d="M4 12h9M13 4v16"/></svg><span data-i="q_find"></span></a>
+  <a href="#walk"><svg viewBox="0 0 24 24"><path d="M12 3 3 8v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg><span data-i="q_walk"></span></a>
+  <a href="#choose"><svg viewBox="0 0 24 24"><path d="M6 21V5l6-2 6 2v16M10 8h4M10 12h4M10 16h4"/></svg><span data-i="q_choose"></span></a>
+  <a class="wa" href="https://wa.me/995596207474" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M4 20l1.3-4A8 8 0 1 1 8 19z"/></svg><span>WhatsApp</span></a>
+</nav>
 <div class="rail" aria-hidden="true"><b id="railbar"></b></div>
 
 <!-- ============ 3D WORLD: hero → location → complex ============ -->
 <div class="world-track" id="home">
   <div class="stage" id="stage">
     <div class="stage-bg"></div>
-    <div class="cam" id="cam">
-      <div class="world" id="world">
-        <div class="grid"></div>
-        <div class="axis x"></div><div class="axis y"></div>
-        <div class="tick" style="left:24px;top:-26px">41° 40' 30.9" N</div>
-        <div class="tick" style="left:14px;top:-560px;transform:rotate(90deg);transform-origin:0 0">44° 49' 37.4" E</div>
-        <div class="pin" id="pin"><div class="ring r2"></div><div class="ring"></div><div class="dot"></div><div class="needle"></div></div>
-        <div id="towers"></div>
-      </div>
-    </div>
-
     <div class="hero-layer" id="heroLayer">
       <div class="hero-meta hero-coords" id="heroCoords">41° 40' 30.9" N · 44° 49' 37.4" E</div>
       <div class="hero-word" id="heroWord" aria-label="Coordinate"></div>
@@ -296,10 +274,8 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
   </div>
 </section>
 
-<!-- ============ GALLERY (shown when PHOTOS has items) ============ -->
-<section class="gal-track" id="gallery" hidden>
-  <div class="gal-stage" id="galStage"></div>
-</section>
+<!-- ============ GALLERY (js/gallery.js) ============ -->
+<section class="gal" id="gallery"></section>
 
 <!-- ============ SELECTOR ============ -->
 <section class="sel" id="choose">
@@ -308,7 +284,7 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
     <h2 class="h2 rv" data-i="choose_h"></h2>
     <div class="sel-grid">
       <div class="sel-3d" id="sel3d">
-        <div class="cam" id="selCam"><div class="world" id="selWorld"><div class="grid"></div></div></div>
+        
         <div class="hint" data-i="drag"></div>
       </div>
       <div class="ctl">
@@ -328,6 +304,12 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
 </section>
 
 <!-- ============ PARTNERS ============ -->
+<!-- ============ LAYOUT FINDER (js/finder.js) ============ -->
+<section class="find" id="find"></section>
+
+<!-- ============ 3D APARTMENT WALKTHROUGH (js/walk.js) ============ -->
+<section class="walk" id="walk"></section>
+
 <section class="partners">
   <div class="wrap">
     <div class="p-row fade">
@@ -358,40 +340,21 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
 </section>
 <footer><span>© Coordinate by Keystone</span><span>41° 40' 30.9" N · 44° 49' 37.4" E</span></footer>
 
+<script src="js/data.js"></script>
+<script type="module" src="js/scene3d.js"></script>
 <script>
 /* =====================================================================
    DATA — edit here. Everything shown on the page comes from this block.
    ===================================================================== */
-// Three round residential towers. x/y = centre on the site plan, r = radius (scene px).
-// Block A floors come from api.coordinate.ge; B and C are read off the official renders — please confirm with the developer.
-const BLOCKS = [
-  {id:"A", floors:31, x:-120, y:  50, r:58},
-  {id:"B", floors:18, x:  10, y:-110, r:56},
-  {id:"C", floors:14, x: 140, y: -20, r:56},
-];
-// Layout types (block A, from api.coordinate.ge). `id` = position on the floor (apt 1803 → "03").
-// rooms = bedrooms + living room. floors = [first,last] floor with this layout. plan2d / plan3d = images in plans/.
-const LAYOUTS = [
-  {id:"09",  rooms:"2", area:62.6,  floors:[3,28],  plan2d:"plans/09-2d.png",  plan3d:"plans/09-3d.webp"},
-  {id:"05",  rooms:"2", area:64.7,  floors:[3,28],  plan2d:"plans/05-2d.png",  plan3d:"plans/05-3d.webp"},
-  {id:"01",  rooms:"2", area:65.3,  floors:[3,28],  plan2d:"plans/01-2d.png",  plan3d:"plans/01-3d.webp"},
-  {id:"07",  rooms:"2", area:68.9,  floors:[3,28],  plan2d:"plans/07-2d.png",  plan3d:"plans/07-3d.webp"},
-  {id:"06",  rooms:"3", area:85.8,  floors:[3,28],  plan2d:"plans/06-2d.png",  plan3d:"plans/06-3d.webp"},
-  {id:"02",  rooms:"3", area:87.7,  floors:[3,28],  plan2d:"plans/02-2d.png",  plan3d:"plans/02-3d.webp"},
-  {id:"04",  rooms:"3", area:92.2,  floors:[3,28],  plan2d:"plans/04-2d.png",  plan3d:"plans/04-3d.webp"},
-  {id:"03",  rooms:"3", area:101.7, floors:[3,28],  plan2d:"plans/03-2d.png",  plan3d:"plans/03-3d.webp"},
-  {id:"08",  rooms:"4", area:125.3, floors:[3,28],  plan2d:"plans/08-2d.png",  plan3d:"plans/08-3d.webp"},
-  {id:"ph2", rooms:"6", area:391.6, floors:[29,30], plan2d:"plans/ph2-2d.png", plan3d:"plans/ph2-3d.webp"},
-  {id:"ph1", rooms:"5", area:401.3, floors:[29,30], plan2d:"plans/ph1-2d.png", plan3d:"plans/ph1-3d.webp"},
-];
+// BLOCKS and LAYOUTS live in js/data.js
+
 // Photos at full resolution, e.g. ["photos/01.jpg", ...]. Gallery section appears automatically.
-const PHOTOS = ["photos/01-aerial-day.webp","photos/02-aerial-park.webp","photos/03-towers-sunset.webp","photos/04-street-evening.webp"];
 
 const PHONE = "995596207474";
 
 const I18N = {
  en:{
-  nav_loc:"Location", nav_infra:"Infrastructure", nav_choose:"Choose an apartment", nav_contact:"Contact",
+  nav_loc:"Location", nav_infra:"Infrastructure", nav_choose:"Choose an apartment", nav_contact:"Contact", nav_find:"Layouts", nav_walk:"3D tour", q_find:"Layouts", q_walk:"3D tour", q_choose:"Floors",
   address:"73 Vakhtang Gorgasali St, Tbilisi, Georgia", district:"Ortachala, Old Tbilisi",
   f_floors:"Floors", upto:"up to", f_park:"Park", ha:"1 ha", f_done:"Completion", q2028:"Q4 2028",
   infra_h:"11 000 m² of infrastructure",
@@ -406,7 +369,7 @@ const I18N = {
   addr_k:"Address", hours_k:"Hours", type_k:"Company", type:"Real Estate Developer", call:"Call"
  },
  ru:{
-  nav_loc:"Локация", nav_infra:"Инфраструктура", nav_choose:"Выбор квартиры", nav_contact:"Контакты",
+  nav_loc:"Локация", nav_infra:"Инфраструктура", nav_choose:"Выбор квартиры", nav_contact:"Контакты", nav_find:"Планировки", nav_walk:"3D-тур", q_find:"Планировки", q_walk:"3D-тур", q_choose:"Этажи",
   address:"ул. Вахтанга Горгасали 73, Тбилиси, Грузия", district:"Ортачала, Старый Тбилиси",
   f_floors:"Этажность", upto:"до", f_park:"Парк", ha:"1 га", f_done:"Завершение", q2028:"IV кв. 2028",
   infra_h:"11 000 м² инфраструктуры",
@@ -421,7 +384,7 @@ const I18N = {
   addr_k:"Адрес", hours_k:"Часы работы", type_k:"Компания", type:"Девелопер недвижимости", call:"Позвонить"
  },
  ka:{
-  nav_loc:"ლოკაცია", nav_infra:"ინფრასტრუქტურა", nav_choose:"ბინის არჩევა", nav_contact:"კონტაქტი",
+  nav_loc:"ლოკაცია", nav_infra:"ინფრასტრუქტურა", nav_choose:"ბინის არჩევა", nav_contact:"კონტაქტი", nav_find:"გეგმარებები", nav_walk:"3D ტური", q_find:"გეგმარება", q_walk:"3D ტური", q_choose:"სართული",
   address:"ვახტანგ გორგასლის ქ. 73, თბილისი, საქართველო", district:"ორთაჭალა, ძველი თბილისი",
   f_floors:"სართულიანობა", upto:"", f_park:"პარკი", ha:"1 ჰა", f_done:"დასრულება", q2028:"2028 IV კვ.",
   infra_h:"11 000 მ² ინფრასტრუქტურა",
@@ -473,61 +436,16 @@ let lang = "ka";
 try{ const s=localStorage.getItem("coord-lang"); if(s&&I18N[s]) lang=s; else { const n=(navigator.language||"").slice(0,2); if(I18N[n]) lang=n; } }catch(e){}
 let L = I18N[lang];
 
-/* ---------- 3D tower builder ---------- */
-// Round tower = ring of N vertical strips around the axis. Even strips are light pilasters,
-// odd ones dark glass with floor lines — the striped facade from the renders. Shading is baked per strip.
-const SIDES=28;
-function makeTower(b, fh, opts={}){
-  const h=b.floors*fh, r=b.r, d=2*r, t=document.createElement("div");
-  t.className="tower"; t.style.left=(b.x-r)+"px"; t.style.top=(b.y-r)+"px"; t.style.width=d+"px"; t.style.height=d+"px";
-  t.style.setProperty("--fh",fh+"px");
-  const z=document.createElement("div"); z.className="z"; t.appendChild(z);
-  const sw=2*r*Math.tan(Math.PI/SIDES)+.6, ap=r*Math.cos(Math.PI/SIDES);
-  for(let i=0;i<SIDES;i++){
-    const a=i*360/SIDES, light=.5+.5*Math.cos((a-200)*Math.PI/180);    // key light from the south-west
-    const pil=i%2===0, e=document.createElement("div");
-    e.className="face "+(pil?"p":"g");
-    e.style.cssText=`left:${r-sw/2}px;top:${r-h}px;width:${sw}px;height:${h}px;transform:rotateZ(${a}deg) translateY(${ap}px) rotateX(-90deg);`+
-      (pil?`background-color:rgb(${Math.round(lerp(92,226,light))},${Math.round(lerp(90,212,light))},${Math.round(lerp(88,184,light))})`
-          :`background-color:rgba(${Math.round(lerp(18,44,light))},${Math.round(lerp(23,52,light))},${Math.round(lerp(34,70,light))},.9)`);
-    z.appendChild(e);
-  }
-  const top=document.createElement("div"); top.className="face t";
-  top.style.cssText=`left:0;top:0;width:${d}px;height:${d}px;transform:translateZ(${h}px)`; z.appendChild(top);
-  if(opts.label){ const lb=document.createElement("div"); lb.className="label"; lb.style.left=r+"px"; lb.style.top=r+"px";
-    lb.style.transform=`translateZ(${h+26}px)`; lb.innerHTML=`<span>${b.id}</span>`; z.appendChild(lb); t._label=lb; }
-  if(opts.slab){ // glowing band one floor high, wrapped just outside the facade
-    const s=document.createElement("div"); s.className="slab"; const bw=2*(r+4)*Math.tan(Math.PI/SIDES)+.6, ba=(r+4)*Math.cos(Math.PI/SIDES);
-    for(let i=0;i<SIDES;i++){ const e=document.createElement("div");
-      e.style.cssText=`left:${r-bw/2}px;top:${r-fh}px;width:${bw}px;height:${fh}px;transform:rotateZ(${i*360/SIDES}deg) translateY(${ba}px) rotateX(-90deg)`; s.appendChild(e); }
-    z.appendChild(s); t._slab=s; }
-  t._z=z; t._h=h; return t;
-}
-
 /* ---------- hero letters ---------- */
 const word="COORDINATE", hw=$("#heroWord");
 const letters=[...word].map((c,i)=>{const s=document.createElement("span");s.textContent=c;hw.appendChild(s);
   return {el:s,i,seed:[Math.sin(i*12.9)*.5+.5,Math.sin(i*78.2)*.5+.5,Math.sin(i*39.4)*.5+.5]}});
-
-/* ---------- world towers ---------- */
-const FH=11;
-const towers=BLOCKS.map(b=>{const t=makeTower(b,FH,{label:true});$("#towers").appendChild(t);return t});
 
 /* ---------- ring cards ---------- */
 const ring=$("#ring"), N=RING_ITEMS.length;
 const cards=RING_ITEMS.map((it,i)=>{const c=document.createElement("div");c.className="card";
   c.innerHTML=`<svg class="ic" viewBox="0 0 24 24">${ICONS[it.ic]}</svg><div>${it.num?`<div class="num">${it.num}</div>`:""}<div class="lbl" data-i="${it.key}"></div></div>`;
   ring.appendChild(c);return c});
-
-/* ---------- gallery (photos at native quality, no recompression) ---------- */
-const gal=$("#gallery"), galStage=$("#galStage"); let galItems=[];
-if(PHOTOS.length){
-  gal.hidden=false; gal.style.height=(120+PHOTOS.length*90)+"vh";
-  galItems=PHOTOS.map((src,i)=>{const d=document.createElement("div");d.className="ph";
-    const im=new Image(); im.src=src; im.alt=""; im.decoding="async"; im.loading=i<2?"eager":"lazy";
-    d.appendChild(im); galStage.appendChild(d);
-    const side=i%2?1:-1; const it={el:d,side,i}; im.onload=()=>{it.ar=im.naturalWidth/im.naturalHeight}; return it});
-}
 
 /* ---------- i18n ---------- */
 function splitWords(el){ const txt=el.textContent; el.innerHTML=txt.split(" ").map((w,i)=>`<span class="w"><i style="--d:${i}">${w}</i></span>`).join(" "); }
@@ -537,6 +455,7 @@ function applyLang(){
   $$(".langs button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.lang===lang));
   renderSelector();
   try{localStorage.setItem("coord-lang",lang)}catch(e){}
+  dispatchEvent(new CustomEvent("coord:lang",{detail:{lang}}));
 }
 $$(".langs button").forEach(b=>b.onclick=()=>{lang=b.dataset.lang;applyLang();requestAnimationFrame(()=>$$(".rv").forEach(r=>{if(r.dataset.seen)r.classList.add("in")}))});
 
@@ -547,15 +466,6 @@ const layOf=id=>LAYOUTS.find(x=>x.id===id);
 const floorRange=b=>[Math.min(...LAYOUTS.map(l=>l.floors[0])), Math.min(b.floors,Math.max(...LAYOUTS.map(l=>l.floors[1])))];
 const layoutsFor=b=>LAYOUTS.filter(l=>l.floors[0]<=b.floors);
 const fits=(l,f)=>f>=l.floors[0]&&f<=l.floors[1];
-const SFH=14; let selTower=null, selRot=-28, selVel=.06, dragging=false;
-function buildSelTower(){
-  const b=BLOCKS.find(x=>x.id===sel.block);
-  const scale=Math.min(1, 470/(b.floors*SFH));
-  if(selTower) selTower.remove();
-  selTower=makeTower({...b,x:0,y:0,r:78},SFH*scale,{slab:true});
-  selTower._fh=SFH*scale; $("#selWorld").appendChild(selTower);
-  selTower._z.style.transform="scaleZ(0)"; selTower._grow=0;
-}
 function renderSelector(){
   const b=BLOCKS.find(x=>x.id===sel.block), [f0,f1]=floorRange(b);
   sel.floor=clamp(sel.floor,f0,f1);
@@ -575,21 +485,15 @@ function renderSelector(){
   $("#req").href=`https://wa.me/${PHONE}?text=${encodeURIComponent(L.msg(sel.block,sel.floor,lay.rooms)+` — ${lay.area} ${L.m2}`)}`;
   placeSlab();
 }
-function placeSlab(){ if(!selTower) return; selTower._slab.style.transform=`translateZ(${(sel.floor-1)*selTower._fh}px)`; }
-$("#blocks").onclick=e=>{const t=e.target.closest("[data-b]"); if(!t) return; sel.block=t.dataset.b; buildSelTower(); renderSelector();};
+function placeSlab(f=sel.floor){ dispatchEvent(new CustomEvent("coord:sel",{detail:{block:sel.block,floor:f}})); }
+$("#blocks").onclick=e=>{const t=e.target.closest("[data-b]"); if(!t) return; sel.block=t.dataset.b; renderSelector();};
 $("#floors").onclick=e=>{const t=e.target.closest("[data-f]"); if(!t) return; sel.floor=+t.dataset.f;
   if(!fits(layOf(sel.layout),sel.floor)) sel.layout=(LAYOUTS.find(l=>fits(l,sel.floor))||LAYOUTS[0]).id;
   renderSelector();};
-$("#floors").onmouseover=e=>{const t=e.target.closest("[data-f]"); if(t&&selTower) selTower._slab.style.transform=`translateZ(${(+t.dataset.f-1)*selTower._fh}px)`;};
-$("#floors").onmouseleave=placeSlab;
+$("#floors").onmouseover=e=>{const t=e.target.closest("[data-f]"); if(t) placeSlab(+t.dataset.f);};
+$("#floors").onmouseleave=()=>placeSlab();
 $("#layouts").onclick=e=>{const t=e.target.closest("[data-l]"); if(!t) return; sel.layout=t.dataset.l; renderSelector();};
 $("#planImg").onclick=e=>{const t=e.target.closest("[data-v]"); if(!t) return; sel.view=t.dataset.v; renderSelector();};
-(()=>{const el=$("#sel3d"); let lx=0;
-  el.addEventListener("pointerdown",e=>{dragging=true;lx=e.clientX;el.setPointerCapture(e.pointerId);el.style.cursor="grabbing"});
-  el.addEventListener("pointermove",e=>{if(!dragging)return;const dx=e.clientX-lx;lx=e.clientX;selRot+=dx*.4;selVel=dx*.4});
-  const up=()=>{dragging=false;el.style.cursor=""}; el.addEventListener("pointerup",up); el.addEventListener("pointercancel",up);
-})();
-
 /* ---------- reveal on view ---------- */
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");e.target.dataset.seen=1;io.unobserve(e.target)}}),{threshold:.25});
 
@@ -602,12 +506,11 @@ const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.targ
 let sy=scrollY, ssy=scrollY, vel=0, vw=innerWidth, vh=innerHeight;
 const track=$(".world-track"), ringTrack=$(".ring-track");
 function prog(el){const r=el.getBoundingClientRect(); return clamp(-r.top/(r.height-vh));}
-function k(){ return vw<700 ? Math.min(vw/560, vh/980) : Math.min(vw/1300, vh/850, 1.2); }  // scene scale
 addEventListener("resize",()=>{vw=innerWidth;vh=innerHeight});
 addEventListener("scroll",()=>{sy=scrollY},{passive:true});
 
-const cam=$("#cam"), world=$("#world"), heroLayer=$("#heroLayer"), coords=$("#heroCoords"), by=$("#heroBy"), hint=$("#hint"),
-      pin=$("#pin"), stageFade=$("#stageFade"), capLoc=$("#capLoc"), factEls=$$("#facts .cap"), topBar=$("#top"), railbar=$("#railbar");
+const qbar=$("#qbar"), heroLayer=$("#heroLayer"), coords=$("#heroCoords"), by=$("#heroBy"), hint=$("#hint"),
+      stageFade=$("#stageFade"), capLoc=$("#capLoc"), factEls=$$("#facts .cap"), topBar=$("#top"), railbar=$("#railbar");
 const t0=performance.now();
 
 function frame(now){
@@ -620,7 +523,6 @@ function frame(now){
   const intro=reduce?1:eo(clamp((now-t0-150)/1700));
   const rTrack=track.getBoundingClientRect();
   const p=clamp(-(rTrack.top+(sy-ssy))/(rTrack.height-vh));
-  const s=k();
 
   const worldOn = rTrack.bottom>-50;
   if(worldOn){
@@ -642,36 +544,13 @@ function frame(now){
   hint.style.opacity=intro*(1-range(p,0,.03));
   heroLayer.style.visibility=fly>=1?"hidden":"visible";
 
-  /* camera path */
-  const tilt=lerp(0,62,eio(range(p,.03,.22))) - lerp(0,8,eio(range(p,.5,.8)));       // sheet → ground
-  const spin=lerp(0,-18,eio(range(p,.1,.35))) + lerp(0,62,eio(range(p,.38,.9)));      // orbit
-  const zoom=lerp(-700,0,eo(range(p,0,.2))) + lerp(0,260,eio(range(p,.2,.34))) - lerp(0,560,eio(range(p,.34,.56))) + lerp(0,-180,eio(range(p,.8,1)));
-  const lift=lerp(0,vw<700?40:90,eio(range(p,.4,.7)));
-  const camX=lerp(0, vw>700?-120:0, eio(range(p,.2,.36))) * (1-eio(range(p,.4,.6))) + (vw>700?lerp(0,-150,eio(range(p,.5,.7))):0);
-  cam.style.transform=`translate3d(${camX}px,${lift}px,0) scale(${s}) translateZ(${zoom}px)`;
-  world.style.transform=`rotateX(${tilt}deg) rotateZ(${spin}deg)`;
+  /* the WebGL scene (js/scene3d.js) follows this progress */
+  COORD.heroP=p;
   stageFade.style.opacity=(1-clamp(intro*1.2))*.85 + range(p,.93,1)*.7;
-
-  /* pin drop + ripple */
-  const pd=range(p,.18,.3);
-  pin.style.transform=`translateZ(${lerp(500,0,eback(pd))}px)`;
-  pin.style.opacity=pd>0?1:0;
-  const rp=((now/1600)%1);
-  pin.children[0].style.transform=`scale(${.4+rp*1.4})`; pin.children[0].style.opacity=(1-rp)*.6*pd;
-  pin.children[1].style.transform=`scale(${.6+((rp+.5)%1)*1.2})`; pin.children[1].style.opacity=(1-((rp+.5)%1))*pd;
 
   /* location caption */
   const lc=range(p,.22,.3)*(1-range(p,.38,.44));
   capLoc.style.opacity=lc; capLoc.style.transform=`translate3d(${(1-eo(range(p,.22,.3)))*-60}px,${range(p,.38,.44)*-40}px,0)`;
-
-  /* towers rise, staggered */
-  towers.forEach((t,i)=>{
-    const g=eback(range(p,.42+i*.04,.56+i*.04));
-    t._z.style.transform=`scaleZ(${Math.max(.001,g)})`;
-    t.style.visibility=p>.415+i*.04?"visible":"hidden";
-    t._label.style.transform=`translateZ(${t._h*g+30}px) rotateZ(${-spin}deg) rotateX(${-tilt}deg)`;
-    t._label.style.visibility=p>.52+i*.04?"visible":"hidden";
-  });
 
   /* facts float in with depth */
   factEls.forEach((el,i)=>{const a=range(p,.6+i*.05,.7+i*.05), o=a*(1-range(p,.92,.98));
@@ -692,46 +571,14 @@ function frame(now){
     c.style.opacity=f>.5?0:1-f*1.4; c.style.visibility=f>.5?"hidden":"visible"; c.style.filter=f<.04?"none":`blur(${(f*8).toFixed(1)}px) brightness(${1-f*.6})`;});
   }
 
-  /* gallery depth tunnel */
-  const gr=galItems.length?gal.getBoundingClientRect():null;
-  if(gr&&gr.top<vh&&gr.bottom>0){
-    const gp=prog(gal), n=galItems.length;
-    galItems.forEach(it=>{const {el,side,i}=it;
-      const ar=it.ar||1.5, maxW=vw>800?vw*.66:vw*.9, maxH=vh*.72;
-      const gw=Math.min(maxW,maxH*ar), gh=gw/ar;
-      const Lc=gp*(n+.5)-i-.2;                                   // <0.5 arriving · 0.5–0.85 hold · >0.85 fly past
-      const z = Lc<.5 ? lerp(-2400,0,eo(clamp((Lc+.6)/1.1))) : Lc<.85 ? (Lc-.5)*120 : lerp(42,1000,eio(clamp((Lc-.85)/.35)));
-      const x = side*(vw>800?vw*.16:vw*.06)*(1-eo(clamp((Lc+.6)/1.1)));
-      const o = clamp((Lc+.6)/.4)*(1-clamp((Lc-1.05)/.15));
-      el.style.width=gw+"px"; el.style.height=gh+"px"; el.style.marginLeft=-gw/2+"px"; el.style.marginTop=-gh/2+"px";
-      el.style.transform=`translate3d(${x}px,0,${z}px) rotateY(${-side*lerp(16,0,eo(clamp((Lc+.6)/1.1)))}deg)`;
-      el.style.zIndex=Math.round(z+3000);
-      el.style.opacity=o; el.style.filter=Lc>.9?`blur(${Math.min(12,(Lc-.9)*40).toFixed(1)}px)`:"none";
-      el.style.visibility=o<=0?"hidden":"visible";
-    });
-  }
-
-  /* selector tower */
-  if(selTower){
-    const r=$("#sel3d").getBoundingClientRect(); const vis=r.top<vh&&r.bottom>0;
-    if(vis){
-      if(!dragging){ selVel=lerp(selVel,.06,.03); selRot+=selVel*dt/16; }
-      selTower._grow=Math.min(1,selTower._grow+dt/1100);
-      selTower._z.style.transform=`scaleZ(${Math.max(.001,eback(selTower._grow))})`;
-      const ss=Math.min(1,r.width/620);
-      $("#selCam").style.transform=`translate3d(0,${r.height*.24}px,0) scale(${ss})`;
-      $("#selWorld").style.transform=`rotateX(64deg) rotateZ(${selRot}deg)`;
-    }
-  }
-
   topBar.classList.toggle("solid",sy>vh*5.6);
+  qbar.classList.toggle("on",sy>vh*5.6 && document.documentElement.scrollHeight-sy-vh>vh*.6);
   railbar.style.transform=`scaleY(${clamp(sy/(document.documentElement.scrollHeight-vh))})`;
   requestAnimationFrame(frame);
 }
 
 /* ---------- boot ---------- */
-$("#selCam").style.left="50%"; $("#selCam").style.top="50%";
-applyLang(); buildSelTower(); placeSlab();
+applyLang();
 $$(".rv,.fade").forEach(e=>io.observe(e));
 requestAnimationFrame(frame);
 </script>

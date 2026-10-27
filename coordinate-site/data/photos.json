@@ -1,0 +1,314 @@
+[
+ {
+  "name": "01-aerial-day",
+  "w": 1750,
+  "h": 984,
+  "alt": {
+   "ka": "კოორდინატი — ხედი ზემოდან",
+   "en": "Coordinate — aerial view",
+   "ru": "Coordinate — вид с высоты"
+  },
+  "srcset": [
+   [
+    "photos/w/01-aerial-day-640.webp",
+    640
+   ],
+   [
+    "photos/w/01-aerial-day-1280.webp",
+    1280
+   ],
+   [
+    "photos/01-aerial-day.webp",
+    1750
+   ]
+  ],
+  "full": "photos/01-aerial-day.webp"
+ },
+ {
+  "name": "02-aerial-park",
+  "w": 2800,
+  "h": 3500,
+  "alt": {
+   "ka": "კომპლექსი და პარკი",
+   "en": "The complex and its park",
+   "ru": "Комплекс и парк"
+  },
+  "srcset": [
+   [
+    "photos/w/02-aerial-park-640.webp",
+    640
+   ],
+   [
+    "photos/w/02-aerial-park-1280.webp",
+    1280
+   ],
+   [
+    "photos/w/02-aerial-park-1920.webp",
+    1920
+   ],
+   [
+    "photos/02-aerial-park.webp",
+    2800
+   ]
+  ],
+  "full": "photos/02-aerial-park.webp"
+ },
+ {
+  "name": "03-towers-sunset",
+  "w": 2742,
+  "h": 1880,
+  "alt": {
+   "ka": "კოშკები მზის ჩასვლისას",
+   "en": "The towers at sunset",
+   "ru": "Башни на закате"
+  },
+  "srcset": [
+   [
+    "photos/w/03-towers-sunset-640.webp",
+    640
+   ],
+   [
+    "photos/w/03-towers-sunset-1280.webp",
+    1280
+   ],
+   [
+    "photos/w/03-towers-sunset-1920.webp",
+    1920
+   ],
+   [
+    "photos/03-towers-sunset.webp",
+    2742
+   ]
+  ],
+  "full": "photos/03-towers-sunset.webp"
+ },
+ {
+  "name": "04-street-evening",
+  "w": 2867,
+  "h": 1612,
+  "alt": {
+   "ka": "საღამოს ქუჩა",
+   "en": "The street in the evening",
+   "ru": "Улица вечером"
+  },
+  "srcset": [
+   [
+    "photos/w/04-street-evening-640.webp",
+    640
+   ],
+   [
+    "photos/w/04-street-evening-1280.webp",
+    1280
+   ],
+   [
+    "photos/w/04-street-evening-1920.webp",
+    1920
+   ],
+   [
+    "photos/04-street-evening.webp",
+    2867
+   ]
+  ],
+  "full": "photos/04-street-evening.webp"
+ },
+ {
+  "name": "05-street-dusk",
+  "w": 1591,
+  "h": 890,
+  "alt": {
+   "ka": "კოორდინატის ბინები ორთაჭალაში",
+   "en": "Coordinate from the street at dusk",
+   "ru": "Coordinate с улицы в сумерках"
+  },
+  "srcset": [
+   [
+    "photos/w/05-street-dusk-640.webp",
+    640
+   ],
+   [
+    "photos/w/05-street-dusk-1280.webp",
+    1280
+   ],
+   [
+    "photos/05-street-dusk.webp",
+    1591
+   ]
+  ],
+  "full": "photos/05-street-dusk.webp"
+ },
+ {
+  "name": "06-towers-park",
+  "w": 1592,
+  "h": 897,
+  "alt": {
+   "ka": "კოორდინატის მშენებარე ბინები ორთაჭალაში",
+   "en": "Three towers above the park",
+   "ru": "Три башни над парком"
+  },
+  "srcset": [
+   [
+    "photos/w/06-towers-park-640.webp",
+    640
+   ],
+   [
+    "photos/w/06-towers-park-1280.webp",
+    1280
+   ],
+   [
+    "photos/06-towers-park.webp",
+    1592
+   ]
+  ],
+  "full": "photos/06-towers-park.webp"
+ },
+ {
+  "name": "07-picnic",
+  "w": 1588,
+  "h": 892,
+  "alt": {
+   "ka": "გამწვანებული ეზო კოორდინატის საცხოვრებელ კომპლექსში",
+   "en": "The green courtyard",
+   "ru": "Зелёный двор"
+  },
+  "srcset": [
+   [
+    "photos/w/07-picnic-640.webp",
+    640
+   ],
+   [
+    "photos/w/07-picnic-1280.webp",
+    1280
+   ],
+   [
+    "photos/07-picnic.webp",
+    1588
+   ]
+  ],
+  "full": "photos/07-picnic.webp"
+ },
+ {
+  "name": "08-playground",
+  "w": 1597,
+  "h": 895,
+  "alt": {
+   "ka": "საბავშვო გასართობი მოედანი",
+   "en": "Children's playground",
+   "ru": "Детская площадка"
+  },
+  "srcset": [
+   [
+    "photos/w/08-playground-640.webp",
+    640
+   ],
+   [
+    "photos/w/08-playground-1280.webp",
+    1280
+   ],
+   [
+    "photos/08-playground.webp",
+    1597
+   ]
+  ],
+  "full": "photos/08-playground.webp"
+ },
+ {
+  "name": "09-aerial-yard",
+  "w": 1592,
+  "h": 893,
+  "alt": {
+   "ka": "კეთილმოწყობილი ეზოსა და ლანდშაფტის ხედი ზემოდან",
+   "en": "The landscaped courtyard from above",
+   "ru": "Благоустроенный двор сверху"
+  },
+  "srcset": [
+   [
+    "photos/w/09-aerial-yard-640.webp",
+    640
+   ],
+   [
+    "photos/w/09-aerial-yard-1280.webp",
+    1280
+   ],
+   [
+    "photos/09-aerial-yard.webp",
+    1592
+   ]
+  ],
+  "full": "photos/09-aerial-yard.webp"
+ },
+ {
+  "name": "10-looking-up",
+  "w": 1587,
+  "h": 896,
+  "alt": {
+   "ka": "კოორდინატის საცხოვრებელი ბლოკები",
+   "en": "Looking up between the towers",
+   "ru": "Вид вверх между башнями"
+  },
+  "srcset": [
+   [
+    "photos/w/10-looking-up-640.webp",
+    640
+   ],
+   [
+    "photos/w/10-looking-up-1280.webp",
+    1280
+   ],
+   [
+    "photos/10-looking-up.webp",
+    1587
+   ]
+  ],
+  "full": "photos/10-looking-up.webp"
+ },
+ {
+  "name": "11-lobby",
+  "w": 1582,
+  "h": 890,
+  "alt": {
+   "ka": "ლობი და კონსიერჟის სივრცე",
+   "en": "Lobby and concierge",
+   "ru": "Лобби и консьерж"
+  },
+  "srcset": [
+   [
+    "photos/w/11-lobby-640.webp",
+    640
+   ],
+   [
+    "photos/w/11-lobby-1280.webp",
+    1280
+   ],
+   [
+    "photos/11-lobby.webp",
+    1582
+   ]
+  ],
+  "full": "photos/11-lobby.webp"
+ },
+ {
+  "name": "12-cafe",
+  "w": 1783,
+  "h": 885,
+  "alt": {
+   "ka": "შიდა კაფე-რესტორანი",
+   "en": "In-house café and restaurant",
+   "ru": "Кафе-ресторан в комплексе"
+  },
+  "srcset": [
+   [
+    "photos/w/12-cafe-640.webp",
+    640
+   ],
+   [
+    "photos/w/12-cafe-1280.webp",
+    1280
+   ],
+   [
+    "photos/12-cafe.webp",
+    1783
+   ]
+  ],
+  "full": "photos/12-cafe.webp"
+ }
+]
