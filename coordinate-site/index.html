@@ -52,7 +52,6 @@ body:after{content:"";position:fixed;inset:-50%;pointer-events:none;z-index:100;
 .intro{position:fixed;inset:0;z-index:300;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;
   transition:transform .85s cubic-bezier(.7,0,.2,1),opacity .85s ease}
 .intro.out{transform:translateY(-100%);opacity:.6;pointer-events:none}
-html.intro-on{overflow:hidden}
 .in-mark{display:flex;flex-direction:column;line-height:1;color:var(--paper)}
 .in-mark small{font:500 9px/1 var(--text);letter-spacing:.16em;opacity:0;margin-bottom:8px;animation:inFade .8s .5s forwards}
 .in-mark b{font:500 clamp(30px,8vw,64px)/1 "Unbounded",sans-serif;letter-spacing:.02em;display:flex;overflow:hidden}
@@ -92,20 +91,20 @@ html.intro-on{overflow:hidden}
 
 /* ---------- world (scroll-driven 3D scene) ---------- */
 .world-track{position:relative;height:460vh}
-.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;perspective:1100px;perspective-origin:50% 42%}
+.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
 .stage-bg{position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 30%,var(--ink-3) 0%,var(--ink) 60%)}
 .stage-fade{position:absolute;inset:0;background:var(--ink);pointer-events:none;opacity:1}
 /* WebGL scenes (js/scene3d.js) */
 .gl-lost .hero3d,.gl-lost .t3label{visibility:hidden}
 .no-webgl .stage-bg,.gl-lost .stage-bg{background:linear-gradient(rgba(29,36,51,.55),rgba(29,36,51,.85)),url(photos/01-aerial-day.webp) center/cover}
-/* own compositing layer: iOS Safari otherwise may not repaint a WebGL canvas inside a sticky block while scrolling */
-.hero3d,.sel3d-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;transform:translateZ(0);will-change:transform;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+/* plain 2D canvas: no 3D context around it — iOS Safari could stop presenting a WebGL canvas inside one */
+.hero3d,.sel3d-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .t3label{position:absolute;left:0;top:0;font:800 clamp(18px,2.2vw,30px)/1 "Unbounded",sans-serif;color:var(--paper);
   text-shadow:0 2px 20px rgba(0,0,0,.5);pointer-events:none;transition:opacity .4s;opacity:0;will-change:transform}
 .t3label:after{content:"";display:block;width:1px;height:14px;margin:6px auto 0;background:var(--glow)}
 
 /* hero letters */
-.hero-layer{position:absolute;inset:0;display:grid;place-items:center;transform-style:preserve-3d;pointer-events:none}
+.hero-layer{position:absolute;inset:0;display:grid;place-items:center;transform-style:preserve-3d;pointer-events:none;perspective:1100px;perspective-origin:50% 42%}
 .hero-word{position:relative;display:flex;transform-style:preserve-3d;font:300 clamp(40px,10.5vw,170px)/1 "Unbounded",sans-serif;letter-spacing:-.01em}
 .hero-word span{display:inline-block;will-change:transform,opacity,filter}
 .hero-meta{position:absolute;left:0;right:0;text-align:center;font:500 clamp(10px,1.1vw,14px)/1.4 "Manrope",sans-serif;letter-spacing:.32em;text-transform:uppercase}
@@ -234,7 +233,7 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
   .scroll-hint:after,.open i{animation:none}
 }
 </style>
-<link rel="stylesheet" href="css/gallery.css?v=20261028d"><link rel="stylesheet" href="css/finder.css?v=20261028d"><link rel="stylesheet" href="css/walk.css?v=20261028d"><link rel="stylesheet" href="css/live.css?v=20261028d">
+<link rel="stylesheet" href="css/gallery.css?v=20261028e"><link rel="stylesheet" href="css/finder.css?v=20261028e"><link rel="stylesheet" href="css/walk.css?v=20261028e"><link rel="stylesheet" href="css/live.css?v=20261028e">
 <script>
 /* Errors are kept in window.__errs; open the site with ?debug to see them on screen (helps diagnose a blank screen). */
 (function(){var E=window.__errs=[];function add(m){E.push(String(m).slice(0,300));if(window.__dbgBox)window.__dbgBox.textContent=E.join("\n");}
@@ -259,11 +258,10 @@ setInterval(function(){var C=window.COORD||{};var cv=document.querySelector(".he
 (function(){
   var el=document.getElementById("intro"), bar=document.getElementById("introBar"), html=document.documentElement;
   if(matchMedia("(prefers-reduced-motion: reduce)").matches){ el.remove(); return; }
-  html.classList.add("intro-on");
   var t0=Date.now(), steps={fonts:0,hero:0}, shown=0, done=false;
   function prog(){ var n=(steps.fonts+steps.hero)/2; shown=Math.max(shown,n); bar.style.transform="scaleX("+(.08+shown*.92)+")"; if(n>=1) finish(); }
   function finish(){ if(done) return; done=true; var wait=Math.max(0,1100-(Date.now()-t0));
-    setTimeout(function(){ bar.style.transform="scaleX(1)"; el.classList.add("out"); html.classList.remove("intro-on");
+    setTimeout(function(){ bar.style.transform="scaleX(1)"; el.classList.add("out");
       dispatchEvent(new CustomEvent("coord:introdone")); setTimeout(function(){ el.remove(); },900); },wait); }
   if(document.fonts&&document.fonts.ready) document.fonts.ready.then(function(){ steps.fonts=1; prog(); }); else steps.fonts=1;
   addEventListener("coord:heroready",function(){ steps.hero=1; prog(); });
@@ -407,12 +405,12 @@ setInterval(function(){var C=window.COORD||{};var cv=document.querySelector(".he
 </section>
 <footer><span>© Coordinate by Keystone</span><span>41° 40' 30.9" N · 44° 49' 37.4" E</span></footer>
 
-<script src="js/data.js?v=20261028d"></script>
-<script type="module" src="js/scene3d.js?v=20261028d"></script>
-<script type="module" src="js/gallery.js?v=20261028d"></script>
-<script type="module" src="js/finder.js?v=20261028d"></script>
-<script type="module" src="js/walk.js?v=20261028d"></script>
-<script type="module" src="js/live.js?v=20261028d"></script>
+<script src="js/data.js?v=20261028e"></script>
+<script type="module" src="js/scene3d.js?v=20261028e"></script>
+<script type="module" src="js/gallery.js?v=20261028e"></script>
+<script type="module" src="js/finder.js?v=20261028e"></script>
+<script type="module" src="js/walk.js?v=20261028e"></script>
+<script type="module" src="js/live.js?v=20261028e"></script>
 <script>
 /* =====================================================================
    DATA — edit here. Everything shown on the page comes from this block.
@@ -594,7 +592,8 @@ const qbar=$("#qbar"), walkSec=$("#walk"), heroLayer=$("#heroLayer"), coords=$("
 let t0=performance.now();
 const HT=[[0,0],[.1,.16],[.13,.21],[.24,.42],[.46,.62],[1,1]];
 function heroTime(x){ for(let i=1;i<HT.length;i++){ const [a0,b0]=HT[i-1],[a1,b1]=HT[i]; if(x<=a1) return b0+(b1-b0)*(x-a0)/(a1-a0); } return 1; }
-addEventListener("coord:introdone",()=>{ t0=performance.now(); });
+addEventListener("coord:introdone",()=>{ t0=performance.now();
+  setTimeout(()=>{ const st=document.getElementById("stage"); if(!st) return; st.style.display="none"; void st.offsetHeight; st.style.display=""; },950); });
 
 function frame(now){
   const dt=Math.min(64,now-(frame.last||now)); frame.last=now;
