@@ -3,7 +3,7 @@
    selector state through the `coord:sel` event ({block, floor}). */
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
-import { buildTower, buildCommercial, buildSite, floorBand, lights, TOWER_POS, LOBBY_H, FLOOR_H, towerHeight } from "./complex.js?v=20261028b";
+import { buildTower, buildCommercial, buildSite, floorBand, lights, TOWER_POS, LOBBY_H, FLOOR_H, towerHeight } from "./complex.js?v=20261028c";
 
 const C = window.COORD, BLOCKS = C.BLOCKS;
 const touch = matchMedia("(pointer:coarse)").matches;
@@ -22,7 +22,9 @@ function makeRenderer(canvas, { shadows, onRestore }) {
   let rebuilt = false;
   const rebuild = () => { if (rebuilt) return; rebuilt = true; document.documentElement.classList.remove("gl-lost"); if (onRestore) onRestore(); };
   canvas.addEventListener("webglcontextlost", e => { e.preventDefault(); r._lost = true; document.documentElement.classList.add("gl-lost");
-    setTimeout(() => { if (r._lost) rebuild(); }, 1500); }, false);   // Safari may never send "restored": rebuild on a fresh canvas
+    (window.__glLost = (window.__glLost || 0) + 1);
+    // Safari may never send "restored": rebuild on a fresh canvas — but at most twice, then keep the photo fallback
+    if (window.__glLost <= 2) setTimeout(() => { if (r._lost) rebuild(); }, 1500); }, false);
   canvas.addEventListener("webglcontextrestored", () => { r._lost = false; rebuild(); }, false);
   const r = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
   r.setClearColor(0x000000, 0);
@@ -197,7 +199,7 @@ function initHero() {
     const animating = (pd > 0 && fadePin > 0) || adaptive(renderer, dt);
     if (key === lastKey && !animating) return;
     lastKey = key;
-    renderer.render(scene, camera);
+    renderer.render(scene, camera); window.__heroFrames = (window.__heroFrames || 0) + 1;
   }
   requestAnimationFrame(frame);
 }
@@ -227,10 +229,10 @@ function initSelector() {
     tower.userData.block = id; scene.add(tower); grow = reduce ? 1 : 0;
   }
   addEventListener("coord:sel", e => { state = { ...state, ...e.detail }; setBlock(state.block); bandTo = floorY(state.floor); dirty = true; });
-  BLOCKS.forEach(b => { if (!cache[b.id]) cache[b.id] = buildTower(b.floors, { lowPoly: touch, noShadow: !SHADOWS }); });
+  if (!touch) BLOCKS.forEach(b => { if (!cache[b.id]) cache[b.id] = buildTower(b.floors, { lowPoly: touch, noShadow: !SHADOWS }); });
   setBlock(state.block); bandY = bandTo = floorY(state.floor);
   camera.position.set(0, 60, 160); camera.lookAt(0, 40, 0);
-  warmUp(renderer, scene, camera, BLOCKS.map(b => cache[b.id]).filter(t => t !== tower));
+  warmUp(renderer, scene, camera, BLOCKS.map(b => cache[b.id]).filter(t => t && t !== tower));
 
   // drag to rotate (horizontal), vertical swipes still scroll the page on phones
   let rot = -30, vel = .05, drag = false, lx = 0, dirty = true;
@@ -274,7 +276,8 @@ function boot() {
     let done = false;
     const go = () => { if (done) return; done = true; try { initSelector(); dispatchEvent(new CustomEvent("coord:selready")); } catch (err) { console.error(err); } };
     // build while idle a few seconds after load; if the visitor gets there first, build it then
-    setTimeout(() => (window.requestIdleCallback ? requestIdleCallback(go, { timeout: 4000 }) : go()), 2500);
+    // desktop: build while idle; phones: only on approach, one GPU scene at a time keeps iPhone memory low
+    if (!touch) setTimeout(() => (window.requestIdleCallback ? requestIdleCallback(go, { timeout: 4000 }) : go()), 2500);
     new IntersectionObserver(([e], o) => { if (e.isIntersecting) { o.disconnect(); go(); } }, { rootMargin: "900px" }).observe(sel);
   }
 }

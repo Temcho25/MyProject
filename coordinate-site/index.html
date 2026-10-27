@@ -233,7 +233,7 @@ footer{border-top:1px solid var(--line);padding:26px var(--gutter);display:flex;
   .scroll-hint:after,.open i{animation:none}
 }
 </style>
-<link rel="stylesheet" href="css/gallery.css?v=20261028b"><link rel="stylesheet" href="css/finder.css?v=20261028b"><link rel="stylesheet" href="css/walk.css?v=20261028b"><link rel="stylesheet" href="css/live.css?v=20261028b">
+<link rel="stylesheet" href="css/gallery.css?v=20261028c"><link rel="stylesheet" href="css/finder.css?v=20261028c"><link rel="stylesheet" href="css/walk.css?v=20261028c"><link rel="stylesheet" href="css/live.css?v=20261028c">
 <script>
 /* Errors are kept in window.__errs; open the site with ?debug to see them on screen (helps diagnose a blank screen). */
 (function(){var E=window.__errs=[];function add(m){E.push(String(m).slice(0,300));if(window.__dbgBox)window.__dbgBox.textContent=E.join("\n");}
@@ -244,7 +244,7 @@ if(/[?&]debug/.test(location.search))addEventListener("DOMContentLoaded",functio
 b.style.cssText="position:fixed;left:8px;right:8px;bottom:8px;z-index:9999;max-height:40vh;overflow:auto;background:rgba(0,0,0,.85);color:#9f9;font:11px/1.4 monospace;padding:10px;white-space:pre-wrap;pointer-events:none";
 var gl;try{var c=document.createElement("canvas").getContext("webgl2");var x=c&&c.getExtension("WEBGL_debug_renderer_info");gl=c?(x?c.getParameter(x.UNMASKED_RENDERER_WEBGL):"webgl2 ok"):"NO webgl2";}catch(e){gl="webgl err "+e}
 add(navigator.userAgent);add("gpu: "+gl+" · dpr "+devicePixelRatio+" · "+innerWidth+"x"+innerHeight);document.body.appendChild(b);b.textContent=E.join("\n");
-setInterval(function(){var C=window.COORD||{};b.textContent=E.join("\n")+"\nheroP "+(C.heroP||0).toFixed(3)+" · canvas "+!!document.querySelector(".hero3d")+" · html."+document.documentElement.className;},500);});})();
+setInterval(function(){var C=window.COORD||{};var cv=document.querySelector(".hero3d");b.textContent=E.join("\n")+"\nheroP "+(C.heroP||0).toFixed(3)+" · canvas "+(cv?cv.width+"x"+cv.height:"none")+" · frames "+(window.__heroFrames||0)+" · lost "+(window.__glLost||0)+" · html."+document.documentElement.className;},500);});})();
 </script>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/addons/"}}</script>
 </head>
@@ -406,12 +406,12 @@ setInterval(function(){var C=window.COORD||{};b.textContent=E.join("\n")+"\nhero
 </section>
 <footer><span>© Coordinate by Keystone</span><span>41° 40' 30.9" N · 44° 49' 37.4" E</span></footer>
 
-<script src="js/data.js?v=20261028b"></script>
-<script type="module" src="js/scene3d.js?v=20261028b"></script>
-<script type="module" src="js/gallery.js?v=20261028b"></script>
-<script type="module" src="js/finder.js?v=20261028b"></script>
-<script type="module" src="js/walk.js?v=20261028b"></script>
-<script type="module" src="js/live.js?v=20261028b"></script>
+<script src="js/data.js?v=20261028c"></script>
+<script type="module" src="js/scene3d.js?v=20261028c"></script>
+<script type="module" src="js/gallery.js?v=20261028c"></script>
+<script type="module" src="js/finder.js?v=20261028c"></script>
+<script type="module" src="js/walk.js?v=20261028c"></script>
+<script type="module" src="js/live.js?v=20261028c"></script>
 <script>
 /* =====================================================================
    DATA — edit here. Everything shown on the page comes from this block.
