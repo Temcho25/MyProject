@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&family=Noto+Sans+Georgian:wght@300;400;500&family=Noto+Serif+Georgian:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/hero.webp">
+<link rel="modulepreload" href="vendor/three.module.min.js">
 <style>
 :root{
   --deep:#06141c; --deep-2:#0a1f2a; --deep-3:#11303f;
@@ -585,8 +586,13 @@ html.rm .word span,html.rm .hero-title .kicker,html.rm .hero-sub{transition:none
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script src="vendor/lenis.min.js"></script>
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/addons/"}}</script>
+<script>
+  // Failsafe: if the module never boots (old browser, blocked script), never leave the visitor behind the loader.
+  setTimeout(function () { if (window.__ready) return; document.body.classList.remove('locked'); document.body.classList.add('go', 'ready');
+    var l = document.getElementById('loader'); if (l) l.classList.add('out'); }, 8000);
+</script>
 <script type="module" src="js/main.js"></script>
 </body>
 </html>

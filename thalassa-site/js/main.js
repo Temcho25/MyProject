@@ -79,7 +79,7 @@ $$('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
   e.preventDefault(); closeAll();
   const id = a.getAttribute('href');
   if (id === '#hero') go(0);
-  else if (id === '#gallery' || id === '#day') go(el.offsetTop);
+  else if (id === '#gallery' || id === '#day') go(G[id === '#day' ? 'day' : 'ring'].top);
   else go(el);
 }));
 
@@ -87,9 +87,16 @@ $$('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
 const S = {
   hero: $('#hero'), sea: $('#sea'), day: $('#day'), ring: $('#gallery'), strip: $('#progress'), choose: $('#choose'), vr: $('#vr'), contact: $('#contact')
 };
-function trackP(el) {
-  const h = el.offsetHeight - VH;
-  return h > 0 ? clamp((scrollY - el.offsetTop) / h) : (scrollY > el.offsetTop ? 1 : 0);
+// Document-space geometry, measured in layout() so frame() never forces a reflow.
+const G = {};
+function measure() {
+  for (const k in S) G[k] = { top: S[k].getBoundingClientRect().top + scrollY, h: S[k].offsetHeight };
+  const box = el => { const r = el.getBoundingClientRect(); return { top: r.top + scrollY, h: r.height }; };
+  G.man = box($('#manifesto')); G.foot = box($('.foot'));
+}
+function trackP(k) {
+  const g = G[k], h = g.h - VH;
+  return h > 0 ? clamp((scrollY - g.top) / h) : (scrollY > g.top ? 1 : 0);
 }
 
 /* =========================================================
@@ -190,8 +197,11 @@ function createOcean(canvas) {
     U.uTime.value = time; U.uCam.value.copy(cam.position);
     renderer.render(scene, cam);
   }
+  let lost = false;
+  canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); lost = true; });
+  canvas.addEventListener('webglcontextrestored', () => { lost = false; resize(); });
   resize();
-  return { render, resize };
+  return { render(...a) { if (!lost) render(...a); }, resize };
 }
 
 /* =========================================================
@@ -215,6 +225,7 @@ function createBuilding(host, cb) {
   const controls = new OrbitControls(camera, renderer.domElement);
   Object.assign(controls, { enableZoom: false, enablePan: false, enableDamping: true, dampingFactor: 0.07, rotateSpeed: 0.55, minPolarAngle: 0.95, maxPolarAngle: 1.42, autoRotate: !RM, autoRotateSpeed: 0.5 });
   controls.target.set(0, 11, 4);
+  renderer.domElement.style.touchAction = 'pan-y'; // let vertical swipes scroll the page
   let idleT = null;
   controls.addEventListener('start', () => { controls.autoRotate = false; clearTimeout(idleT); });
   controls.addEventListener('end', () => { clearTimeout(idleT); idleT = setTimeout(() => { controls.autoRotate = !RM; }, 6000); });
@@ -379,9 +390,12 @@ function createBuilding(host, cb) {
     });
     renderer.render(scene, camera);
   }
+  let lost = false;
+  el.addEventListener('webglcontextlost', e => { e.preventDefault(); lost = true; });
+  el.addEventListener('webglcontextrestored', () => { lost = false; resize(); });
   resize();
   return {
-    tick, resize,
+    tick(dt, p) { if (!lost) tick(dt, p); }, resize,
     setHover(id) { listHover = id; },
     setSelected(id) { selected = id; }
   };
@@ -405,8 +419,8 @@ function renderFloorList() {
   $('#floorList').innerHTML = FLOORS.map(f => `<button data-f="${f.id}" aria-pressed="${f.id === sel}" aria-label="${t('ch.floor')} ${f.id}">${f.id}${f.free.length ? `<small>${f.free.length}</small>` : ''}</button>`).join('');
   $$('#floorList button').forEach(b => {
     b.addEventListener('click', () => select(b.dataset.f));
-    b.addEventListener('mouseenter', () => { bld?.setHover(b.dataset.f); blip(700, 0.01); });
-    b.addEventListener('mouseleave', () => bld?.setHover(null));
+    b.addEventListener('pointerenter', e => { if (e.pointerType !== 'mouse') return; bld?.setHover(b.dataset.f); blip(700, 0.01); });
+    b.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') bld?.setHover(null); });
     b.addEventListener('focus', () => bld?.setHover(b.dataset.f));
     b.addEventListener('blur', () => bld?.setHover(null));
   });
@@ -443,14 +457,18 @@ $('#openPlan').addEventListener('click', () => { renderPlan(); openModal($('#pla
 $('#planReq').addEventListener('click', e => { e.preventDefault(); requestApt(null); });
 
 let lastFocus = null;
+let vrT = 0;
+const bgEls = () => [$('main'), $('#top'), ...$$('.modal')];
 function openModal(m) {
-  lastFocus = document.activeElement; m.classList.add('open'); lenis?.stop(); document.body.style.overflow = 'hidden';
+  lastFocus = document.activeElement; m.classList.add('open');
+  bgEls().forEach(el => { if (el !== m) el.inert = true; }); lenis?.stop(); document.body.style.overflow = 'hidden';
   setTimeout(() => m.querySelector('.x')?.focus(), 50);
 }
 function closeModal(m) {
   if (!m.classList.contains('open')) return;
   m.classList.remove('open'); lenis?.start(); document.body.style.overflow = '';
-  if (m.id === 'vrModal') setTimeout(() => { $('#vrSlot').innerHTML = ''; }, 460);
+  bgEls().forEach(el => { el.inert = false; });
+  if (m.id === 'vrModal') vrT = setTimeout(() => { $('#vrSlot').innerHTML = ''; }, 460);
   lastFocus?.focus?.({ preventScroll: true });
 }
 function closeAll() { $$('.modal.open').forEach(closeModal); }
@@ -462,6 +480,7 @@ document.addEventListener('keydown', e => {
   if ($('#lightbox').classList.contains('open')) { if (e.key === 'ArrowRight') lbStep(1); if (e.key === 'ArrowLeft') lbStep(-1); }
 });
 $('#openVr').addEventListener('click', () => {
+  clearTimeout(vrT);
   $('#vrSlot').innerHTML = '<iframe title="Thalassa VR tour" allow="xr-spatial-tracking; gyroscope; accelerometer; fullscreen" allowfullscreen src="https://kuula.co/share/5yJ1X?logo=-1&info=0&fs=1&vr=0&sd=1&gyro=0&thumbs=1&keys=0"></iframe>';
   openModal($('#vrModal'));
 });
@@ -488,7 +507,9 @@ const ringEl = $('#ring');
 const cards = VISION.map((n, i) => {
   const c = document.createElement('div'); c.className = 'card';
   c.innerHTML = `<img src="img/${n}-s.webp" alt="Thalassa render ${i + 1}" loading="lazy" draggable="false"><em>${String(i + 1).padStart(2, '0')}</em>`;
+  c.tabIndex = 0; c.setAttribute('role', 'button'); c.setAttribute('aria-label', `Render ${i + 1}`);
   c.addEventListener('click', () => lightbox(VISION.map(v => `img/${v}.webp`), i));
+  c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.click(); } });
   ringEl.appendChild(c); return c;
 });
 const SHOTS = ['site-5', 'site-1', 'site-4', 'site-6', 'site-3', 'site-7', 'site-2'];
@@ -496,7 +517,9 @@ const stripEl = $('#strip');
 const shots = SHOTS.map((n, i) => {
   const s = document.createElement('div'); s.className = 'shot' + (i % 2 ? ' tall' : '');
   s.innerHTML = `<img src="img/${n}-s.webp" alt="Construction site, drone photo ${i + 1}" loading="lazy" draggable="false"><em>DRONE · ${String(i + 1).padStart(2, '0')}</em>`;
+  s.tabIndex = 0; s.setAttribute('role', 'button'); s.setAttribute('aria-label', `Drone photo ${i + 1}`);
   s.addEventListener('click', () => lightbox(SHOTS.map(v => `img/${v}.webp`), i));
+  s.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); s.click(); } });
   stripEl.appendChild(s); return { el: s, img: s.querySelector('img') };
 });
 const endCard = document.createElement('a'); endCard.className = 'strip-end'; endCard.href = '#vr';
@@ -505,8 +528,10 @@ endCard.addEventListener('click', e => { e.preventDefault(); go(S.vr); });
 stripEl.appendChild(endCard);
 
 /* ---------------- ocean + building instances ---------------- */
-const ocean = createOcean($('#ocean'));
-const bld = createBuilding($('#bld'), {
+let ocean = null;
+try { ocean = createOcean($('#ocean')); } catch (e) { ocean = null; }
+let bld = null;
+try { bld = createBuilding($('#bld'), {
   hover(id, x, y) {
     const tip = $('#bldTip');
     if (!id) { tip.classList.remove('on'); return; }
@@ -516,7 +541,7 @@ const bld = createBuilding($('#bld'), {
     tip.classList.add('on');
   },
   select(id) { select(id); }
-});
+}); } catch (e) { bld = null; }
 
 /* ---------------- layout ---------------- */
 let dist = 0, ringR = 0, ringStep = 360 / VISION.length;
@@ -530,8 +555,19 @@ function layout() {
   ringR = (cw / 2) / Math.tan(Math.PI / VISION.length) + (MOBILE() ? 10 : 40);
   ringEl.style.setProperty('--cw', cw + 'px');
   cards.forEach((c, i) => { c.style.transform = `rotateY(${i * ringStep}deg) translateZ(${ringR}px)`; });
+  shots.forEach(sh => { sh.c = sh.el.offsetLeft + sh.el.offsetWidth / 2; });
+  measure();
 }
-addEventListener('resize', layout);
+let rzT = 0, lastW = innerWidth, lastH = innerHeight;
+addEventListener('resize', () => {
+  // phones fire resize while the URL bar collapses: ignore small height-only changes
+  const touch = !matchMedia('(pointer:fine)').matches;
+  if (touch && innerWidth === lastW && Math.abs(innerHeight - lastH) < 160) return;
+  lastW = innerWidth; lastH = innerHeight;
+  clearTimeout(rzT); rzT = setTimeout(layout, 150);
+});
+addEventListener('load', layout);
+document.fonts?.ready.then(layout);
 
 /* ---------------- observers: reveals, counters, amenities ---------------- */
 const io = new IntersectionObserver(es => es.forEach(e => {
@@ -606,8 +642,8 @@ function blip(freq = 880, vol = 0.02) {
 $$('.nav a, .btn, .chips, .dn-toggle button').forEach(el => el.addEventListener('mouseenter', () => blip(1180, 0.008)));
 
 /* ---------------- day/night toggle ---------------- */
-$('#dnDay').addEventListener('click', () => go(S.day.offsetTop + (S.day.offsetHeight - VH) * 0.12));
-$('#dnNightBtn').addEventListener('click', () => go(S.day.offsetTop + (S.day.offsetHeight - VH) * 0.96));
+$('#dnDay').addEventListener('click', () => go(G.day.top + (G.day.h - VH) * 0.12));
+$('#dnNightBtn').addEventListener('click', () => go(G.day.top + (G.day.h - VH) * 0.96));
 
 /* =========================================================
    FRAME — every scroll-driven scene
@@ -619,6 +655,7 @@ const wrap = $('#wordWrap'), cue = $('#cue'), revealImg = $('#revealImg'), revea
 const foam1 = $('#foam1'), foam2 = $('#foam2'), foamSvg = $('#foam');
 const seaBg = $('#seaBg img'), seaLine = $('#seaLine'), seaNum = $('#seaNum'), pinA = $('#pinA'), pinB = $('#pinB');
 const dnStage = $('#dnStage'), dnNight = $('#dnNight'), dnTint = $('#dnTint'), clock = $('#clock'), sunDot = $('#sun');
+const dnDayBtn = $('#dnDay'), dnNightBtn = $('#dnNightBtn');
 const ringBar = $('#ringBar'), ringCount = $('#ringCount'), vrBg = $('#vrBg');
 const fw = [$('#fw1'), $('#fw2'), $('#fw3')];
 
@@ -634,20 +671,21 @@ function heroCopy(cp, force) {
 }
 
 function frame(time, dt) {
+  if (RM) time = 4;
   const y = scrollY;
   const rawVel = (y - lastY) / Math.max(dt, 1 / 240); lastY = y;
   st.vel = damp(st.vel, rawVel, 6, dt);
   const K = RM ? 60 : 7;
 
   /* header */
-  const heroEnd = S.hero.offsetTop + S.hero.offsetHeight - VH;
-  top.classList.toggle('light', y < S.hero.offsetTop + (S.hero.offsetHeight - VH) * 0.3);
+  const heroEnd = G.hero.top + G.hero.h - VH;
+  top.classList.toggle('light', y < G.hero.top + (G.hero.h - VH) * 0.3);
   top.classList.toggle('solid', y > heroEnd - 10);
   top.classList.toggle('hide', y > heroEnd + VH && st.vel > 60);
 
   /* hero: ocean + tide */
-  if (y < S.hero.offsetTop + S.hero.offsetHeight) {
-    st.hero = damp(st.hero, trackP(S.hero), K, dt);
+  if (y < G.hero.top + G.hero.h) {
+    st.hero = damp(st.hero, trackP('hero'), K, dt);
     const p = st.hero;
     if (ocean && p < 0.7) ocean.render(RM ? 4 : time, p, nmx * 0.6, nmy * 0.6);
     const tp = range(p, 0, 0.2);
@@ -678,8 +716,8 @@ function frame(time, dt) {
   }
 
   /* 800 m */
-  if (Math.abs(y - S.sea.offsetTop) < S.sea.offsetHeight + VH) {
-    st.sea = damp(st.sea, trackP(S.sea), K, dt);
+  if (Math.abs(y - G.sea.top) < G.sea.h + VH) {
+    st.sea = damp(st.sea, trackP('sea'), K, dt);
     const p = st.sea;
     seaBg.style.transform = `scale(${lerp(1.16, 1.0, ease(p))}) translate3d(${nmx * -6}px,${(0.5 - p) * 3}%,0)`;
     const lp = range(p, 0.12, 0.62);
@@ -689,7 +727,7 @@ function frame(time, dt) {
   }
 
   /* manifesto */
-  const mr = $('#manifesto').getBoundingClientRect();
+  const mr = { top: G.man.top - y, bottom: G.man.top + G.man.h - y, height: G.man.h };
   if (mr.top < VH && mr.bottom > 0) {
     const mp = clamp((VH * 0.88 - mr.top) / (mr.height + VH * 0.3));
     const lit = Math.floor(mp * mWords.length * 1.04);
@@ -697,8 +735,8 @@ function frame(time, dt) {
   }
 
   /* day → night */
-  if (Math.abs(y - S.day.offsetTop) < S.day.offsetHeight + VH) {
-    st.day = damp(st.day, trackP(S.day), K, dt);
+  if (Math.abs(y - G.day.top) < G.day.h + VH) {
+    st.day = damp(st.day, trackP('day'), K, dt);
     const p = st.day;
     dnStage.style.transform = `scale(${lerp(1.1, 1.0, p)}) translate3d(${nmx * -8}px,0,0)`;
     dnTint.style.opacity = Math.sin(Math.PI * range(p, 0.22, 0.78)) * 0.95;
@@ -711,52 +749,52 @@ function frame(time, dt) {
     sunDot.setAttribute('cy', (60 - 54 * Math.sin(th) + range(p, 0.6, 0.75) * 30).toFixed(1));
     sunDot.style.opacity = 1 - range(p, 0.62, 0.74);
     const night = p > 0.62;
-    $('#dnDay').classList.toggle('on', !night); $('#dnNightBtn').classList.toggle('on', night);
+    dnDayBtn.classList.toggle('on', !night); dnNightBtn.classList.toggle('on', night);
   }
 
   /* building */
   if (bld) {
-    const r = S.choose.getBoundingClientRect();
-    st.bld = clamp((VH - r.top) / (VH * 0.9));
+    st.bld = clamp((VH - (G.choose.top - y)) / (VH * 0.9));
     bld.tick(dt, st.bld);
   }
 
   /* ring */
-  if (Math.abs(y - S.ring.offsetTop) < S.ring.offsetHeight + VH) {
-    st.ring = damp(st.ring, trackP(S.ring), K * 0.8, dt);
+  if (Math.abs(y - G.ring.top) < G.ring.h + VH) {
+    st.ring = damp(st.ring, trackP('ring'), K * 0.8, dt);
     const p = st.ring, N = VISION.length;
     const rot = -ease(p) * ringStep * (N - 1) + (RM ? 0 : Math.sin(time * 0.4) * 1.2);
     ringEl.style.transform = `translateZ(${-ringR}px) rotateX(${-3 + nmy * 2}deg) rotateY(${rot + nmx * 3}deg)`;
     cards.forEach((c, i) => {
       const a = Math.abs(((i * ringStep + rot) % 360 + 540) % 360 - 180);
-      c.style.filter = `blur(${(Math.min(a / 45, 1) * 4).toFixed(2)}px) brightness(${(1 - Math.min(a / 120, 1) * 0.55).toFixed(3)})`;
+      const f = MOBILE() ? `brightness(${(1 - Math.min(a / 120, 1) * 0.55).toFixed(2)})`
+        : `blur(${(Math.min(a / 45, 1) * 4).toFixed(1)}px) brightness(${(1 - Math.min(a / 120, 1) * 0.55).toFixed(2)})`;
+      if (c._f !== f) { c.style.filter = f; c._f = f; }
     });
     ringBar.style.transform = `scaleX(${p})`;
     ringCount.textContent = `${String(Math.round(ease(p) * (N - 1)) + 1).padStart(2, '0')} / ${String(N).padStart(2, '0')}`;
   }
 
   /* strip */
-  if (Math.abs(y - S.strip.offsetTop) < S.strip.offsetHeight + VH) {
-    st.strip = damp(st.strip, trackP(S.strip), K, dt);
+  if (Math.abs(y - G.strip.top) < G.strip.h + VH) {
+    st.strip = damp(st.strip, trackP('strip'), K, dt);
     st.skew = damp(st.skew, RM ? 0 : clamp(-st.vel * 0.0012, -4, 4), 6, dt);
     const x = -st.strip * dist;
     stripEl.style.transform = `translate3d(${x.toFixed(1)}px,0,0) skewX(${st.skew.toFixed(2)}deg)`;
     shots.forEach(s => {
-      const c = s.el.offsetLeft + s.el.offsetWidth / 2 + x; const rel = (c - VW / 2) / VW;
+      const c = s.c + x; const rel = (c - VW / 2) / VW;
       s.img.style.transform = `translate3d(${(-rel * 9).toFixed(2)}%,0,0) scale(${1 + Math.abs(rel) * 0.06})`;
     });
   }
 
   /* vr parallax */
-  const vr = S.vr.getBoundingClientRect();
+  const vr = { top: G.vr.top - y, bottom: G.vr.top + G.vr.h - y, height: G.vr.h };
   if (vr.top < VH && vr.bottom > 0) {
     const p = (VH - vr.top) / (VH + vr.height);
     vrBg.style.transform = `translate3d(0,${(p - 0.5) * -14}%,0) scale(1.05)`;
   }
 
   /* footer waves */
-  const fr = fw[0].ownerSVGElement.getBoundingClientRect();
-  if (fr.top < VH && fr.bottom > 0) {
+  if (G.foot.top - y < VH && G.foot.top + G.foot.h - y > 0) {
     fw.forEach((path, k) => {
       let d = ''; const amp = 22 - k * 5, ph = k * 1.3;
       for (let x = 0; x <= 1000; x += 20) {
