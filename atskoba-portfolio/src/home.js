@@ -22,6 +22,12 @@ $('#featured').innerHTML = featured.map((p) => `
       <a class="pill" href="${p.url}" target="_blank" rel="noopener"><span data-i18n="work.visit"></span><i class="arrow">↗</i></a>
     </div>
   </article>`).join('');
+$('#highlights').innerHTML = PROJECTS.filter((p) => p.highlight).map((p) => `
+  <a class="card" href="${p.url}" target="_blank" rel="noopener" data-cursor>
+    <div class="card-media">${imgSet(p.id, p.main, '(max-width: 760px) 100vw, 46vw', false, p.name)}</div>
+    <div class="card-meta"><h3 class="card-name">${p.name}</h3><span class="card-tags" data-tags="${p.id}"></span></div>
+    <p class="card-desc" data-desc="${p.id}"></p>
+  </a>`).join('');
 $('#allCount').textContent = PROJECTS.length;
 
 const names = PROJECTS.map((p) => `<span>${p.name}</span>`).join('');
@@ -66,6 +72,21 @@ function setupScroll() {
     gsap.fromTo($('.case-meta', c).children, { y: 30, opacity: 0 }, {
       y: 0, opacity: 1, duration: 1.2, stagger: 0.08, ease: 'expo.out',
       scrollTrigger: { trigger: $('.case-meta', c), start: 'top 90%', once: true },
+    });
+  });
+
+  // Highlight cards: same wipe + inner parallax as the Work page.
+  $$('#highlights .card').forEach((c) => {
+    const media = $('.card-media', c);
+    gsap.fromTo(media, { clipPath: 'inset(12% 6% 12% 6% round 22px)' }, {
+      clipPath: 'inset(0% 0% 0% 0% round 22px)', ease: 'power2.out',
+      scrollTrigger: { trigger: c, start: 'top 98%', end: 'top 50%', scrub: 0.6 },
+    });
+    gsap.fromTo($('img', media), { yPercent: -4 }, {
+      yPercent: 4, ease: 'none', scrollTrigger: { trigger: c, start: 'top bottom', end: 'bottom top', scrub: true },
+    });
+    gsap.fromTo([$('.card-meta', c), $('.card-desc', c)], { y: 24, opacity: 0 }, {
+      y: 0, opacity: 1, duration: 1.1, stagger: 0.08, ease: 'expo.out', scrollTrigger: { trigger: media, start: 'bottom 98%', once: true },
     });
   });
 

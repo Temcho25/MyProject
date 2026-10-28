@@ -208,6 +208,9 @@ main { position: relative; z-index: 2; }
 .case-tags { margin: 6px 0 0; font-size: 14px; color: var(--mute); }
 .case-desc { margin: 0; color: var(--ink-2); max-width: 44ch; }
 .all-wrap { display: flex; justify-content: center; padding: 0 var(--gut); }
+.more-head { margin-bottom: clamp(28px, 3vw, 44px); }
+.grid-home { padding-bottom: clamp(64px, 8vw, 120px); }
+.case { margin-bottom: clamp(100px, 13vw, 200px); }
 
 /* ---------- Services ---------- */
 .services { padding-bottom: clamp(120px, 16vw, 240px); }
