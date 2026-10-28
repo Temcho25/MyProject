@@ -22,7 +22,7 @@ Deploy: `npx vercel thalassa-site` (or drag the folder into Netlify). `?lang=ka|
 | Reality | horizontal pinned strip of drone photos with parallax and velocity skew |
 | VR / contact | Kuula tour in a modal, form → `mailto:sales@thalassagroup.ge` |
 
-Also: GE/EN/RU, Lenis smooth scroll, custom cursor, optional synthesized sea sound (off by default),
+Also: GE/EN/RU, Lenis smooth scroll, optional synthesized sea sound (off by default),
 `prefers-reduced-motion` support, mobile layout.
 
 All copy, photos, renders, floor plans and apartment statuses come from thalassagroup.ge (Oct 2026).

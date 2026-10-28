@@ -15,7 +15,6 @@ const damp = (a, b, k, dt) => lerp(a, b, 1 - Math.exp(-k * dt));
 const params = new URLSearchParams(location.search);
 const CAPTURE = params.has('capture');
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const FINE = matchMedia('(pointer:fine)').matches && !CAPTURE;
 let VW = innerWidth, VH = innerHeight;
 const MOBILE = () => VW < 760;
 if (RM) document.documentElement.classList.add('rm');
@@ -592,15 +591,9 @@ $$('#amen li').forEach(li => li.addEventListener('pointermove', e => {
   const r = li.getBoundingClientRect(); li.style.setProperty('--mx', (e.clientX - r.left) + 'px'); li.style.setProperty('--my', (e.clientY - r.top) + 'px');
 }));
 
-/* ---------------- cursor ---------------- */
-const cur = $('#cursor'); let mx = VW / 2, my = VH / 2, cx = mx, cy = my, nmx = 0, nmy = 0;
-addEventListener('pointermove', e => {
-  mx = e.clientX; my = e.clientY; nmx = mx / VW * 2 - 1; nmy = my / VH * 2 - 1;
-  if (!FINE) return;
-  const tgt = e.target;
-  cur.classList.toggle('drag', !!tgt.closest('#bld canvas'));
-  cur.classList.toggle('link', !!tgt.closest('a,button,.card,.shot') && !tgt.closest('#bld'));
-}, { passive: true });
+/* ---------------- pointer (for parallax) ---------------- */
+let nmx = 0, nmy = 0;
+addEventListener('pointermove', e => { nmx = e.clientX / VW * 2 - 1; nmy = e.clientY / VH * 2 - 1; }, { passive: true });
 
 /* ---------------- sound: synthesized surf + pad ---------------- */
 let actx = null, master = null, surfF = null, soundOn = false;
@@ -804,9 +797,6 @@ function frame(time, dt) {
       path.setAttribute('d', d);
     });
   }
-
-  /* cursor */
-  if (FINE) { cx = damp(cx, mx, 14, dt); cy = damp(cy, my, 14, dt); cur.style.transform = `translate3d(${cx}px,${cy}px,0)`; }
 
   /* sound reacts to scroll speed */
   if (soundOn && surfF) surfF.frequency.setTargetAtTime(520 + Math.min(Math.abs(st.vel), 3000) * 0.35, actx.currentTime, 0.3);

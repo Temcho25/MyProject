@@ -71,18 +71,6 @@ body:after{content:"";position:fixed;inset:-50%;pointer-events:none;z-index:90;o
 .loader-word{font:400 12px/1 var(--ui);letter-spacing:.5em;text-transform:uppercase;color:var(--foam-dim)}
 .loader-num{font:300 15px/1 var(--ui);font-variant-numeric:tabular-nums;color:var(--sea-hi);letter-spacing:.2em}
 
-/* ---------- cursor ---------- */
-.cursor{position:fixed;left:0;top:0;z-index:150;pointer-events:none;display:none}
-@media (pointer:fine){.cursor{display:block}}
-.cursor i{position:absolute;width:6px;height:6px;margin:-3px;border-radius:50%;background:var(--foam);mix-blend-mode:difference}
-.cursor b{position:absolute;width:38px;height:38px;margin:-19px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;
-  transition-property:width,height,margin,background-color,border-color;transition-duration:.35s;transition-timing-function:var(--ease)}
-.cursor b span{font:500 10px/1 var(--ui);letter-spacing:.18em;text-transform:uppercase;color:var(--deep);opacity:0;transition:opacity .2s}
-.cursor.link b{width:64px;height:64px;margin:-32px;border-color:var(--sea-hi)}
-.cursor.drag b{width:84px;height:84px;margin:-42px;background:var(--foam);border-color:var(--foam)}
-.cursor.drag b span{opacity:1}
-.cursor.drag i{opacity:0}
-
 /* ---------- header ---------- */
 .top{position:fixed;inset:0 0 auto 0;z-index:60;display:flex;align-items:center;gap:28px;justify-content:space-between;
   padding:16px var(--gutter);padding-top:max(16px,env(safe-area-inset-top));transition-property:background-color,transform,padding;transition-duration:.5s;transition-timing-function:var(--ease)}
@@ -361,7 +349,6 @@ html.rm .word span,html.rm .hero-title .kicker,html.rm .hero-sub{transition:none
   </div>
 </div>
 
-<div class="cursor" id="cursor" aria-hidden="true"><i></i><b><span data-i18n="ch.drag">Drag</span></b></div>
 
 <header class="top light" id="top">
   <a class="brand" href="#hero" aria-label="Thalassa Group"><img src="img/logo.png" alt="Thalassa Group logo" width="33" height="40"><b>THALASSA</b></a>
