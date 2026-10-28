@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Work — Atskoba</title>
+  <meta name="description" content="Atskoba is an independent Tbilisi studio crafting premium websites with 3D, WebGL and motion." />
+  <meta name="theme-color" content="#eeece7" />
+  <meta property="og:title" content="Atskoba — 3D & motion websites" />
+  <meta property="og:description" content="Premium websites with 3D, WebGL and motion. Independent studio, Tbilisi." />
+  <meta property="og:image" content="/og.jpg" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Cormorant+Garamond:ital,wght@1,500&family=Noto+Sans+Georgian:wght@400;500;600&family=Noto+Serif+Georgian:wght@500&display=swap" rel="stylesheet" />
+</head>
+<body data-page="work">
+  <div class="curtain" id="curtain" aria-hidden="true">
+    <svg class="curtain-mark" viewBox="6 26 92 68" aria-hidden="true">
+      <path class="cm-ring" fill="none" stroke="currentColor" stroke-width="15" d="M40 37.5a22.5 22.5 0 1 0 0.01 0z" />
+      <rect class="cm-stem" x="60" y="30" width="15" height="60" fill="currentColor" />
+      <circle class="cm-dot" cx="88" cy="83" r="7" />
+    </svg>
+  </div>
+
+  <header class="nav" id="nav">
+    <a class="logo" href="/" aria-label="Atskoba — home" data-nav>
+      <svg class="logo-mark" viewBox="6 26 92 68" aria-hidden="true">
+        <path fill-rule="evenodd" d="M40 30a30 30 0 1 0 0.01 0zM40 45a15 15 0 1 1-0.01 0z" />
+        <rect x="60" y="30" width="15" height="60" />
+        <circle class="dot" cx="88" cy="83" r="7" />
+      </svg>
+      <span class="logo-word">atskoba</span>
+    </a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="/work/" data-nav data-i18n="nav.work">Work</a>
+      <a href="/#services" data-i18n="nav.services">Services</a>
+      <a href="/#approach" data-i18n="nav.approach">Approach</a>
+      <a href="/#contact" data-i18n="nav.contact">Contact</a>
+    </nav>
+    <div class="nav-right">
+      <div class="langs" role="group" aria-label="Language">
+        <button data-lang="en">EN</button><button data-lang="ka">ქა</button><button data-lang="ru">RU</button>
+      </div>
+      <a class="pill nav-cta" href="/#contact"><span data-i18n="nav.cta">Let’s talk</span></a>
+      <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="menu"><i></i><i></i></button>
+    </div>
+  </header>
+
+  <div class="menu" id="menu" aria-hidden="true">
+    <nav class="menu-links">
+      <a href="/work/" data-nav data-i18n="nav.work">Work</a>
+      <a href="/#services" data-i18n="nav.services">Services</a>
+      <a href="/#approach" data-i18n="nav.approach">Approach</a>
+      <a href="/#contact" data-i18n="nav.contact">Contact</a>
+    </nav>
+  </div>
+
+
+  <main id="top">
+    <section class="wp-hero">
+      <p class="kicker"><a href="/" data-nav class="back">← <span data-i18n="wp.back"></span></a></p>
+      <h1 class="wp-title"><span class="ln"><span data-i18n="wp.title">Work</span><sup class="wp-count" id="wpCount"></sup></span></h1>
+      <p class="wp-lead fade-up" data-i18n="wp.lead"></p>
+      <div class="filters fade-up" role="tablist" id="filters">
+        <button role="tab" data-f="all" class="is-on" data-i18n="f.all"></button>
+        <button role="tab" data-f="3d" data-i18n="f.3d"></button>
+        <button role="tab" data-f="estate" data-i18n="f.estate"></button>
+        <button role="tab" data-f="food" data-i18n="f.food"></button>
+        <button role="tab" data-f="sport" data-i18n="f.sport"></button>
+      </div>
+    </section>
+    <section class="grid" id="grid"></section>
+  </main>
+
+  <footer class="contact" id="contact">
+    <div class="contact-inner">
+      <p class="kicker" data-i18n="cta.kicker"></p>
+      <h2 class="cta-title">
+        <span class="ln"><span data-i18n="cta.l1"></span></span>
+        <span class="ln"><em class="serif" data-i18n="cta.l2"></em></span>
+      </h2>
+      <p class="cta-sub fade-up" data-i18n="cta.sub"></p>
+      <a class="cta-mail fade-up" id="ctaMail" href="mailto:hello@atskoba.com"><span id="ctaMailText">hello@atskoba.com</span><i class="arrow">↗</i></a>
+      <div class="cta-actions fade-up">
+        <a class="pill pill-lg pill-light" id="mailBtn" href="mailto:hello@atskoba.com"><span data-i18n="cta.mail"></span><i class="arrow">↗</i></a>
+        <a class="pill pill-lg pill-ghost" id="upworkBtn" href="#" target="_blank" rel="noopener" hidden><span data-i18n="cta.upwork"></span><i class="arrow">↗</i></a>
+      </div>
+    </div>
+    <div class="foot">
+      <div class="foot-brand">
+        <svg class="logo-mark" viewBox="6 26 92 68" aria-hidden="true"><path fill-rule="evenodd" d="M40 30a30 30 0 1 0 0.01 0zM40 45a15 15 0 1 1-0.01 0z" /><rect x="60" y="30" width="15" height="60" /><circle class="dot" cx="88" cy="83" r="7" /></svg>
+        <span>Atskoba · <span data-i18n="foot.city"></span></span>
+      </div>
+      <p>© 2026 Atskoba. <span data-i18n="foot.rights"></span></p>
+      <a href="#top" class="to-top" data-i18n="foot.top"></a>
+    </div>
+  </footer>
+
+  <div class="cursor" id="cursor" aria-hidden="true"><span id="cursorLabel"></span></div>
+  <script type="module" src="/src/work.js"></script>
+</body>
+</html>

@@ -1,59 +1,49 @@
-# Atskoba portfolio — motion storyboard
+# Atskoba portfolio — storyboard (v2, full redesign)
 
-One idea runs through the whole site: **assembly** (აწყობა = "to assemble").
-The logo is built from three pieces. The site opens by assembling it, takes it apart
-as you scroll into the work, and assembles a final sentence for the contact call.
+Feedback on v1: dark particle background, skew/blur motion and compressed preview videos
+felt cheap; too many projects on the home page. v2 goes premium and editorial:
+warm stone background, black type, one wine accent, crisp 2x stills, motion made only of
+masks, fades and translation — nothing is skewed, blurred or stretched.
 
-Section numbers are never shown on the page (no 01 / 02 / 03).
+Section numbers are never shown (no 01 / 02 / 03).
 
 ## Logo
-Options: monogram in a circle · isometric cube · stacked "A" blocks · **split "A" from three bars** · bracket wordmark.
-Chosen: a split "A" — two leaning legs with an open apex and an ember crossbar.
-It reads as a letter, as a building frame, and as parts waiting to be joined.
+Options: split "A" (v1) · Georgian letter ა · wordmark only · **single-storey "a" + accent dot** · grid monogram.
+Chosen: a single-storey "a" built from a ring and a stem, with a separate wine dot —
+"a." reads as a confident full stop; in 3D the three parts assemble.
 
 ## Loader
-Options: percent counter · stroke draw · **pieces slide in and snap** · blur-to-sharp · curtain only.
-Chosen: the three SVG pieces slide in from three directions and snap, with a thin progress line.
-Exit: a curtain lifts and the WebGL logo continues from the same position.
+Options: counter · logo stroke draw · **ring draws, stem rises, dot drops, panel lifts** · blank fade.
+Chosen: the mark draws itself in under two seconds, then an ink panel lifts to reveal the hero.
 
 ## Hero
-Options: video reel · particle text · **3D logo with glass/metal materials + kinetic headline** · scroll-scrubbed image sequence · cursor-reactive mesh.
-Chosen: the extruded logo floats in a foggy space with bokeh particles (depth layers: particles
-front/back, logo middle, type in front). The camera drifts constantly and follows the cursor.
-Headline letters rise in with blur. On scroll the pieces separate, the camera pushes through
-the open apex and the headline letters scatter in depth with motion blur.
+Options: full-bleed image · video · **3D lacquered mark + editorial headline** · text only · slider.
+Chosen: headline lines rise out of masks; on the right the black lacquered 3D mark assembles
+(ring rolls in, stem lands, dot drops) and then floats, turning toward the cursor, over a soft
+contact shadow. Scrolling turns it away and lifts it out.
 
-## Manifesto
-Options: typewriter · **word-by-word light-up while scrolling** · marquee · split screen · pinned quote.
-Chosen: large text whose words light up with the scroll position, accent words in ember.
+## Statement
+Options: word scrub · **line-by-line mask reveal** · marquee · split layout.
+Chosen: one confident paragraph, revealed line by line.
 
-## Featured work (cinematic scenes)
-Options: grid · **3D-tilted frame that straightens and grows** · fullscreen swap · hover cards · WebGL planes.
-Chosen: each project lives in a scene. The live-site preview video starts tilted back in
-perspective, rotates flat and grows; title characters rise; tags slide in; a link opens the
-live site. Scenes alternate left/right so the camera rhythm changes.
+## Selected work (two projects)
+Options: grid · slider · **editorial pair: large still + offset detail still** · fullscreen pin.
+Chosen: each project gets a large crisp still revealed by a clip-path wipe, an offset second
+still moving at a different parallax speed (translation only), and a clean meta row.
+A button leads to the separate Work page.
 
-## More work (horizontal depth rail)
-Options: list · masonry · **cover-flow rail with rotateY by distance** · slider · carousel dots.
-Chosen: a pinned horizontal rail. Cards rotate and blur depending on their distance from the
-centre and skew with scroll velocity (motion blur).
+## Services
+Options: icons grid · **hairline list with hover detail** · tabs.
 
-## Capabilities
-Options: icon grid · **two counter-moving marquees + reveal list** · tabs · accordion · orbit.
-Chosen: marquees that skew and blur with scroll speed, then a list where each line wipes in.
+## Approach
+Options: timeline · **sticky title + steps that reveal** · cards slider.
 
-## Process
-Options: timeline · **path that draws itself through four steps** · cards · video · stepper.
-Chosen: an SVG line draws through Discover → Direct → Build → Launch (words, no numbers).
+## Clients strip
+Options: logos · **constant-speed name marquee** · none.
 
-## Index of other sites
-Options: grid · **list with an image that follows the cursor** · table · tag cloud.
-Chosen: a list; on desktop a preview follows the cursor with inertia, on phones it is hidden.
+## Contact (dark)
+Options: form · **ink section, large sentence, chrome version of the 3D mark** · map.
+The mark re-appears in polished chrome, so the story closes where it opened.
 
-## Contact
-Options: form · **giant kinetic sentence that assembles** · calendar · map.
-Chosen: "Let's assemble yours" — words fly in from depth and snap like the logo did.
-
-## Sound
-Ambient pad + soft UI ticks and a whoosh on scene changes, generated with WebAudio.
-Off by default (browsers block autoplay); one toggle in the header.
+## Work page
+Filterable grid of all projects with crisp stills, line reveals and a curtain page transition.
