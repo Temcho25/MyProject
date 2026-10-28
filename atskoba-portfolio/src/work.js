@@ -1,4 +1,4 @@
-import { gsap, ScrollTrigger, $, $$, lenis, onLang, imgSet, revealLines, intro, initCursor, initContact, updateNav } from './core.js';
+import { gsap, ScrollTrigger, $, $$, lenis, reduced, M, onLang, imgSet, revealLines, intro, initCursor, initContact, initTilt, updateNav } from './core.js';
 import { PROJECTS } from './data.js';
 
 /* ------------------------------------------------------------------ build grid */
@@ -17,6 +17,7 @@ onLang((l) => {
 });
 initContact();
 initCursor();
+initTilt($$('.card-media'));
 
 /* ------------------------------------------------------------------ filters */
 let filterToken = 0;
@@ -48,8 +49,14 @@ $$('#filters button').forEach((b) => b.addEventListener('click', () => {
 /* ------------------------------------------------------------------ motion */
 function setupScroll() {
   revealLines();
-  $$('.card').forEach((c) => {
+  $$('.card').forEach((c, i) => {
     const media = $('.card-media', c);
+    if (!reduced) {
+      gsap.fromTo(c, { rotationX: 12, rotationY: i % 2 ? -5 : 5, y: 60, transformPerspective: 1600, transformOrigin: '50% 100%' }, {
+        rotationX: 0, rotationY: 0, y: 0, ease: M.ease.soft,
+        scrollTrigger: { trigger: c, start: 'top 100%', end: 'top 45%', scrub: 0.8 },
+      });
+    }
     gsap.fromTo(media, { clipPath: 'inset(12% 6% 12% 6% round 22px)' }, {
       clipPath: 'inset(0% 0% 0% 0% round 22px)', ease: 'power2.out',
       scrollTrigger: { trigger: c, start: 'top 98%', end: 'top 50%', scrub: 0.6 },

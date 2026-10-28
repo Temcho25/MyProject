@@ -47,3 +47,46 @@ The mark re-appears in polished chrome, so the story closes where it opened.
 
 ## Work page
 Filterable grid of all projects with crisp stills, line reveals and a curtain page transition.
+
+---
+
+# v3 — more 3D and scroll motion
+
+The 3D mark becomes the hero character of the whole page: it is assembled in the hero,
+taken apart and re-assembled through the services chapters, and closes in chrome.
+Rules from ECC motion skills: every motion guides attention, shows state or keeps spatial
+continuity; transform/opacity only; reduced motion = short fades; pause when hidden;
+lighter mode on low-end devices.
+
+## Hero depth
+Options: particles · **floating lacquer parts of the mark at several depths, fading into the
+background colour (atmospheric depth)** · blurred blobs · photo backdrop.
+Foreground mark sharp, mid/back parts smaller and fogged, all drifting at different speeds.
+
+## Services → "Assembly" (pinned 3D chapters)
+Options: hairline list (v2) · tabs · **pinned scene where the 3D mark is taken apart, one
+chapter per service** · horizontal cards · video.
+Camera orbits continuously while the copy changes chapter by chapter:
+- 3D & WebGL — the ring comes forward, wireframe edges reveal the construction.
+- Motion design — the dot orbits the ring leaving a trail of ghost dots.
+- Design & art direction — pieces lay out flat on a blueprint grid like a spec sheet.
+- Development & launch — everything snaps back together; the dot lands with a bounce.
+Text: the chapter title rises from a mask as the previous one leaves upward.
+
+## Case studies in 3D
+Options: flat wipe (v2) · **frames tilt back in perspective and settle flat while the wipe
+opens; cursor tilt with a soft light sheen** · WebGL planes · carousel.
+
+## Approach
+Options: cards list (v2) · **sticky stacked cards that step back in depth** · timeline.
+
+## Scroll progress
+A 2px line under the nav shows reading progress.
+
+## Sound
+Optional (browsers block autoplay): soft ambient pad, a chime on each services chapter,
+a low whoosh on page transitions.
+
+## Showreel
+Per vizavi-motion defaults: a 1920×1080 60 fps H.264 + AAC MP4 scroll-through of the site,
+rendered frame by frame with a controlled clock and a matching soundtrack — usable on Upwork.

@@ -5,6 +5,8 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { T, LANGS, CONTACT } from './data.js';
+import { toggleSound, whoosh, tick } from './sound.js';
+export { whoosh, tick };
 
 gsap.registerPlugin(ScrollTrigger);
 export { gsap, ScrollTrigger };
@@ -15,6 +17,15 @@ export const mobile = window.matchMedia('(max-width: 760px), (pointer: coarse)')
 export const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 const EASE = 'expo.out';
+
+// Motion tokens (ECC motion-foundations): every duration/ease comes from here.
+export const M = {
+  ease: { out: 'expo.out', inOut: 'expo.inOut', soft: 'power2.out', in: 'power2.in', bounce: 'bounce.out' },
+  dur: { fast: 0.4, normal: 0.9, slow: 1.3, crawl: 1.7 },
+};
+// Low-end devices get the lighter path (no floating parts, lower pixel ratio, no tilt).
+export const lowEnd = (navigator.hardwareConcurrency || 8) <= 2 || (navigator.deviceMemory || 8) <= 2
+  || (mobile && (navigator.hardwareConcurrency || 8) <= 4);
 
 /* ------------------------------------------------------------------ language */
 function pickLang() {
@@ -76,7 +87,8 @@ export function revealLines() {
       trigger: el, start: 'top 88%', once: true,
       onEnter: () => {
         el.dataset.shown = '1';
-        gsap.to($$('.line > span', el), { yPercent: 0, duration: 1.4, stagger: 0.09, ease: EASE });
+        if (reduced) gsap.set($$('.line > span', el), { yPercent: 0 });
+        else gsap.to($$('.line > span', el), { yPercent: 0, duration: M.dur.slow, stagger: 0.09, ease: M.ease.out });
       },
     });
   });
@@ -123,7 +135,10 @@ export function scrollToEl(el) {
 /* ------------------------------------------------------------------ nav + menu */
 const nav = $('#nav');
 let navY = 0;
+const progressBar = document.getElementById('progress');
 export function updateNav(y) {
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  if (progressBar) progressBar.style.transform = `scaleX(${max > 0 ? Math.min(1, y / max) : 0})`;
   nav.classList.toggle('is-solid', y > 30);
   const menuOpen = $('#menu').classList.contains('is-open');
   if (y > navY + 6 && y > 300 && !menuOpen) nav.classList.add('is-hidden');
@@ -183,6 +198,7 @@ document.addEventListener('click', (e) => {
 });
 
 function leaveTo(href) {
+  whoosh(0.6);
   try { sessionStorage.setItem('atskoba-nav', '1'); } catch (e) { /* blocked */ }
   $('.curtain-mark').style.opacity = '0';
   gsap.fromTo(curtain, { clipPath: 'inset(100% 0 0 0)' }, {
@@ -248,6 +264,39 @@ export function initCursor() {
     const v = e.target.closest('[data-cursor]');
     if (v) $('#cursorLabel').textContent = t('work.view');
     gsap.to(cur, { scale: v ? 1 : 0, opacity: v ? 1 : 0, duration: 0.5, ease: EASE });
+  });
+}
+
+/* ------------------------------------------------------------------ sound (opt-in) */
+const soundBtn = $('#sound');
+if (soundBtn) {
+  soundBtn.addEventListener('click', () => {
+    const on = toggleSound();
+    soundBtn.classList.toggle('is-on', on);
+    soundBtn.setAttribute('aria-pressed', String(on));
+  });
+}
+
+/* ------------------------------------------------------------------ 3D tilt with light sheen */
+// Real perspective rotation (no skew): the frame turns toward the cursor, a soft light follows it.
+export function initTilt(els) {
+  if (!finePointer || reduced || lowEnd) return;
+  els.forEach((el) => {
+    el.classList.add('tilt');
+    const sheen = document.createElement('span');
+    sheen.className = 'sheen';
+    el.appendChild(sheen);
+    const rx = gsap.quickTo(el, 'rotationX', { duration: 0.8, ease: 'power3' });
+    const ry = gsap.quickTo(el, 'rotationY', { duration: 0.8, ease: 'power3' });
+    gsap.set(el, { transformPerspective: 1400 });
+    el.addEventListener('pointermove', (e) => {
+      const b = el.getBoundingClientRect();
+      const x = (e.clientX - b.left) / b.width, y = (e.clientY - b.top) / b.height;
+      rx((0.5 - y) * 5); ry((x - 0.5) * 7);
+      el.style.setProperty('--mx', `${x * 100}%`);
+      el.style.setProperty('--my', `${y * 100}%`);
+    });
+    el.addEventListener('pointerleave', () => { rx(0); ry(0); });
   });
 }
 

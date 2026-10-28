@@ -26,6 +26,7 @@
     </svg>
   </div>
 
+  <div class="progress" aria-hidden="true"><i id="progress"></i></div>
   <header class="nav" id="nav">
     <a class="logo" href="/" aria-label="Atskoba — home" data-nav>
       <svg class="logo-mark" viewBox="6 26 92 68" aria-hidden="true">
@@ -45,6 +46,7 @@
       <div class="langs" role="group" aria-label="Language">
         <button data-lang="en">EN</button><button data-lang="ka">ქა</button><button data-lang="ru">RU</button>
       </div>
+      <button class="sound" id="sound" aria-pressed="false" aria-label="Sound"><span class="bars"><i></i><i></i><i></i><i></i></span></button>
       <a class="pill nav-cta" href="/#contact"><span data-i18n="nav.cta">Let’s talk</span></a>
       <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="menu"><i></i><i></i></button>
     </div>
@@ -94,17 +96,20 @@
       </div>
     </section>
 
-    <section class="services" id="services">
-      <header class="sec-head">
-        <p class="kicker" data-i18n="svc.kicker"></p>
-        <h2 class="h2 lines" data-i18n="svc.title"></h2>
-      </header>
-      <ul class="svc-list">
-        <li class="svc"><h3 data-i18n="svc.1.t"></h3><p data-i18n="svc.1.d"></p></li>
-        <li class="svc"><h3 data-i18n="svc.2.t"></h3><p data-i18n="svc.2.d"></p></li>
-        <li class="svc"><h3 data-i18n="svc.3.t"></h3><p data-i18n="svc.3.d"></p></li>
-        <li class="svc"><h3 data-i18n="svc.4.t"></h3><p data-i18n="svc.4.d"></p></li>
-      </ul>
+    <section class="svc3d" id="services">
+      <div class="svc-pin">
+        <div class="svc-copy">
+          <p class="kicker" data-i18n="svc.kicker"></p>
+          <h2 class="h2 lines" data-i18n="svc.title"></h2>
+          <div class="chapters" id="chapters">
+            <article class="chap is-on"><h3 class="chap-t"><span class="ln"><span data-i18n="svc.1.t"></span></span></h3><p class="chap-d" data-i18n="svc.1.d"></p></article>
+            <article class="chap"><h3 class="chap-t"><span class="ln"><span data-i18n="svc.2.t"></span></span></h3><p class="chap-d" data-i18n="svc.2.d"></p></article>
+            <article class="chap"><h3 class="chap-t"><span class="ln"><span data-i18n="svc.3.t"></span></span></h3><p class="chap-d" data-i18n="svc.3.d"></p></article>
+            <article class="chap"><h3 class="chap-t"><span class="ln"><span data-i18n="svc.4.t"></span></span></h3><p class="chap-d" data-i18n="svc.4.d"></p></article>
+          </div>
+          <div class="chap-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        </div>
+      </div>
     </section>
 
     <section class="approach" id="approach">
