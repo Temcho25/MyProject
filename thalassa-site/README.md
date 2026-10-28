@@ -30,3 +30,14 @@ Statuses live in `js/i18n.js` → `FLOORS`; update them there (or wire them to t
 
 Creative plan: [STORYBOARD.md](STORYBOARD.md).
 Recording mode for the showcase video: `index.html?capture=1` exposes `window.__step(scrollY, dtMs)`.
+
+## Showcase video
+
+`tools/record-video.js` renders a frame-exact 1920×1080 / 60 fps walkthrough (Playwright + ffmpeg),
+`tools/soundtrack.py` synthesizes the matching 80 bpm score + sound design (numpy). Then mux:
+
+```bash
+node tools/record-video.js ru 60 0 60.75 video.mp4      # site must be served on :8765
+python3 tools/soundtrack.py                            # → soundtrack.wav
+ffmpeg -i video.mp4 -i soundtrack.wav -c:v libx264 -crf 19 -pix_fmt yuv420p -c:a aac -b:a 192k -shortest showcase.mp4
+```
