@@ -15,6 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Cormorant+Garamond:ital,wght@1,500&family=Noto+Sans+Georgian:wght@400;500;600&family=Noto+Serif+Georgian:wght@500&display=swap" rel="stylesheet" />
+  <noscript><style>.curtain{display:none}</style></noscript>
 </head>
 <body data-page="work">
   <div class="curtain" id="curtain" aria-hidden="true">
@@ -64,12 +65,12 @@
       <p class="kicker"><a href="/" data-nav class="back">← <span data-i18n="wp.back"></span></a></p>
       <h1 class="wp-title"><span class="ln"><span data-i18n="wp.title">Work</span><sup class="wp-count" id="wpCount"></sup></span></h1>
       <p class="wp-lead fade-up" data-i18n="wp.lead"></p>
-      <div class="filters fade-up" role="tablist" id="filters">
-        <button role="tab" data-f="all" class="is-on" data-i18n="f.all"></button>
-        <button role="tab" data-f="3d" data-i18n="f.3d"></button>
-        <button role="tab" data-f="estate" data-i18n="f.estate"></button>
-        <button role="tab" data-f="food" data-i18n="f.food"></button>
-        <button role="tab" data-f="sport" data-i18n="f.sport"></button>
+      <div class="filters fade-up" role="group" id="filters">
+        <button data-f="all" class="is-on" aria-pressed="true" data-i18n="f.all"></button>
+        <button aria-pressed="false" data-f="3d" data-i18n="f.3d"></button>
+        <button aria-pressed="false" data-f="estate" data-i18n="f.estate"></button>
+        <button aria-pressed="false" data-f="food" data-i18n="f.food"></button>
+        <button aria-pressed="false" data-f="sport" data-i18n="f.sport"></button>
       </div>
     </section>
     <section class="grid" id="grid"></section>

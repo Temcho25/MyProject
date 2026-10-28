@@ -97,9 +97,11 @@ export function createMark(canvas, { mobile, reduced }) {
 
   let vw = 0, vh = 0, worldH = 1, worldW = 1;
   function resize() {
-    // Phones fire resize when the address bar moves; ignore small height-only changes.
-    if (mobile && vw === window.innerWidth && Math.abs(vh - window.innerHeight) < 140) return;
-    vw = window.innerWidth; vh = window.innerHeight;
+    // The canvas is 100lvh tall, so mobile toolbars don't change it; always match its real CSS
+    // box so the drawing buffer is never stretched.
+    const w = canvas.clientWidth || window.innerWidth, h = canvas.clientHeight || window.innerHeight;
+    if (w === vw && h === vh) return;
+    vw = w; vh = h;
     renderer.setSize(vw, vh, false);
     camera.aspect = vw / vh;
     camera.updateProjectionMatrix();

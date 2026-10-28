@@ -5,7 +5,7 @@ import { PROJECTS } from './data.js';
 // Every third card spans the full width for an editorial rhythm.
 $('#grid').innerHTML = PROJECTS.map((p, i) => `
   <a class="card ${i % 3 === 0 ? 'is-wide' : ''}" href="${p.url}" target="_blank" rel="noopener" data-cursor data-cats="${p.cats.join(' ')}">
-    <div class="card-media">${imgSet(p.id, p.main, i % 3 === 0 ? '(max-width: 760px) 100vw, 92vw' : '(max-width: 760px) 100vw, 46vw', i < 2, p.name)}</div>
+    <div class="card-media">${imgSet(p.id, p.main, '(max-width: 760px) 100vw, 92vw', i < 2, p.name)}</div>
     <div class="card-meta"><h2 class="card-name">${p.name}</h2><span class="card-tags" data-tags="${p.id}"></span></div>
     <p class="card-desc" data-desc="${p.id}"></p>
   </a>`).join('');
@@ -19,14 +19,18 @@ initContact();
 initCursor();
 
 /* ------------------------------------------------------------------ filters */
+let filterToken = 0;
 $$('#filters button').forEach((b) => b.addEventListener('click', () => {
   if (b.classList.contains('is-on')) return;
-  $$('#filters button').forEach((x) => { x.classList.toggle('is-on', x === b); x.setAttribute('aria-selected', String(x === b)); });
+  $$('#filters button').forEach((x) => { x.classList.toggle('is-on', x === b); x.setAttribute('aria-pressed', String(x === b)); });
   const f = b.dataset.f;
   const cards = $$('.card');
+  const token = ++filterToken;
+  gsap.killTweensOf(cards);
   gsap.to(cards, {
     opacity: 0, y: 20, duration: 0.35, ease: 'power2.in', stagger: 0.02,
     onComplete: () => {
+      if (token !== filterToken) return; // a newer click took over
       let n = 0;
       cards.forEach((c) => {
         const show = f === 'all' || c.dataset.cats.split(' ').includes(f);

@@ -86,7 +86,8 @@ const ticker = $('#ticker');
 let tx = 0, tw = 0;
 const measureTicker = () => { tw = ticker.scrollWidth / 2; };
 measureTicker();
-window.addEventListener('resize', measureTicker);
+ScrollTrigger.addEventListener('refresh', measureTicker);
+document.fonts?.ready.then(measureTicker);
 const contact = $('#contact');
 let contactTop = 0;
 const measure = () => { contactTop = contact.getBoundingClientRect().top + window.scrollY; };
@@ -97,7 +98,7 @@ gsap.ticker.add(() => {
   const vh = window.innerHeight;
   updateNav(y);
   if (!reduced) {
-    tx -= 0.6;
+    tx -= 0.6 * gsap.ticker.deltaRatio(60); // same speed at 60 and 120 Hz
     if (tx <= -tw) tx += tw;
     ticker.style.transform = `translate3d(${tx}px,0,0)`;
   }

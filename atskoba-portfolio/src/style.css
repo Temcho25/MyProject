@@ -124,6 +124,7 @@ html.ready .curtain { pointer-events: none; }
 .arrow { font-style: normal; display: inline-block; transition: transform .6s var(--ease); }
 .pill:hover .arrow, .cta-mail:hover .arrow { transform: translateX(4px); }
 .count { opacity: .5; font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* ---------- Type ---------- */
 .kicker {
@@ -144,7 +145,7 @@ html.ready .curtain { pointer-events: none; }
 .sec-head { max-width: var(--max); margin: 0 auto clamp(48px, 7vw, 110px); padding: 0 var(--gut); }
 
 /* ---------- WebGL ---------- */
-#gl { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
+#gl { position: fixed; left: 0; top: 0; width: 100%; height: 100vh; height: 100lvh; z-index: 3; pointer-events: none; }
 main { position: relative; z-index: 2; }
 
 /* ---------- Hero ---------- */
@@ -156,8 +157,8 @@ main { position: relative; z-index: 2; }
   margin: 0; font-weight: 500; font-size: clamp(54px, 9.4vw, 176px); line-height: .94; letter-spacing: -0.06em;
 }
 .hero-title .serif { font-size: 1.08em; letter-spacing: -0.035em; color: var(--ink); }
-:lang(ka) .hero-title { font-size: clamp(38px, 6.6vw, 124px); letter-spacing: -0.015em; line-height: 1.08; }
-:lang(ru) .hero-title { font-size: clamp(46px, 8.2vw, 156px); }
+:lang(ka) .hero-title { font-size: clamp(38px, 5.8vw, 108px); letter-spacing: -0.015em; line-height: 1.08; }
+:lang(ru) .hero-title { font-size: clamp(44px, 7vw, 134px); }
 .hero-bottom {
   display: grid; grid-template-columns: minmax(0, 1.4fr) 1fr auto; gap: 24px; align-items: end;
   margin-top: clamp(40px, 8vh, 96px); padding-top: 22px; border-top: 1px solid var(--line);

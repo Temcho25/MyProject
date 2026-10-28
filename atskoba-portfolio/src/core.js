@@ -52,7 +52,6 @@ export function applyLang(next) {
 function splitLines(el) {
   const text = el.dataset.text ?? el.textContent.trim();
   el.dataset.text = text;
-  el.setAttribute('aria-label', text);
   el.innerHTML = text.split(' ').map((w) => `<span class="w" style="display:inline-block">${w}</span>`).join(' ');
   const words = $$('.w', el);
   const rows = [];
@@ -61,7 +60,8 @@ function splitLines(el) {
     if (w.offsetTop !== top) { rows.push([]); top = w.offsetTop; }
     rows[rows.length - 1].push(w.textContent);
   });
-  el.innerHTML = rows.map((r) => `<span class="line" aria-hidden="true"><span>${r.join(' ')}</span></span>`).join('');
+  el.innerHTML = `<span class="sr-only">${text}</span>`
+    + rows.map((r) => `<span class="line" aria-hidden="true"><span>${r.join(' ')}</span></span>`).join('');
   if (el.dataset.shown) gsap.set($$('.line > span', el), { yPercent: 0 });
   else gsap.set($$('.line > span', el), { yPercent: 115 });
 }
@@ -138,6 +138,7 @@ function openMenu() {
   $('#menu').setAttribute('aria-hidden', 'false');
   $('#burger').setAttribute('aria-expanded', 'true');
   $('main').inert = true;
+  if ($('#contact')) $('#contact').inert = true;
   document.documentElement.style.overflow = 'hidden';
   lenis?.stop();
   gsap.fromTo('.menu-links a', { yPercent: 60, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 1.1, stagger: 0.06, ease: EASE, delay: 0.25 });
@@ -149,6 +150,7 @@ export function closeMenu() {
   $('#menu').setAttribute('aria-hidden', 'true');
   $('#burger').setAttribute('aria-expanded', 'false');
   $('main').inert = false;
+  if ($('#contact')) $('#contact').inert = false;
   document.documentElement.style.overflow = '';
   lenis?.start();
 }
@@ -192,7 +194,25 @@ function leaveTo(href) {
 window.addEventListener('pageshow', (e) => { if (e.persisted) gsap.set(curtain, { clipPath: 'inset(0 0 100% 0)' }); });
 
 /* ------------------------------------------------------------------ intro: loader on first visit, short wipe after */
+function openCurtain() {
+  gsap.to('.curtain-mark', { opacity: 0, y: -20, duration: 0.4, ease: 'power2.in' });
+  gsap.to(curtain, { clipPath: 'inset(0 0 100% 0)', duration: reduced ? 0.01 : 1.1, ease: 'expo.inOut', delay: 0.15 });
+}
+// Never leave the page covered, whatever happens during start-up.
+const failsafe = setTimeout(openCurtain, 6000);
+
 export async function intro() {
+  try {
+    await runIntro();
+  } catch (e) {
+    console.error(e);
+  }
+  clearTimeout(failsafe);
+  openCurtain();
+  await new Promise((r) => setTimeout(r, 150));
+}
+
+async function runIntro() {
   let internal = false;
   try { internal = sessionStorage.getItem('atskoba-nav') === '1'; sessionStorage.removeItem('atskoba-nav'); } catch (e) { /* blocked */ }
   const fonts = document.fonts?.ready ?? Promise.resolve();
@@ -215,13 +235,6 @@ export async function intro() {
     await new Promise((r) => setTimeout(r, 150));
   }
   applyLang(lang);
-  return new Promise((resolve) => {
-    gsap.to('.curtain-mark', { opacity: 0, y: -20, duration: 0.4, ease: 'power2.in' });
-    gsap.to(curtain, {
-      clipPath: 'inset(0 0 100% 0)', duration: reduced ? 0.01 : 1.1, ease: 'expo.inOut', delay: 0.15,
-      onStart: resolve,
-    });
-  });
 }
 
 /* ------------------------------------------------------------------ cursor */
