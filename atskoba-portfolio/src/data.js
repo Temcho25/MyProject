@@ -40,7 +40,7 @@ export const PROJECTS = [
     ru: 'Скролл ведёт камеру по 3D-анфиладе залов с колоннами.',
   },
   {
-    id: 'trio', name: 'Trio Group', url: 'https://trio-group.vercel.app', cats: ['3d', 'estate'], main: 1, detail: 0, highlight: true,
+    id: 'trio', name: 'Trio Group', url: 'https://trio-group.vercel.app', cats: ['3d', 'estate'], main: 0, detail: 1, highlight: true,
     tags: { en: 'Developer · 3D transitions', ka: 'დეველოპერი · 3D გადასვლები', ru: 'Девелопер · 3D-переходы' },
     en: 'Three residential projects of one developer, with 3D transitions.',
     ka: 'ერთი დეველოპერის სამი საცხოვრებელი პროექტი 3D-გადასვლებით.',
@@ -61,14 +61,14 @@ export const PROJECTS = [
     ru: 'Выбор квартиры по корпусам и планировкам.',
   },
   {
-    id: 'orientiri', name: 'Orientiri Lisi', url: 'https://orientiri-concept.vercel.app', cats: ['estate'], main: 0, detail: null,
+    id: 'orientiri', name: 'Orientiri Lisi', url: 'https://orientiri-concept.vercel.app', cats: ['estate'], main: 0, detail: null, highlight: true,
     tags: { en: 'Gated community', ka: 'დახურული დასახლება', ru: 'Закрытый посёлок' },
     en: 'A gated community for 24 families by Lisi Lake.',
     ka: 'დახურული დასახლება 24 ოჯახისთვის ლისის ტბასთან.',
     ru: 'Закрытый посёлок на 24 семьи у озера Лиси.',
   },
   {
-    id: 'thalassa', name: 'Thalassa Group', url: 'https://thalassa-group.vercel.app', cats: ['estate'], main: 0, detail: null, highlight: true,
+    id: 'thalassa', name: 'Thalassa Group', url: 'https://thalassa-group.vercel.app', cats: ['estate'], main: 0, detail: null,
     tags: { en: 'Residences · Batumi', ka: 'საცხოვრებელი · ბათუმი', ru: 'Резиденции · Батуми' },
     en: 'Premium residences at Green Cape, Batumi.',
     ka: 'პრემიუმ საცხოვრებელი კომპლექსი მწვანე კონცხზე, ბათუმი.',

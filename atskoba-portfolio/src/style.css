@@ -208,7 +208,7 @@ main { position: relative; z-index: 2; }
   aspect-ratio: 16 / 10; clip-path: inset(0 0 0 0 round var(--r));
 }
 .case-main img, .card-media img {
-  position: absolute; left: 0; top: -6%; width: 100%; height: 112%; object-fit: cover; will-change: transform;
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; /* same 16:10 ratio as the still: shown 1:1, no crop or upscale */
 }
 .case-main, .card-media { transform-style: preserve-3d; }
 .sheen {

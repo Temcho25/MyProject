@@ -61,9 +61,6 @@ function setupScroll() {
       clipPath: 'inset(0% 0% 0% 0% round 22px)', ease: 'power2.out',
       scrollTrigger: { trigger: c, start: 'top 98%', end: 'top 50%', scrub: 0.6 },
     });
-    gsap.fromTo($('img', media), { yPercent: -4 }, {
-      yPercent: 4, ease: 'none', scrollTrigger: { trigger: c, start: 'top bottom', end: 'bottom top', scrub: true },
-    });
     gsap.fromTo([$('.card-meta', c), $('.card-desc', c)], { y: 24, opacity: 0 }, {
       y: 0, opacity: 1, duration: 1.1, stagger: 0.08, ease: 'expo.out', scrollTrigger: { trigger: media, start: 'bottom 98%', once: true },
     });

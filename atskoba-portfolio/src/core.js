@@ -112,9 +112,11 @@ export function revealLines() {
 }
 
 /* ------------------------------------------------------------------ images */
+// Bump when stills are re-captured: /img is cached for a year.
+const IMG_V = 2;
 export const imgSet = (id, n, sizes, eager = false, alt = '') => `
-  <img src="/img/${id}-${n}-1600.webp"
-       srcset="/img/${id}-${n}-1600.webp 1600w, /img/${id}-${n}-2880.webp 2880w"
+  <img src="/img/${id}-${n}-1600.webp?v=${IMG_V}"
+       srcset="/img/${id}-${n}-1600.webp?v=${IMG_V} 1600w, /img/${id}-${n}-2880.webp?v=${IMG_V} 2880w"
        sizes="${sizes}" width="1600" height="1000" alt="${alt}"
        ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" />`;
 

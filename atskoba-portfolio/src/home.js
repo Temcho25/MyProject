@@ -70,9 +70,6 @@ function setupScroll() {
       clipPath: 'inset(0% 0% 0% 0% round 22px)', ease: 'power2.out',
       scrollTrigger: { trigger: main, start: 'top 95%', end: 'top 35%', scrub: 0.6 },
     });
-    gsap.fromTo($('img', main), { yPercent: -5 }, {
-      yPercent: 5, ease: 'none', scrollTrigger: { trigger: main, start: 'top bottom', end: 'bottom top', scrub: true },
-    });
     const det = $('.case-detail', c);
     gsap.fromTo(det, { yPercent: 35 }, {
       yPercent: -12, ease: 'none',
@@ -96,9 +93,6 @@ function setupScroll() {
     gsap.fromTo(media, { clipPath: 'inset(12% 6% 12% 6% round 22px)' }, {
       clipPath: 'inset(0% 0% 0% 0% round 22px)', ease: 'power2.out',
       scrollTrigger: { trigger: c, start: 'top 98%', end: 'top 50%', scrub: 0.6 },
-    });
-    gsap.fromTo($('img', media), { yPercent: -4 }, {
-      yPercent: 4, ease: 'none', scrollTrigger: { trigger: c, start: 'top bottom', end: 'bottom top', scrub: true },
     });
     gsap.fromTo([$('.card-meta', c), $('.card-desc', c)], { y: 24, opacity: 0 }, {
       y: 0, opacity: 1, duration: 1.1, stagger: 0.08, ease: 'expo.out', scrollTrigger: { trigger: media, start: 'bottom 98%', once: true },
