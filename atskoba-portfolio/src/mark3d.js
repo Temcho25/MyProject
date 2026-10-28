@@ -133,7 +133,7 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
       const depth = -3 - Math.random() * 12;
       m.userData = {
         // x/y in viewport fractions: desktop keeps them right of the text column, phones above it.
-        base: new Vector3(mobile ? (Math.random() - 0.5) * 0.9 : 0.04 + Math.random() * 0.44,
+        base: new Vector3(mobile ? (Math.random() - 0.5) * 0.9 : 0.17 + Math.random() * 0.31,
           mobile ? 0.12 + Math.random() * 0.3 : Math.random() * 0.72 - 0.42, depth), // clear of the nav band
         spin: new Vector3(Math.random() - 0.5, Math.random() - 0.5, 0).multiplyScalar(0.6),
         phase: Math.random() * Math.PI * 2,
