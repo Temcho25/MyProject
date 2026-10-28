@@ -1,6 +1,6 @@
 // Generated sound: a slow ambient pad, soft ticks for hovers and a filtered whoosh for
 // scene changes. Nothing plays until the visitor turns sound on (browsers block autoplay).
-let ctx = null, master = null, padGain = null, on = false;
+let ctx = null, master = null, padGain = null, on = false, suspendTimer = 0;
 
 function noiseBuffer(c) {
   const b = c.createBuffer(1, c.sampleRate * 1.5, c.sampleRate);
@@ -40,11 +40,14 @@ export function toggleSound() {
     buildPad();
   }
   on = !on;
+  clearTimeout(suspendTimer);
   if (on) ctx.resume();
   const t = ctx.currentTime;
   padGain.gain.cancelScheduledValues(t);
   padGain.gain.setTargetAtTime(on ? 0.55 : 0, t, on ? 1.2 : 0.25);
   if (on) whoosh(0.6);
+  // Stop the audio engine after the fade-out so oscillators don't drain battery.
+  else suspendTimer = setTimeout(() => ctx.suspend(), 1500);
   return on;
 }
 

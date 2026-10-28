@@ -116,6 +116,8 @@ function applyLang(next, animate = false) {
     gsap.from('.hero-title .ch', { yPercent: 100, opacity: 0, duration: 0.8, stagger: 0.012, ease: 'expo.out' });
   }
   ScrollTrigger.refresh();
+  // Georgian glyphs download lazily; re-measure once they arrive.
+  document.fonts?.ready.then(() => ScrollTrigger.refresh());
 }
 
 function buildManifesto() {
@@ -168,26 +170,35 @@ try { gl = createScene($('#gl'), { mobile, reduced }); } catch (e) {
 
 /* ------------------------------------------------------------------ nav, menu, language, sound */
 const nav = $('#nav');
-let lastY = 0;
+let navY = 0;
 function navOnScroll(y) {
   nav.classList.toggle('is-solid', y > 40);
-  nav.classList.toggle('is-hidden', y > lastY + 4 && y > 400 && !$('#menu').classList.contains('is-open'));
-  if (y < lastY - 4) nav.classList.remove('is-hidden');
-  lastY = y;
+  nav.classList.toggle('is-hidden', y > navY + 4 && y > 400 && !$('#menu').classList.contains('is-open'));
+  if (y < navY - 4) nav.classList.remove('is-hidden');
+  navY = y;
 }
 function closeMenu() {
+  if (!$('#menu').classList.contains('is-open')) return;
   $('#menu').classList.remove('is-open');
   $('#menu').setAttribute('aria-hidden', 'true');
   $('#burger').setAttribute('aria-expanded', 'false');
+  $('main').inert = false;
+  document.documentElement.style.overflow = '';
   lenis?.start();
 }
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && $('#menu').classList.contains('is-open')) { closeMenu(); $('#burger').focus(); }
+});
 $('#burger').addEventListener('click', () => {
   const open = !$('#menu').classList.contains('is-open');
   if (!open) return closeMenu();
   $('#menu').classList.add('is-open');
   $('#menu').setAttribute('aria-hidden', 'false');
   $('#burger').setAttribute('aria-expanded', 'true');
+  $('main').inert = true;
+  document.documentElement.style.overflow = 'hidden'; // also stops native touch scroll behind the menu
   lenis?.stop();
+  $('#menu a').focus({ preventScroll: true });
   gsap.from('#menu a', { yPercent: 80, opacity: 0, stagger: 0.06, duration: 0.8, ease: 'expo.out', delay: 0.15 });
   whoosh(0.5);
 });
@@ -256,6 +267,7 @@ $$('video[data-src]').forEach((v) => vio.observe(v));
 
 // Hero: headline letters scatter into depth with blur as you leave.
 function buildScatter() {
+  if (reduced) return;
   if (scatter) { scatter.scrollTrigger?.kill(); scatter.progress(0).kill(); }
   const heroChars = $$('.hero-title .ch');
   scatter = gsap.timeline({
@@ -299,10 +311,12 @@ function setupScroll() {
       },
       defaults: { ease: 'none' },
     });
+    // Phones skip the filter (blur on 3D-tilted video stutters on iOS); opacity does the fade instead.
+    const fx = (b, l) => (mobile ? { opacity: l } : { filter: `blur(${b}px) brightness(${l})` });
     tl.fromTo(frame,
-      { rotateX: 34, rotateY: right ? -16 : 16, rotateZ: right ? 3 : -3, scale: 0.6, yPercent: 22, filter: 'blur(6px) brightness(0.45)' },
-      { rotateX: 0, rotateY: 0, rotateZ: 0, scale: 1, yPercent: 0, filter: 'blur(0px) brightness(1)', duration: 0.42, ease: 'power2.out' }, 0)
-      .to(frame, { scale: 0.84, rotateX: -16, yPercent: -12, filter: 'blur(5px) brightness(0.35)', duration: 0.34, ease: 'power2.in' }, 0.66)
+      { rotateX: 34, rotateY: right ? -16 : 16, rotateZ: right ? 3 : -3, scale: 0.6, yPercent: 22, ...fx(6, 0.45) },
+      { rotateX: 0, rotateY: 0, rotateZ: 0, scale: 1, yPercent: 0, ...fx(0, 1), duration: 0.42, ease: 'power2.out' }, 0)
+      .to(frame, { scale: 0.84, rotateX: -16, yPercent: -12, ...fx(5, 0.35), duration: 0.34, ease: 'power2.in' }, 0.66)
       .fromTo($$('.scene-name .ch', sc), { yPercent: 120, rotate: 8, opacity: 0 },
         { yPercent: 0, rotate: 0, opacity: 1, stagger: 0.008, duration: 0.14, ease: 'power3.out' }, 0.26)
       .fromTo($('.scene-meta', sc), { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.12, ease: 'power3.out' }, 0.36)
@@ -315,7 +329,7 @@ function setupScroll() {
   const track = $('#railTrack');
   const sizeRail = () => {
     const dist = Math.max(0, track.scrollWidth - window.innerWidth);
-    rail.style.height = `${window.innerHeight + dist}px`;
+    rail.style.height = `calc(100svh + ${dist}px)`;
     return dist;
   };
   let railDist = sizeRail();
@@ -323,7 +337,8 @@ function setupScroll() {
   ScrollTrigger.create({
     trigger: rail, start: 'top top', end: 'bottom bottom', scrub: true,
     onUpdate: (s) => {
-      gsap.set(track, { x: -s.progress * railDist });
+      L.railX = -s.progress * railDist;
+      gsap.set(track, { x: L.railX });
       gsap.set('#railProgress', { scaleX: s.progress });
     },
     onEnter: () => whoosh(0.6),
@@ -376,22 +391,38 @@ measure();
 window.addEventListener('resize', measure);
 
 let vel = 0;
-const cards = () => $$('.card');
+const cards = $$('.card');
 const sceneMedia = $$('.scene-frame video');
 const smooth = (a, b, x) => { const k = clamp((x - a) / (b - a)); return k * k * (3 - 2 * k); };
 
+// Layout cache: measured on refresh, so the per-frame loop only reads numbers (no layout thrash).
+const L = { contactTop: 0, railTop: 0, railH: 0, railX: 0, centres: [], vh: window.innerHeight, vw: window.innerWidth };
+function measureLayout() {
+  const y = window.scrollY;
+  L.vh = window.innerHeight; L.vw = window.innerWidth;
+  L.contactTop = $('#contact').getBoundingClientRect().top + y;
+  const r = $('#rail').getBoundingClientRect();
+  L.railTop = r.top + y; L.railH = r.height;
+  L.centres = cards.map((c) => c.offsetLeft + c.offsetWidth / 2);
+}
+ScrollTrigger.addEventListener('refresh', measureLayout);
+measureLayout();
+
+let lastY = -1, lastVel = 0;
 gsap.ticker.add(() => {
   const y = lenis ? lenis.scroll : window.scrollY;
   const rawVel = lenis ? lenis.velocity : 0;
   vel += (rawVel - vel) * 0.15;
-  navOnScroll(y);
+  if (Math.abs(vel) < 0.01) vel = 0;
+  const moved = y !== lastY || vel !== lastVel;
+  lastVel = vel;
+  if (moved) navOnScroll(y);
+  lastY = y;
 
   // 3D state from scroll position.
   if (gl) {
-    const vh = window.innerHeight;
-    const heroP = clamp(y / vh);
-    const c = $('#contact').getBoundingClientRect();
-    const contactP = smooth(0, 1, (vh - c.top) / (vh * 0.9));
+    const heroP = clamp(y / L.vh);
+    const contactP = smooth(0, 1, (L.vh - (L.contactTop - y)) / (L.vh * 0.9));
     gl.state.assemble = (introDone ? 1 : intro.a) * (1 - smooth(0, 0.9, heroP)) + contactP;
     gl.state.flight = heroP * 0.9 * (1 - contactP);
     gl.state.focus = Math.max(1 - smooth(0.55, 1, heroP), contactP * 0.9);
@@ -401,31 +432,36 @@ gsap.ticker.add(() => {
   }
 
   // Marquees run constantly and speed up / skew with scroll velocity (motion blur).
-  const skew = clamp(vel * 0.35, -14, 14);
-  marquees.forEach((m) => {
-    m.x -= (1.1 + Math.abs(vel) * 0.25) * m.dir;
-    if (m.x <= -m.w) m.x += m.w;
-    if (m.x > 0) m.x -= m.w;
-    m.el.style.transform = `translate3d(${m.x}px,0,0) skewX(${-skew * m.dir}deg)`;
-    m.el.style.filter = Math.abs(vel) > 6 ? `blur(${Math.min(Math.abs(vel) * 0.06, 3)}px)` : '';
-  });
+  if (!reduced) {
+    const skew = clamp(vel * 0.35, -14, 14);
+    marquees.forEach((m) => {
+      m.x -= (1.1 + Math.abs(vel) * 0.25) * m.dir;
+      if (m.x <= -m.w) m.x += m.w;
+      if (m.x > 0) m.x -= m.w;
+      m.el.style.transform = `translate3d(${m.x}px,0,0) skewX(${-skew * m.dir}deg)`;
+      if (!mobile) m.el.style.filter = Math.abs(vel) > 6 ? `blur(${Math.min(Math.abs(vel) * 0.06, 3)}px)` : '';
+    });
+  }
+  if (!moved) return;
 
-  // Inner media gets a velocity skew + blur: reads as motion blur during fast scroll.
-  const mb = Math.min(Math.abs(vel) * 0.05, 4);
+  // Inner media gets a velocity skew (+ blur on desktop): reads as motion blur during fast scroll.
+  const mb = mobile ? 0 : Math.min(Math.abs(vel) * 0.05, 4);
+  const sk = clamp(vel * 0.08, -4, 4).toFixed(2);
   sceneMedia.forEach((v) => {
-    v.style.transform = `scale(1.06) skewY(${clamp(vel * 0.08, -4, 4)}deg)`;
+    v.style.transform = `scale(1.06) skewY(${sk}deg)`;
     v.style.filter = mb > 0.4 ? `blur(${mb}px)` : '';
   });
 
-  // Rail cards: rotateY / depth / blur by distance from the centre.
-  const r = $('#rail').getBoundingClientRect();
-  if (r.top < window.innerHeight && r.bottom > 0) {
-    const cxView = window.innerWidth / 2;
-    cards().forEach((card) => {
-      const b = card.getBoundingClientRect();
-      const d = clamp((b.left + b.width / 2 - cxView) / window.innerWidth, -1.2, 1.2);
-      card.style.transform = `perspective(1200px) rotateY(${-d * 28}deg) translateZ(${-Math.abs(d) * 180}px) skewX(${clamp(-vel * 0.12, -6, 6)}deg)`;
-      card.style.filter = `blur(${Math.max(0, Math.abs(d) - 0.35) * 5}px) brightness(${1 - Math.abs(d) * 0.35})`;
+  // Rail cards: rotateY / depth (/ blur on desktop) by distance from the centre.
+  if (y + L.vh > L.railTop && y < L.railTop + L.railH) {
+    const cxView = L.vw / 2;
+    const skx = clamp(-vel * 0.12, -6, 6);
+    cards.forEach((card, i) => {
+      const d = clamp((L.centres[i] + L.railX - cxView) / L.vw, -1.2, 1.2);
+      card.style.transform = `perspective(1200px) rotateY(${-d * 28}deg) translateZ(${-Math.abs(d) * 180}px) skewX(${skx}deg)`;
+      card.style.filter = mobile
+        ? `brightness(${1 - Math.abs(d) * 0.35})`
+        : `blur(${Math.max(0, Math.abs(d) - 0.35) * 5}px) brightness(${1 - Math.abs(d) * 0.35})`;
     });
   }
 });
@@ -475,7 +511,7 @@ async function boot() {
     .to('.hero-title .ch', {
       yPercent: 0, rotateX: 0, opacity: 1, filter: 'blur(0px)', duration: 1.3, stagger: 0.025, ease: 'expo.out',
     }, 0.75)
-    .to('.nav', { opacity: 1, y: 0, duration: 1, ease: 'expo.out' }, 1.0)
+    .to('.nav', { opacity: 1, y: 0, duration: 1, ease: 'expo.out', clearProps: 'transform' }, 1.0)
     .to('.hero-kicker, .hero-foot, .scroll-cue', { opacity: 1, y: 0, duration: 1.2, stagger: 0.1, ease: 'expo.out' }, 1.15);
 }
 boot();

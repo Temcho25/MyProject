@@ -62,9 +62,11 @@ export function createScene(canvas, { mobile, reduced }) {
   // ---- The mark
   const mark = new THREE.Group();
   scene.add(mark);
-  const metal = new THREE.MeshPhysicalMaterial({
-    color: 0x2c2c35, metalness: 1, roughness: 0.24, clearcoat: 1, clearcoatRoughness: 0.12, envMapIntensity: 1.4,
-  });
+  const metal = mobile
+    ? new THREE.MeshStandardMaterial({ color: 0x2c2c35, metalness: 1, roughness: 0.22, envMapIntensity: 1.5 })
+    : new THREE.MeshPhysicalMaterial({
+      color: 0x2c2c35, metalness: 1, roughness: 0.24, clearcoat: 1, clearcoatRoughness: 0.12, envMapIntensity: 1.4,
+    });
   const ember = new THREE.MeshPhysicalMaterial({
     color: 0xff5a1f, emissive: 0xff4a10, emissiveIntensity: 0.55, metalness: 0.1, roughness: 0.35, clearcoat: 1,
   });
@@ -142,6 +144,8 @@ export function createScene(canvas, { mobile, reduced }) {
 
   let w = 0, h = 0;
   function resize() {
+    // Phones fire resize when the address bar shows/hides; ignore those small height changes.
+    if (mobile && w === window.innerWidth && Math.abs(h - window.innerHeight) < 140) return;
     w = window.innerWidth; h = window.innerHeight;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
@@ -151,11 +155,15 @@ export function createScene(canvas, { mobile, reduced }) {
   window.addEventListener('resize', resize);
 
   const clock = new THREE.Clock();
-  let time = 0, running = true, sm = { a: 0, f: 0, side: state.side, focus: 1, speed: 0, fin: 0 };
+  let time = 0, running = true, raf = 0, skip = false, sm = { a: 0, f: 0, side: state.side, focus: 1, speed: 0, fin: 0 };
   const tmpQ = new THREE.Quaternion(), tmpE = new THREE.Euler();
 
+  const vA = new THREE.Vector3(), vS = new THREE.Vector3();
   function frame() {
     if (!running) return;
+    raf = requestAnimationFrame(frame);
+    // Phones render at ~30 fps to save battery and heat.
+    if (mobile) { skip = !skip; if (skip) return; }
     const dt = Math.min(clock.getDelta(), 0.05);
     time += reduced ? dt * 0.2 : dt;
     mouse.x = damp(mouse.x, mouse.tx, 3, dt);
@@ -185,7 +193,7 @@ export function createScene(canvas, { mobile, reduced }) {
     mark.scale.setScalar(markScale);
     mark.position.set(
       lerp(0, mobile ? 0 : 3.9, sm.side),
-      lerp(mobile ? 1.55 : 0.2, mobile ? 0.9 : 0.75, sm.fin) + Math.sin(time * 0.8) * 0.12 + lerp(-6, 0, sm.focus),
+      lerp(mobile ? 1.55 : 0.2, mobile ? 1.5 : 1.6, sm.fin) + Math.sin(time * 0.8) * 0.12 + lerp(-6, 0, sm.focus),
       lerp(-6, 0, sm.focus) - sm.fin * 3.5,
     );
     tmpE.set(
@@ -205,11 +213,9 @@ export function createScene(canvas, { mobile, reduced }) {
       const r = d.r * (1 + apart * 0.35);
       tmpE.set(d.rot.x + time * d.sp, d.rot.y + time * 0.3, 0);
       tmpQ.setFromEuler(tmpE);
-      m4.compose(
-        new THREE.Vector3(Math.cos(a) * r + mark.position.x * 0.6, d.y + Math.sin(time * d.sp + i) * 0.3, Math.sin(a) * r * 0.6 - 3),
-        tmpQ,
-        new THREE.Vector3(d.s, d.s, d.s),
-      );
+      vA.set(Math.cos(a) * r + mark.position.x * 0.6, d.y + Math.sin(time * d.sp + i) * 0.3, Math.sin(a) * r * 0.6 - 3);
+      vS.setScalar(d.s);
+      m4.compose(vA, tmpQ, vS);
       parts.setMatrixAt(i, m4);
     }
     parts.instanceMatrix.needsUpdate = true;
@@ -235,15 +241,18 @@ export function createScene(canvas, { mobile, reduced }) {
     camera.lookAt(lerp(mark.position.x * 0.35, mark.position.x, sm.f), mark.position.y * 0.5, -2);
 
     renderer.render(scene, camera);
-    requestAnimationFrame(frame);
+    if (reduced) { running = false; cancelAnimationFrame(raf); } // one still frame is enough
   }
-  requestAnimationFrame(frame);
+  raf = requestAnimationFrame(frame);
 
-  document.addEventListener('visibilitychange', () => {
-    const was = running;
-    running = !document.hidden;
-    if (running && !was) { clock.getDelta(); requestAnimationFrame(frame); }
-  });
+  function pause() { running = false; cancelAnimationFrame(raf); }
+  function resume() {
+    if (running || reduced) return;
+    running = true; clock.getDelta(); raf = requestAnimationFrame(frame);
+  }
+  document.addEventListener('visibilitychange', () => (document.hidden ? pause() : resume()));
+  canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); pause(); });
+  canvas.addEventListener('webglcontextrestored', resume);
 
   return { state };
 }

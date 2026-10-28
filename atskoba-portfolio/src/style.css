@@ -459,6 +459,10 @@ main, .foot { position: relative; z-index: 2; }
   .brand-word { display: none; }
 }
 
+@media (pointer: coarse) {
+  .grain { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .grain { display: none; }
