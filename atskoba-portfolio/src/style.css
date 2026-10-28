@@ -257,7 +257,7 @@ main { position: relative; z-index: 2; }
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(32px, 6vw, 120px); align-items: start;
 }
 .app-side { position: sticky; top: 120px; }
-.app-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(16px, 2vw, 24px); }
+.app-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: clamp(16px, 2vw, 24px); }
 .step {
   position: sticky; top: calc(120px + var(--i, 0) * 22px); min-height: clamp(220px, 28vh, 300px);
   padding: clamp(28px, 3vw, 44px); border-radius: var(--r); background: var(--bg-2);

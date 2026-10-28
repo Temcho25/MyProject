@@ -136,17 +136,26 @@ export function scrollToEl(el) {
 const nav = $('#nav');
 let navY = 0;
 const progressBar = document.getElementById('progress');
+const menuEl = document.getElementById('menu');
+const contactEl = document.getElementById('contact');
+// Layout values are measured on refresh only — the per-frame path just reads numbers.
+const navL = { max: 1, contactTop: Infinity };
+function measureNav() {
+  navL.max = document.documentElement.scrollHeight - window.innerHeight;
+  navL.contactTop = contactEl ? contactEl.getBoundingClientRect().top + window.scrollY : Infinity;
+}
+ScrollTrigger.addEventListener('refresh', measureNav);
+measureNav();
 export function updateNav(y) {
-  const max = document.documentElement.scrollHeight - window.innerHeight;
-  if (progressBar) progressBar.style.transform = `scaleX(${max > 0 ? Math.min(1, y / max) : 0})`;
+  if (y === navY) return; // nothing moved this frame
+  if (progressBar) progressBar.style.transform = `scaleX(${navL.max > 0 ? Math.min(1, y / navL.max) : 0})`;
   nav.classList.toggle('is-solid', y > 30);
-  const menuOpen = $('#menu').classList.contains('is-open');
+  const menuOpen = menuEl.classList.contains('is-open');
   if (y > navY + 6 && y > 300 && !menuOpen) nav.classList.add('is-hidden');
   else if (y < navY - 6 || y < 300) nav.classList.remove('is-hidden');
   navY = y;
   // Light text when the nav sits over the dark contact section.
-  const c = $('#contact');
-  if (c) nav.classList.toggle('on-dark', c.getBoundingClientRect().top < 40);
+  nav.classList.toggle('on-dark', navL.contactTop - y < 40);
 }
 function openMenu() {
   $('#menu').classList.add('is-open');

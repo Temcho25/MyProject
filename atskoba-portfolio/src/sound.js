@@ -32,6 +32,14 @@ function buildPad() {
   lp.connect(padGain).connect(master);
 }
 
+// Pause the audio engine in background tabs; resume (also after an iOS interruption) when back.
+document.addEventListener('visibilitychange', () => {
+  if (!ctx) return;
+  if (document.hidden) ctx.suspend();
+  else if (on) ctx.resume();
+});
+const ready = () => on && ctx && (ctx.state === 'running' || (ctx.resume(), false));
+
 export function toggleSound() {
   if (!ctx) {
     ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -54,7 +62,7 @@ export function toggleSound() {
 // A soft bell-like note: one per services chapter (A minor pentatonic, rising).
 const NOTES = [440, 523.25, 659.25, 783.99, 880];
 export function chime(i = 0) {
-  if (!on) return;
+  if (!ready()) return;
   const t = ctx.currentTime;
   const f = NOTES[i % NOTES.length];
   [[1, 0.09], [2.01, 0.03], [3.02, 0.012]].forEach(([mult, amp]) => {
@@ -68,7 +76,7 @@ export function chime(i = 0) {
 }
 
 export function tick(pitch = 1) {
-  if (!on) return;
+  if (!ready()) return;
   const t = ctx.currentTime;
   const o = ctx.createOscillator(); o.type = 'sine';
   o.frequency.setValueAtTime(1800 * pitch, t);
@@ -81,7 +89,7 @@ export function tick(pitch = 1) {
 }
 
 export function whoosh(strength = 1) {
-  if (!on) return;
+  if (!ready()) return;
   const t = ctx.currentTime;
   const s = ctx.createBufferSource(); s.buffer = noise;
   const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.4;

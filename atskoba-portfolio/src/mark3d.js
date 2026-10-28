@@ -139,7 +139,8 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
         phase: Math.random() * Math.PI * 2,
         par: 0.4 + (1 + depth / 15) * 0.6, // nearer parts move more with scroll
       };
-      m.scale.setScalar(0.5 + Math.random() * 0.7);
+      m.userData.size = 0.5 + Math.random() * 0.7;
+      m.scale.setScalar(m.userData.size);
       parts.push(m);
       scene.add(m);
     }
@@ -175,6 +176,11 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
   resize();
   window.addEventListener('resize', resize);
 
+  const O = { x: 0, y: 0, z: 0 }, O2 = { x: 0, y: 0, z: 0 };
+  // Dot orbit around the ring (motion chapter), written into a reused object.
+  function orbit(a, out) {
+    out.x = ringC.x + Math.cos(a) * 52; out.y = ringC.y + Math.sin(a) * 40; out.z = Math.sin(a) * 18;
+  }
   let time = 0, last = performance.now(), raf = 0, running = true;
   const sm = { out: 0, fin: 0, on: 0, k: 0 };
 
@@ -214,21 +220,22 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
     stem.rotation.set(0, w0 * 0.4, w1 * 0.18);
     // Chapter 2 (motion): dot orbits the ring.
     const orbitA = time * 1.6;
-    const orbit = (a) => ({ x: ringC.x + Math.cos(a) * 52, y: ringC.y + Math.sin(a) * 40, z: Math.sin(a) * 18 });
-    const o = orbit(orbitA);
+    orbit(orbitA, O);
+    const o = O;
     dot.position.set(
       MathUtils.lerp(dotHome.x + w2 * 30, o.x, w1),
       MathUtils.lerp(dotHome.y + (1 - d) * 150 + w2 * 8, o.y, w1),
       MathUtils.lerp(w0 * 8, o.z, w1),
     );
     dot.visible = d > 0.001;
-    trail.forEach((m, i) => {
-      const p = orbit(orbitA - (i + 1) * 0.16);
-      m.position.set(p.x, p.y, p.z);
+    for (let i = 0; i < trail.length; i++) {
+      const m = trail[i];
+      orbit(orbitA - (i + 1) * 0.16, O2);
+      m.position.set(O2.x, O2.y, O2.z);
       m.scale.setScalar(1 - (i + 1) * 0.08);
       m.material.opacity = w1 * (0.42 - i * 0.045);
       m.visible = w1 > 0.01;
-    });
+    }
     edgeMat.opacity = Math.min(1, w0 * 1.1 + w2 * 0.8);
     wireMat.opacity = w0 * 0.28;
     ringGhost.visible = stemGhost.visible = w0 > 0.01;
@@ -274,12 +281,14 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
     shadow.material.opacity = (1 - fin) * Math.max(heroVis * Math.min(r, s), on * (1 - w2) * 0.7);
 
     // Floating parts: visible in the hero and the services scene, parallax by depth.
-    // Parts only while the hero or the fully pinned services scene owns the screen.
-    const partsOn = (heroVis > 0.25 || on > 0.9) && fin < 0.01;
-    parts.forEach((m) => {
+    // Parts grow in/out smoothly while the hero or the pinned services scene owns the screen.
+    const partsF = Math.max(sstep(0.2, 0.7, heroVis), sstep(0.75, 1, on)) * (1 - sstep(0, 0.05, fin));
+    for (let i = 0; i < parts.length; i++) {
+      const m = parts[i];
       const u = m.userData;
-      m.visible = partsOn;
-      if (!m.visible) return;
+      m.visible = partsF > 0.01;
+      if (!m.visible) continue;
+      m.scale.setScalar(u.size * partsF);
       // Project the viewport fraction to the part's own depth so far parts stay on the same side.
       const zScale = (camera.position.z - u.base.z) / camera.position.z;
       m.position.set(
@@ -289,8 +298,7 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
       );
       m.rotation.x += u.spin.x * dt * idle;
       m.rotation.y += u.spin.y * dt * idle;
-      m.scale.setScalar(m.scale.x); // keep authored size
-    });
+    }
 
     // Lacquer → chrome on the dark section.
     lacquer.color.lerpColors(black, chrome, fin);

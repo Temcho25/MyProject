@@ -27,9 +27,9 @@ $$('#filters button').forEach((b) => b.addEventListener('click', () => {
   const f = b.dataset.f;
   const cards = $$('.card');
   const token = ++filterToken;
-  gsap.killTweensOf(cards);
+  gsap.killTweensOf(cards, 'opacity,visibility,yPercent');
   gsap.to(cards, {
-    opacity: 0, y: 20, duration: 0.35, ease: 'power2.in', stagger: 0.02,
+    autoAlpha: 0, yPercent: 4, duration: 0.35, ease: 'power2.in', stagger: 0.02,
     onComplete: () => {
       if (token !== filterToken) return; // a newer click took over
       let n = 0;
@@ -41,7 +41,7 @@ $$('#filters button').forEach((b) => b.addEventListener('click', () => {
         if (show) n += 1;
       });
       ScrollTrigger.refresh();
-      gsap.fromTo($$('.card:not(.is-out)'), { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 1.1, stagger: 0.06, ease: 'expo.out' });
+      gsap.fromTo($$('.card:not(.is-out)'), { autoAlpha: 0, yPercent: 6 }, { autoAlpha: 1, yPercent: 0, duration: 1.1, stagger: 0.06, ease: 'expo.out' });
     },
   });
 }));
