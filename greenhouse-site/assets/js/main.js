@@ -19,6 +19,7 @@ const mobile = matchMedia('(max-width: 820px)').matches;
 // ---------- language ----------
 const lang = getLang();
 applyLang(lang);
+import('./explorer.js').then(x => x.initExplorer(document.querySelector('#tour'))).catch(e => console.warn('3D tour unavailable', e));
 $$('.lang a').forEach(a => a.addEventListener('click', e => {
   e.preventDefault();
   try { localStorage.setItem('gh-lang', a.dataset.lang); } catch (_) {}

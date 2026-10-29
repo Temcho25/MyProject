@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wdth,wght@62.5..100,100..900&family=Manrope:wght@300..800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/explorer.css">
 <script type="importmap">
 { "imports": {
   "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
@@ -148,6 +149,48 @@
         <figure class="card"><div class="card__in"><img src="assets/img/isani-3.webp" alt="Green House Isani" loading="lazy"></div></figure>
       </div>
       <div class="rail__word" aria-hidden="true">Green House Isani</div>
+    </div>
+  </section>
+
+  <!-- 3D TOUR: floors and illustrative layouts -->
+<!-- 3D TOUR: building → floor → illustrative apartment (assets/js/explorer.js, assets/css/explorer.css) -->
+  <section class="explorer" id="tour" aria-labelledby="ex-title">
+    <div class="ex-head">
+      <div class="ex-head__l">
+        <p class="ex-eyebrow"><span class="ex-dot" aria-hidden="true"></span><span data-ex="eyebrow">Green House Isani</span></p>
+        <h2 class="ex-title" id="ex-title" data-ex="title">3D ტური</h2>
+      </div>
+      <p class="ex-lead" data-ex="lead">დაატრიალე მოდელი, აირჩიე სართული და გაიარე ბინაში. გეგმარებები საილუსტრაციოა.</p>
+    </div>
+
+    <div class="ex-stage">
+      <div class="ex-view" aria-hidden="true"></div>
+
+      <div class="ex-loading" role="status">
+        <span class="ex-spin" aria-hidden="true"></span>
+        <span data-ex="loading">3D მოდელი იტვირთება…</span>
+      </div>
+
+      <p class="ex-badge"><span class="ex-dot" aria-hidden="true"></span><span data-ex="illustrative">საილუსტრაციო გეგმარება</span></p>
+      <div class="ex-tip" aria-hidden="true"></div>
+      <div class="ex-caption" aria-live="polite"></div>
+      <p class="ex-hint" aria-hidden="true"></p>
+
+      <div class="ex-modes" role="group" aria-label="3D / გეგმა / ტური">
+        <button type="button" class="ex-mode" data-mode="3d" aria-pressed="true">3D</button>
+        <button type="button" class="ex-mode" data-mode="plan" aria-pressed="false" data-ex="plan">გეგმა</button>
+        <button type="button" class="ex-mode ex-mode--tour" data-mode="tour" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.8v10.4L13 8z"/></svg><span data-ex="tour">ტური</span></button>
+      </div>
+
+      <aside class="ex-panel" aria-label="Green House Isani">
+        <span class="ex-grab" aria-hidden="true"></span>
+        <nav class="ex-crumbs" aria-label="breadcrumb"></nav>
+        <div class="ex-body"></div>
+        <div class="ex-note">
+          <strong><span class="ex-dot" aria-hidden="true"></span><span data-ex="illustrative">საილუსტრაციო გეგმარება</span></strong>
+          <span data-ex="disclaimer">ზუსტი გეგმარებები და ფართები — დეველოპერისგან</span>
+        </div>
+      </aside>
     </div>
   </section>
 
