@@ -229,10 +229,31 @@ setStat(0);
 // 3D canvas visibility: hidden while the content sections cover it
 if (tower) {
   ScrollTrigger.create({
-    trigger: '.manifest', start: 'top 35%', endTrigger: '.contact', end: 'top 85%',
+    trigger: '.projects', start: 'top 35%', endTrigger: '.contact', end: 'top 85%',
     onToggle: s => { TT.vis = s.isActive ? 0 : 1; tower.setActive(!s.isActive); },
   });
 }
+
+// ---------- project cards: pointer tilt + entrance ----------
+$$('.pcard').forEach(card => {
+  const rx = gsap.quickTo(card, 'rotationX', { duration: 0.8, ease: 'power3.out' });
+  const ry = gsap.quickTo(card, 'rotationY', { duration: 0.8, ease: 'power3.out' });
+  card.addEventListener('pointermove', e => {
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    rx((0.5 - y) * 10); ry((x - 0.5) * 12);
+    card.style.setProperty('--mx', `${x * 100}%`); card.style.setProperty('--my', `${y * 100}%`);
+  });
+  card.addEventListener('pointerleave', () => { rx(0); ry(0); });
+});
+gsap.from('.pcard', {
+  y: 120, rotationX: 18, opacity: 0, stagger: 0.12, duration: 1.4, ease: 'expo.out', transformOrigin: '50% 100%',
+  scrollTrigger: { trigger: '.projects__grid', start: 'top 85%', toggleActions: 'play none none reverse' },
+});
+gsap.fromTo('.pcard__img img', { yPercent: -6 }, {
+  yPercent: 6, ease: 'none',
+  scrollTrigger: { trigger: '.projects__grid', start: 'top bottom', end: 'bottom top', scrub: true },
+});
 
 // ---------- word-by-word paragraphs ----------
 $$('[data-words]').forEach(p => {

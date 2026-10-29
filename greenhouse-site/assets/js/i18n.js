@@ -63,6 +63,10 @@ export const EN = {
   about_eyebrow: 'About the developer',
   about_text: 'Green House Development has been operating since 2021, focusing on the construction of in-demand residential properties across Georgia.',
   call: 'Call',
+  proj_title: 'Projects',
+  nav_tour: '3D tour',
+  cta_tour: '3D tour and layouts',
+  cta_more: 'About the project',
   concept: 'Concept · not the official Green House Development website',
 };
 
