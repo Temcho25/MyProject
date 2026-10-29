@@ -32,8 +32,9 @@ const fillTicker = (l) => {
 
 onLang((l) => {
   $$('[data-desc]').forEach((el) => { el.textContent = PROJECTS.find((p) => p.id === el.dataset.desc)[l]; });
-  // Honest label: these are concept sites, not launched client work.
-  $$('[data-tags]').forEach((el) => { el.textContent = `${T[l]['work.concept']} · ${PROJECTS.find((p) => p.id === el.dataset.tags).tags[l]}`; });
+  // Honest label: launched client work is marked live, the rest are concepts.
+  $$('[data-tags]').forEach((el) => { const p = PROJECTS.find((x) => x.id === el.dataset.tags);
+    el.textContent = `${T[l][p.live ? 'work.live' : 'work.concept']} · ${p.tags[l]}`; });
   fillTicker(l);
 });
 initContact();

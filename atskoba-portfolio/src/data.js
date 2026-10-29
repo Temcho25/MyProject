@@ -12,6 +12,13 @@ export const LANGS = ['en', 'ka', 'ru'];
 // `cats`: 3d · estate · food · sport
 export const PROJECTS = [
   {
+    id: 'legal', name: 'Legal Georgia', url: 'https://legal-georgia.ge/en/', cats: ['services'], main: 0, detail: 1, featured: true, live: true,
+    tags: { en: 'Legal services · Multilingual', ka: 'იურიდიული მომსახურება · მრავალენოვანი', ru: 'Юридические услуги · мультиязычный' },
+    en: 'Legal services in Georgia for foreigners, relocants and expats: company registration, residence and work permits — clear prices, three cities.',
+    ka: 'იურიდიული მომსახურება საქართველოში უცხოელებისთვის: კომპანიის რეგისტრაცია, ბინადრობისა და სამუშაო ნებართვები — გასაგები ფასებით, სამ ქალაქში.',
+    ru: 'Юридические услуги в Грузии для иностранцев и релокантов: регистрация компаний, ВНЖ и разрешения на работу — понятные цены, три города.',
+  },
+  {
     id: 'rolex', name: 'Rolex Submariner', url: 'https://rolex-submariner.vercel.app', cats: ['3d'], main: 2, detail: 0, featured: true,
     tags: { en: '3D product · WebGL', ka: '3D პროდუქტი · WebGL', ru: '3D-продукт · WebGL' },
     en: 'The watch comes apart as you scroll — a real-time WebGL model with metal, glass and light.',
@@ -40,7 +47,7 @@ export const PROJECTS = [
     ru: 'Скролл ведёт камеру по 3D-анфиладе залов с колоннами.',
   },
   {
-    id: 'trio', name: 'Trio Group', url: 'https://trio-group.vercel.app', cats: ['3d', 'estate'], main: 0, detail: 1, featured: true,
+    id: 'trio', name: 'Trio Group', url: 'https://trio-group.vercel.app', cats: ['3d', 'estate'], main: 0, detail: 1,
     tags: { en: 'Developer · 3D transitions', ka: 'დეველოპერი · 3D გადასვლები', ru: 'Девелопер · 3D-переходы' },
     en: 'Three residential projects of one developer, with 3D transitions.',
     ka: 'ერთი დეველოპერის სამი საცხოვრებელი პროექტი 3D-გადასვლებით.',
@@ -148,6 +155,7 @@ export const PROJECTS = [
 
 export const T = {
   en: {
+    'work.live': 'Live client site',
     'work.concept': 'Concept', 'clients.kicker': 'Clients', 'ticker': ['3D & WebGL', 'Motion design', 'Art direction', 'Development', 'Multilingual sites'],
     'mirror.cap': '3D · Motion · Web — made in Tbilisi',
     'lab.kicker': 'Lab', 'lab.title': 'Beyond finished projects',
@@ -184,6 +192,7 @@ export const T = {
     'wp.back': 'Home',
   },
   ka: {
+    'work.live': 'მოქმედი საიტი',
     'work.concept': 'კონცეფცია', 'clients.kicker': 'კლიენტები', 'ticker': ['3D და WebGL', 'მოუშენ-დიზაინი', 'არტ-დირექშენი', 'დეველოპმენტი', 'მრავალენოვანი საიტები'],
     'mirror.cap': '3D · მოუშენი · ვები — თბილისიდან',
     'lab.kicker': 'ლაბორატორია', 'lab.title': 'მზა პროექტების მიღმა',
@@ -220,6 +229,7 @@ export const T = {
     'wp.back': 'მთავარი',
   },
   ru: {
+    'work.live': 'Живой сайт клиента',
     'work.concept': 'Концепт', 'clients.kicker': 'Клиенты', 'ticker': ['3D и WebGL', 'Моушн-дизайн', 'Арт-дирекшн', 'Разработка', 'Мультиязычные сайты'],
     'mirror.cap': '3D · Моушн · Веб — из Тбилиси',
     'lab.kicker': 'Лаборатория', 'lab.title': 'Не только готовые сайты',
