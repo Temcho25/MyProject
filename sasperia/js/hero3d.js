@@ -12,9 +12,10 @@ const INK = 0x0b100e;
 
 export async function initHero(canvas, { emblemUrl, quality = 'high' } = {}) {
   const lowEnd = quality === 'low';
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !lowEnd, powerPreference: 'high-performance' });
-  const maxDpr = lowEnd ? 1.25 : 1.75;
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
+  // Crisp on phones (retina), then step the resolution down only if the device can't keep up.
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+  let dpr = Math.min(window.devicePixelRatio || 1, 2);
+  renderer.setPixelRatio(dpr);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
   renderer.setClearColor(INK, 1);
@@ -35,7 +36,7 @@ export async function initHero(canvas, { emblemUrl, quality = 'high' } = {}) {
   const shapes = [];
   svg.paths.forEach((p) => SVGLoader.createShapes(p).forEach((s) => shapes.push(s)));
   const relief = new THREE.ExtrudeGeometry(shapes, {
-    depth: 16, bevelEnabled: true, bevelThickness: 3, bevelSize: 1.6, bevelSegments: lowEnd ? 1 : 3, curveSegments: lowEnd ? 6 : 10,
+    depth: 16, bevelEnabled: true, bevelThickness: 3, bevelSize: 1.6, bevelSegments: 3, curveSegments: 16,
   });
   relief.computeBoundingBox();
   const bb = relief.boundingBox;
@@ -79,13 +80,14 @@ export async function initHero(canvas, { emblemUrl, quality = 'high' } = {}) {
         varying vec3 vWorld;
         void main(){ vec4 w = modelMatrix * vec4(position,1.); vWorld = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }
       `,
+      defines: { OCT: lowEnd ? 3 : 4 },
       fragmentShader: /* glsl */`
         uniform float uTime; uniform vec3 uGold; uniform vec3 uDeep; uniform vec3 uTeal; uniform float uStreak; uniform vec3 uFogColor;
         varying vec3 vWorld;
         float hash(vec2 p){ return fract(sin(dot(p, vec2(41.3, 289.1))) * 43758.5453); }
         float noise(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.-2.*f);
           return mix(mix(hash(i),hash(i+vec2(1,0)),f.x), mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x), f.y); }
-        float fbm(vec2 p){ float v=0., a=.5; for(int i=0;i<4;i++){ v+=a*noise(p); p*=2.03; a*=.5; } return v; }
+        float fbm(vec2 p){ float v=0., a=.5; for(int i=0;i<OCT;i++){ v+=a*noise(p); p*=2.03; a*=.5; } return v; }
         void main(){
           vec2 p = vWorld.xz;
           float t = uTime;
@@ -234,11 +236,19 @@ export async function initHero(canvas, { emblemUrl, quality = 'high' } = {}) {
   }
 
   let raf = 0;
+  let slow = 0, samples = 0;
   function loop() {
     raf = requestAnimationFrame(loop);
     if (!state.running || state.external) return;
-    state.time += Math.min(clock.getDelta(), 0.05);
+    const dt = clock.getDelta();
+    state.time += Math.min(dt, 0.05);
     frame(state.time);
+    // Adaptive resolution: if most recent frames take longer than ~30 fps, render fewer pixels.
+    if (dt < 0.5) { samples++; if (dt > 0.034) slow++; }
+    if (samples >= 45) {
+      if (slow > 22 && dpr > 1) { dpr = Math.max(1, Math.round((dpr - 0.35) * 100) / 100); renderer.setPixelRatio(dpr); dustUniforms.uPx.value = dpr; resize(); }
+      samples = 0; slow = 0;
+    }
   }
   loop();
 

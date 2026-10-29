@@ -191,7 +191,7 @@ html[lang="ka"] .hero__meta { text-transform: none; letter-spacing: .02em; }
 /* ---------- story / confluence ---------- */
 .story { position: relative; padding-bottom: 20svh; background: linear-gradient(to bottom, transparent, rgba(11,16,14,.55) 18%, rgba(11,16,14,.92) 55%, var(--ink)); }
 .story__pin { position: relative; }
-.rivers { position: sticky; top: 0; width: 100%; height: 100svh; display: block; }
+.rivers { opacity: .75; position: sticky; top: 0; width: 100%; height: 100svh; display: block; }
 .river { fill: none; stroke-linecap: round; }
 .river--a { stroke: url(#gRiverA); stroke-width: 3; }
 .river--b { stroke: url(#gRiverB); stroke-width: 3; }
@@ -202,7 +202,7 @@ html[lang="ka"] .hero__meta { text-transform: none; letter-spacing: .02em; }
 .story__paras { display: grid; gap: 34svh; padding-bottom: 10svh; }
 .story__paras p {
   font-family: var(--f-display); font-size: clamp(1.45rem, 1.05rem + 2vw, 2.7rem); line-height: 1.22; margin: 0; max-width: 24ch;
-  padding: 1rem 0; text-wrap: pretty; text-shadow: 0 0 6px var(--ink), 0 0 22px var(--ink), 0 0 40px var(--ink);
+  padding: 1rem 0; text-wrap: pretty;
 }
 html[lang="ka"] .story__paras p { font-size: clamp(1.12rem, .95rem + 1.2vw, 1.85rem); line-height: 1.45; max-width: 34ch; }
 html[lang="ru"] .story__paras p { max-width: 26ch; }
@@ -478,3 +478,12 @@ mark { background: rgba(213,183,132,.35); color: inherit; border-radius: 2px; }
   .icon-btn { width: 40px; height: 40px; }
 }
 @media (max-width: 370px) { .nav__word { display: none; } }
+
+/* ---------- touch devices: drop paint-heavy effects ---------- */
+@media (pointer: coarse) {
+  .hero__letters { animation: none; background-position: 30% 0; }
+  .nav.is-scrolled { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(11,16,14,.94); }
+  .drawer { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(11,16,14,.98); }
+  .route-card, .dish-card__price { -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .route-card { background: rgba(17,25,21,.9); }
+}

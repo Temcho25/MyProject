@@ -629,8 +629,10 @@ function scenes() {
 
   /* Grape marquee follows scroll direction */
   if (!reduce) {
-    const row = $('#grapes'); let x = 0, dir = -1;
+    const row = $('#grapes'); let x = 0, dir = -1, seen = CAPTURE;
+    new IntersectionObserver(([en]) => { seen = CAPTURE || en.isIntersecting; }).observe(row);
     gsap.ticker.add(window.__marqueeStep = () => {
+      if (!seen) return;
       if (Math.abs(vel) > 30) dir = vel > 0 ? -1 : 1;
       x += dir * (0.6 + Math.min(6, Math.abs(vel) / 400));
       const w = row.scrollWidth / 2 || 1;
