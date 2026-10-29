@@ -211,6 +211,7 @@ gsap.ticker.add(() => {
     ticker.style.transform = `translate3d(${tx}px,0,0)`;
   }
   if (mark) {
+    mark.state.scrollY = y;
     mark.state.out = Math.min(1, Math.max(0, y / (vh * 0.9)));
     const p = (y + vh - contactTop) / (vh * 0.8);
     mark.state.fin = Math.min(1, Math.max(0, p));

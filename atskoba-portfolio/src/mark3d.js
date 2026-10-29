@@ -207,8 +207,10 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
   // ---- Mirror floor (skipped on low-end devices: it renders the scene a second time).
   let mirror = null;
   if (!lowEnd) {
-    const res = mobile ? 512 : 1024;
-    mirror = new Reflector(new PlaneGeometry(60, 60), { textureWidth: res, textureHeight: res, clipBias: 0.003, shader: MirrorShader });
+    const res = mobile ? 384 : 1024;
+    mirror = new Reflector(new PlaneGeometry(60, 60), {
+      textureWidth: res, textureHeight: res, clipBias: 0.003, shader: MirrorShader, multisample: mobile ? 0 : 2,
+    });
     mirror.material.transparent = true;
     mirror.material.depthWrite = false;
     mirror.rotation.x = -Math.PI / 2;
@@ -240,15 +242,23 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
         #endif`)
       .replace('#include <begin_vertex>', 'vec3 transformed = d0;');
   };
-  const blob = new Mesh(new IcosahedronGeometry(1, mobile || lowEnd ? 40 : 72), blobMat);
+  const blob = new Mesh(new IcosahedronGeometry(1, mobile || lowEnd ? 24 : 64), blobMat);
   blob.visible = false;
   scene.add(blob);
   const lightA = new PointLight(0xff4d5e, 0, 0, 2);
   const lightB = new PointLight(0xfff1dc, 0, 0, 2);
   const bulbGeo = new SphereGeometry(0.06, 24, 16);
-  lightA.add(new Mesh(bulbGeo, new MeshBasicMaterial({ color: 0xff6b78 })));
-  lightB.add(new Mesh(bulbGeo, new MeshBasicMaterial({ color: 0xffffff })));
+  const bulbA = new Mesh(bulbGeo, new MeshBasicMaterial({ color: 0xff6b78 }));
+  const bulbB = new Mesh(bulbGeo, new MeshBasicMaterial({ color: 0xffffff }));
+  lightA.add(bulbA);
+  lightB.add(bulbB);
   scene.add(lightA, lightB);
+  // Compile every program once up front (blob, lit materials with both lights, mirror), so the
+  // first visit to the lab doesn't freeze on shader compilation mid-scroll. Lights stay in the
+  // scene at intensity 0 — toggling their visibility would trigger recompiles.
+  blob.visible = true;
+  renderer.compile(scene, camera);
+  blob.visible = false;
 
   // ---- Floating parts at several depths (mid and far planes).
   const parts = [];
@@ -282,6 +292,7 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
     svc: 0,                   // chapter position inside services, 0 → 4
     fin: 0,                   // contact section in view, 0 → 1
     labOn: 0,                 // lab scene on screen, 0 → 1
+    scrollY: 0,               // written by the page ticker (no layout read here)
     lab: 0,                   // chapter position inside the lab, 0 → 3
   };
   const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
@@ -313,7 +324,8 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
   }
   let time = 0, last = performance.now(), raf = 0, running = true;
   const sm = { out: 0, fin: 0, on: 0, k: 0, labOn: 0, lab: 0, vel: 0 };
-  let lastScroll = window.scrollY;
+  let lastScroll = 0;
+  const BB = { x: 0, y: 0, r: 1, o: 0 }, MB = { x: 0, y: 0, r: 1, o: 0 }; // reused per frame
 
   function frame(now) {
     if (!running) return;
@@ -329,7 +341,7 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
     sm.k = damp(sm.k, state.svc, 6, dt);
     sm.labOn = damp(sm.labOn, state.labOn, 7, dt);
     sm.lab = damp(sm.lab, state.lab, 5, dt);
-    const sy = window.scrollY;
+    const sy = state.scrollY;
     sm.vel = damp(sm.vel, Math.min(3, Math.abs(sy - lastScroll) / Math.max(dt, 0.001) / 1500), 5, dt);
     lastScroll = sy;
     const { out, fin, on, k } = sm;
@@ -441,7 +453,7 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
     blob.visible = labOn > 0.005;
     const lk = sm.lab;
     const L0 = 1 - sstep(0.65, 1.15, lk), L2 = sstep(1.65, 2.15, lk), L1 = Math.max(0, 1 - L0 - L2);
-    let blobBase = null;
+    let blobOn = false;
     if (blob.visible) {
       const rad = mobile ? Math.min(worldW * 0.26, worldH * 0.15) : Math.min(worldW * 0.15, worldH * 0.27);
       const dir = state.lab < 1.5 ? 1 : -1; // enter from below, leave upward
@@ -450,31 +462,36 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
       blob.position.set(bx, by + Math.sin(time * 0.8) * 0.04 * idle, 0);
       blob.scale.setScalar(rad);
       blob.rotation.set(time * 0.15 * idle + mouse.y * 0.4, time * 0.22 * idle + mouse.x * 0.6, 0);
-      blobU.uTime.value += dt * (0.6 + L0 * 0.9 + sm.vel * 1.5) * (reduced ? 0.2 : 1);
-      blobU.uAmp.value = 0.24 * L0 + 0.015 * L1 + 0.09 * L2 + sm.vel * 0.05 * (1 - L1);
+      const mo = reduced ? 0 : 1; // reduced motion: a still sculpture, no flow
+      blobU.uTime.value += dt * (0.6 + L0 * 0.9 + sm.vel * 1.5) * mo;
+      blobU.uAmp.value = 0.24 * L0 + 0.015 * L1 + 0.09 * L2 + sm.vel * 0.05 * (1 - L1) * mo;
       blobU.uFreq.value = 1.25 * L0 + 0.8 * L1 + 2.1 * L2;
       blobMat.roughness = 0.05 + L2 * 0.08;
       const a = time * 1.1;
       lightA.position.set(bx + Math.cos(a) * rad * 1.9, by + Math.sin(a * 0.7) * rad * 0.6, Math.sin(a) * rad * 1.9);
       lightB.position.set(bx + Math.cos(a + Math.PI) * rad * 1.7, by + rad * 0.5, Math.sin(a + Math.PI) * rad * 1.7);
       lightA.intensity = lightB.intensity = L2 * labOn * 18 * rad * rad;
-      lightA.visible = lightB.visible = L2 * labOn > 0.01;
-      blobBase = { x: bx, y: by - rad * 1.12, r: rad * 2.2, o: 0.28 + L1 * 0.32 };
+      bulbA.visible = bulbB.visible = L2 * labOn > 0.05; // unlit meshes: toggling is free
+      blobOn = true;
+      BB.x = bx; BB.y = by - rad * 1.12; BB.r = rad * 2.2; BB.o = 0.28 + L1 * 0.32;
     } else {
-      lightA.visible = lightB.visible = false;
+      lightA.intensity = lightB.intensity = 0;
+      bulbA.visible = bulbB.visible = false;
     }
 
     // ---- Mirror floor under whichever object owns the screen.
     if (mirror) {
       const markOn = (1 - fin) * Math.max(heroVis * Math.min(r, s), on * (1 - w2));
-      const useBlob = blobBase && labOn > markOn;
-      const base = useBlob ? blobBase : { x: mark.position.x, y: mark.position.y - sc * 0.42, r: sc * 1.4, o: 0.34 };
-      const strength = useBlob ? labOn : markOn;
+      MB.x = mark.position.x; MB.y = mark.position.y - sc * 0.42; MB.r = sc * 1.4; MB.o = 0.34;
+      const lo = blobOn ? labOn : 0;
+      const wB = lo / (lo + markOn + 1e-5); // blend smoothly between the two owners: no pop
+      const bx2 = MathUtils.lerp(MB.x, BB.x, wB), by2 = MathUtils.lerp(MB.y, BB.y, wB);
+      const strength = Math.max(lo, markOn);
       mirror.visible = strength > 0.01;
-      mirror.position.set(base.x, base.y, 0);
-      mirror.material.uniforms.uCenter.value.set(base.x, 0);
-      mirror.material.uniforms.uRadius.value = base.r;
-      mirror.material.uniforms.uOpacity.value = base.o * strength;
+      mirror.position.set(bx2, by2, 0);
+      mirror.material.uniforms.uCenter.value.set(bx2, 0);
+      mirror.material.uniforms.uRadius.value = MathUtils.lerp(MB.r, BB.r, wB);
+      mirror.material.uniforms.uOpacity.value = MathUtils.lerp(MB.o, BB.o, wB) * strength;
       shadow.material.opacity *= 0.55; // the reflection now carries most of the grounding
     }
 

@@ -211,6 +211,8 @@ main { position: relative; z-index: 2; }
 .mw-top, .mw-flip { display: flex; overflow: hidden; padding: 0 .04em; }
 .ml {
   display: inline-block; will-change: transform;
+  /* the box must cover the whole glyph or background-clip:text cuts its right edge */
+  letter-spacing: 0; padding-inline: .04em; margin-inline: -.075em;
   /* chrome sheen: an ink gradient with a bright band that sweeps across on scroll */
   background: linear-gradient(100deg, var(--ink) 0%, var(--ink) 38%, #8d8a83 46%, #f6f4ef 50%, #8d8a83 54%, var(--ink) 62%, var(--ink) 100%);
   background-size: 260% 100%; background-position: var(--sheen) 0;
