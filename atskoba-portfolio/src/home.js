@@ -2,8 +2,7 @@ import {
   gsap, ScrollTrigger, $, $$, mobile, reduced, lowEnd, lenis, onLang, imgSet, M,
   revealLines, intro, initCursor, initContact, initTilt, updateNav, scrollToEl,
 } from './core.js';
-import { chime } from './sound.js';
-import { PROJECTS } from './data.js';
+import { PROJECTS, T } from './data.js';
 import { createMark } from './mark3d.js';
 
 const featured = PROJECTS.filter((p) => p.featured);
@@ -23,31 +22,27 @@ $('#featured').innerHTML = featured.map((p) => `
       <a class="pill" href="${p.url}" target="_blank" rel="noopener"><span data-i18n="work.visit"></span><i class="arrow">↗</i></a>
     </div>
   </article>`).join('');
-$('#highlights').innerHTML = PROJECTS.filter((p) => p.highlight).map((p) => `
-  <a class="card" href="${p.url}" target="_blank" rel="noopener" data-cursor>
-    <div class="card-media">${imgSet(p.id, p.main, '(max-width: 760px) 100vw, 46vw', false, p.name)}</div>
-    <div class="card-meta"><h3 class="card-name">${p.name}</h3><span class="card-tags" data-tags="${p.id}"></span></div>
-    <p class="card-desc" data-desc="${p.id}"></p>
-  </a>`).join('');
-$('#allCount').textContent = PROJECTS.length;
 
-// Ticker shows the home-page selection plus the rest of the range, minus projects the owner
-// asked to keep off the home page.
-const OFF_HOME = ['angels', 'mgrand', 'roof', 'townsquare'];
-const names = PROJECTS.filter((p) => !OFF_HOME.includes(p.id)).map((p) => `<span>${p.name}</span>`).join('');
-$('#ticker').innerHTML = names + names;
+
+// Ticker: what we do (not client names — only real clients are listed, in the clients row).
+const fillTicker = (l) => {
+  const words = T[l].ticker.map((w) => `<span>${w}</span>`).join('');
+  $('#ticker').innerHTML = words + words + words;
+};
 
 onLang((l) => {
   $$('[data-desc]').forEach((el) => { el.textContent = PROJECTS.find((p) => p.id === el.dataset.desc)[l]; });
-  $$('[data-tags]').forEach((el) => { el.textContent = PROJECTS.find((p) => p.id === el.dataset.tags).tags[l]; });
+  // Honest label: these are concept sites, not launched client work.
+  $$('[data-tags]').forEach((el) => { el.textContent = `${T[l]['work.concept']} · ${PROJECTS.find((p) => p.id === el.dataset.tags).tags[l]}`; });
+  fillTicker(l);
 });
 initContact();
 initCursor();
-initTilt($$('.case-main, #highlights .card-media'));
+initTilt($$('.case-main'));
 
 /* ------------------------------------------------------------------ 3D mark */
 let mark = null;
-try { mark = createMark($('#gl'), { mobile, reduced, lowEnd }); } catch (e) { $('#gl').remove(); }
+try { mark = createMark($('#gl'), { mobile, reduced, lowEnd }); } catch (e) { console.error('3D scene failed:', e); $('#gl').remove(); }
 
 /* ------------------------------------------------------------------ scroll choreography */
 function setupScroll() {
@@ -84,36 +79,15 @@ function setupScroll() {
     });
   });
 
-  // Highlight cards: same wipe + inner parallax as the Work page.
-  $$('#highlights .card').forEach((c, i) => {
-    const media = $('.card-media', c);
-    if (!reduced) {
-      gsap.fromTo(c, { rotationX: 12, rotationY: i % 2 ? -5 : 5, y: 60, transformPerspective: 1600, transformOrigin: '50% 100%' }, {
-        rotationX: 0, rotationY: 0, y: 0, ease: M.ease.soft,
-        scrollTrigger: { trigger: c, start: 'top 100%', end: 'top 45%', scrub: 0.8 },
-      });
-    }
-    gsap.fromTo(media, { clipPath: 'inset(12% 6% 12% 6% round 22px)' }, {
-      clipPath: 'inset(0% 0% 0% 0% round 22px)', ease: 'power2.out',
-      scrollTrigger: { trigger: c, start: 'top 98%', end: 'top 50%', scrub: 0.6 },
-    });
-    gsap.fromTo([$('.card-meta', c), $('.card-desc', c)], { y: 24, opacity: 0 }, {
-      y: 0, opacity: 1, duration: 1.1, stagger: 0.08, ease: 'expo.out', scrollTrigger: { trigger: media, start: 'bottom 98%', once: true },
-    });
-  });
-
   setupChapters();
   setupMirror();
   setupStack();
-  gsap.fromTo('.all-wrap .pill', { y: 30, opacity: 0 }, {
-    y: 0, opacity: 1, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: '.all-wrap', start: 'top 92%', once: true },
-  });
 }
 
-/* ------------------------------------------------------------------ pinned chapter scenes (services, lab) */
+/* ------------------------------------------------------------------ pinned chapter scene (services) */
 // One controller per pinned section: chapter titles swap through masks, bars show progress,
 // and onK(k) drives the 3D scene with a continuous chapter position (0..n).
-function chapterScene(section, root, bars, onK, noteBase = 0) {
+function chapterScene(section, root, bars, onK) {
   const chaps = $$('.chap', root);
   const n = chaps.length;
   let cur = 0;
@@ -132,7 +106,6 @@ function chapterScene(section, root, bars, onK, noteBase = 0) {
     gsap.to($('.chap-d', prev), { y: -20 * dir, opacity: 0, duration: M.dur.fast, ease: M.ease.in });
     gsap.fromTo($('.ln > span', nxt), { yPercent: 110 * dir }, { yPercent: 0, duration: M.dur.slow, ease: M.ease.out, delay: 0.08 });
     gsap.fromTo($('.chap-d', nxt), { y: 24 * dir, opacity: 0 }, { y: 0, opacity: 1, duration: M.dur.slow, ease: M.ease.out, delay: 0.18 });
-    chime(noteBase + next);
   };
   ScrollTrigger.create({
     trigger: section, start: 'top top', end: 'bottom bottom',
@@ -146,7 +119,6 @@ function chapterScene(section, root, bars, onK, noteBase = 0) {
 }
 function setupChapters() {
   chapterScene('.svc3d', $('#chapters'), $$('.svc3d .chap-bars i'), (k) => { if (mark) mark.state.svc = k; });
-  chapterScene('.lab', $('#labChapters'), $$('.lab .chap-bars i'), (k) => { if (mark) mark.state.lab = k; }, 1);
 }
 
 /* ------------------------------------------------------------------ mirror word */
@@ -157,7 +129,7 @@ function setupMirror() {
   gsap.set([letters, refl], { yPercent: 105 });
   gsap.set('.mw-line', { scaleX: 0 });
   gsap.set('.mirror-cap', { opacity: 0, y: 20 });
-  const tl = gsap.timeline({ scrollTrigger: { trigger: '.mirror', start: 'top top', end: 'bottom bottom', scrub: 0.6 } });
+  const tl = gsap.timeline({ scrollTrigger: { trigger: '.mirror', start: 'top 85%', end: 'top -25%', scrub: 0.5 } });
   tl.to('.mw-line', { scaleX: 1, duration: 0.3, ease: 'power2.inOut' }, 0);
   letters.forEach((el, i) => {
     // Same tween on the letter and its reflection: the flipped container mirrors the motion.
@@ -165,7 +137,6 @@ function setupMirror() {
   });
   tl.fromTo('.mword', { '--sheen': '120%' }, { '--sheen': '-20%', duration: 0.4, ease: 'none' }, 0.5);
   tl.to('.mirror-cap', { opacity: 1, y: 0, duration: 0.2 }, 0.62);
-  tl.to({}, { duration: 0.1 }); // short hold before the section scrolls away
 }
 
 /* ------------------------------------------------------------------ approach: stacked cards */
@@ -187,20 +158,18 @@ function setupStack() {
 /* ------------------------------------------------------------------ per frame */
 const ticker = $('#ticker');
 let tx = 0, tw = 0;
-const measureTicker = () => { tw = ticker.scrollWidth / 2; };
+const measureTicker = () => { tw = ticker.scrollWidth / 3; }; // content is repeated three times
 measureTicker();
 ScrollTrigger.addEventListener('refresh', measureTicker);
 document.fonts?.ready.then(measureTicker);
 const contact = $('#contact');
 const svcEl = $('.svc3d');
-const labEl = $('.lab');
-let contactTop = 0, svcTop = 0, svcH = 0, labTop = 0, labH = 0;
+let contactTop = 0, svcTop = 0, svcH = 0;
 const measure = () => {
   contactTop = contact.getBoundingClientRect().top + window.scrollY;
   const r = svcEl.getBoundingClientRect();
   svcTop = r.top + window.scrollY; svcH = r.height;
-  const l = labEl.getBoundingClientRect();
-  labTop = l.top + window.scrollY; labH = l.height;
+
 };
 ScrollTrigger.addEventListener('refresh', measure);
 
@@ -223,8 +192,7 @@ gsap.ticker.add(() => {
     const inn = Math.min(1, Math.max(0, (vh - top) / (vh * 0.7)));
     const outn = Math.min(1, Math.max(0, bottom / (vh * 0.7)));
     mark.state.svcOn = Math.min(inn, outn);
-    const lt = labTop - y, lb = labTop + labH - y;
-    mark.state.labOn = Math.min(Math.min(1, Math.max(0, (vh - lt) / (vh * 0.7))), Math.min(1, Math.max(0, lb / (vh * 0.7))));
+
   }
 });
 

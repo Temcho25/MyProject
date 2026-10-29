@@ -5,8 +5,6 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { T, LANGS, CONTACT } from './data.js';
-import { toggleSound, whoosh, tick } from './sound.js';
-export { whoosh, tick };
 
 gsap.registerPlugin(ScrollTrigger);
 export { gsap, ScrollTrigger };
@@ -210,7 +208,6 @@ document.addEventListener('click', (e) => {
 });
 
 function leaveTo(href) {
-  whoosh(0.6);
   try { sessionStorage.setItem('atskoba-nav', '1'); } catch (e) { /* blocked */ }
   $('.curtain-mark').style.opacity = '0';
   gsap.fromTo(curtain, { clipPath: 'inset(100% 0 0 0)' }, {
@@ -276,16 +273,6 @@ export function initCursor() {
     const v = e.target.closest('[data-cursor]');
     if (v) $('#cursorLabel').textContent = t('work.view');
     gsap.to(cur, { scale: v ? 1 : 0, opacity: v ? 1 : 0, duration: 0.5, ease: EASE });
-  });
-}
-
-/* ------------------------------------------------------------------ sound (opt-in) */
-const soundBtn = $('#sound');
-if (soundBtn) {
-  soundBtn.addEventListener('click', () => {
-    const on = toggleSound();
-    soundBtn.classList.toggle('is-on', on);
-    soundBtn.setAttribute('aria-pressed', String(on));
   });
 }
 

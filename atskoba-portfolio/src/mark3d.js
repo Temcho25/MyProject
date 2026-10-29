@@ -2,8 +2,8 @@
 // Hero: it assembles (ring rolls in, stem drops, dot lands) and floats over a contact shadow,
 //       with smaller lacquer parts drifting at several depths behind it (atmospheric depth).
 // Services: a pinned scroll scene takes it apart, one chapter per service:
-//   0 3D & WebGL — ring comes forward, wireframe edges show the construction
-//   1 Motion     — the dot orbits the ring with a trail of ghost dots
+//   0 3D & WebGL — the ring comes forward and turns, showing its depth
+//   1 Motion     — the dot orbits the ring
 //   2 Design     — pieces lie flat on a blueprint grid like a spec sheet
 //   3 Launch     — everything snaps back together
 // Contact: it returns in polished chrome on the dark section.
@@ -11,8 +11,7 @@ import {
   WebGLRenderer, Scene, PerspectiveCamera, PMREMGenerator, ACESFilmicToneMapping, SRGBColorSpace,
   Group, Shape, Path, ExtrudeGeometry, SphereGeometry, PlaneGeometry, TorusGeometry, BoxGeometry, Mesh,
   MeshPhysicalMaterial, MeshBasicMaterial, CanvasTexture, DirectionalLight, Color, MathUtils, Fog,
-  EdgesGeometry, LineSegments, LineBasicMaterial, GridHelper, Vector3, Vector2,
-  IcosahedronGeometry, PointLight, BackSide,
+  GridHelper, Vector3, Vector2,
 } from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { Reflector } from 'three/examples/jsm/objects/Reflector.js';
@@ -55,47 +54,6 @@ const MirrorShader = {
       #include <colorspace_fragment>
     }`,
 };
-
-// 3D simplex noise (Ashima Arts, MIT) for the liquid chrome surface.
-const NOISE = `
-vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x,289.0);}
-vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}
-float snoise(vec3 v){
-  const vec2 C=vec2(1.0/6.0,1.0/3.0);const vec4 D=vec4(0.0,0.5,1.0,2.0);
-  vec3 i=floor(v+dot(v,C.yyy));vec3 x0=v-i+dot(i,C.xxx);
-  vec3 g=step(x0.yzx,x0.xyz);vec3 l=1.0-g;vec3 i1=min(g.xyz,l.zxy);vec3 i2=max(g.xyz,l.zxy);
-  vec3 x1=x0-i1+C.xxx;vec3 x2=x0-i2+2.0*C.xxx;vec3 x3=x0-1.0+3.0*C.xxx;
-  i=mod(i,289.0);
-  vec4 p=permute(permute(permute(i.z+vec4(0.0,i1.z,i2.z,1.0))+i.y+vec4(0.0,i1.y,i2.y,1.0))+i.x+vec4(0.0,i1.x,i2.x,1.0));
-  float n_=1.0/7.0;vec3 ns=n_*D.wyz-D.xzx;
-  vec4 j=p-49.0*floor(p*ns.z*ns.z);vec4 x_=floor(j*ns.z);vec4 y_=floor(j-7.0*x_);
-  vec4 x=x_*ns.x+ns.yyyy;vec4 y=y_*ns.x+ns.yyyy;vec4 h=1.0-abs(x)-abs(y);
-  vec4 b0=vec4(x.xy,y.xy);vec4 b1=vec4(x.zw,y.zw);
-  vec4 s0=floor(b0)*2.0+1.0;vec4 s1=floor(b1)*2.0+1.0;vec4 sh=-step(h,vec4(0.0));
-  vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
-  vec3 p0=vec3(a0.xy,h.x);vec3 p1=vec3(a0.zw,h.y);vec3 p2=vec3(a1.xy,h.z);vec3 p3=vec3(a1.zw,h.w);
-  vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
-  p0*=norm.x;p1*=norm.y;p2*=norm.z;p3*=norm.w;
-  vec4 m=max(0.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.0);m=m*m;
-  return 42.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
-}`;
-
-// Studio environment for chrome: soft light strips, a wine panel and dark gaps, so the
-// mirror surface has something beautiful to reflect.
-function chromeEnvironment(pmrem) {
-  const env = new Scene();
-  env.add(new Mesh(new BoxGeometry(20, 20, 20), new MeshBasicMaterial({ color: 0x8f8b83, side: BackSide })));
-  const panel = (w, h, color, x, y, z, ry = 0) => {
-    const m = new Mesh(new PlaneGeometry(w, h), new MeshBasicMaterial({ color, side: 2 }));
-    m.position.set(x, y, z); m.rotation.y = ry; m.lookAt(0, 0, 0); env.add(m);
-  };
-  panel(14, 2.2, 0xffffff, 0, 7, 3);        // long top softbox
-  panel(2, 12, 0xfff3e2, -8.5, 0, 2);        // warm side strip
-  panel(2, 12, 0xffffff, 8.5, 1, -1);        // cool side strip
-  panel(9, 6, 0x7d1d2c, 0, -2, -9);          // wine panel behind
-  panel(20, 5, 0x141412, 0, -8, 0);          // dark floor bounce
-  return pmrem.fromScene(env, 0.035).texture;
-}
 
 const damp = (a, b, k, dt) => MathUtils.lerp(a, b, 1 - Math.exp(-k * dt));
 const sstep = (a, b, x) => { const t = MathUtils.clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
@@ -163,7 +121,6 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
   });
   const black = new Color(0x111110), chrome = new Color(0xe9e7e1);
   const wineA = new Color(0x7d1d2c), wineB = new Color(0xc23a4b);
-  const edgeMat = new LineBasicMaterial({ color: 0x7d1d2c, transparent: true, opacity: 0, depthTest: false });
 
   const mark = new Group();
   const inner = new Group();
@@ -172,26 +129,10 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
   const ring = new Mesh(ringGeo, lacquer);
   const stem = new Mesh(stemGeo, lacquer);
   const dot = new Mesh(dotGeo, wine);
-  ring.add(new LineSegments(new EdgesGeometry(ringGeo, 25), edgeMat));
-  stem.add(new LineSegments(new EdgesGeometry(stemGeo, 25), edgeMat));
   const dotHome = { x: 88 - CX, y: CY - 83 };
   inner.add(ring, stem, dot);
-  // "Construction" ghosts: wireframe copies that slide out behind the solid pieces.
-  const wireMat = new MeshBasicMaterial({ color: 0x7d1d2c, wireframe: true, transparent: true, opacity: 0, depthWrite: false });
-  const ringGhost = new Mesh(ringGeo, wireMat);
-  const stemGhost = new Mesh(stemGeo, wireMat);
-  inner.add(ringGhost, stemGhost);
-
-  // Motion trail: ghost dots behind the orbiting dot.
-  const trail = [];
-  for (let i = 0; i < 9; i++) {
-    const m = new Mesh(dotGeo, new MeshBasicMaterial({ color: 0x7d1d2c, transparent: true, opacity: 0 }));
-    trail.push(m);
-    inner.add(m);
-  }
-
   // Blueprint grid for the design chapter.
-  const grid = new GridHelper(200, 20, 0x7d1d2c, 0x0d0d0b);
+  const grid = new GridHelper(200, 20, 0x0d0d0b, 0x0d0d0b);
   grid.rotation.x = Math.PI / 2;
   grid.position.z = -30;
   grid.material.transparent = true;
@@ -217,48 +158,6 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
     mirror.renderOrder = -1;
     scene.add(mirror);
   }
-
-  // ---- Lab: liquid chrome object with real-time normals.
-  const chromeEnv = chromeEnvironment(pmrem);
-  const blobU = { uTime: { value: 0 }, uAmp: { value: 0.2 }, uFreq: { value: 1.4 } };
-  const blobMat = new MeshPhysicalMaterial({
-    color: 0xffffff, metalness: 1, roughness: 0.05, envMap: chromeEnv, envMapIntensity: 1.25, clearcoat: 1, clearcoatRoughness: 0.04,
-  });
-  blobMat.onBeforeCompile = (sh) => {
-    Object.assign(sh.uniforms, blobU);
-    sh.vertexShader = 'uniform float uTime; uniform float uAmp; uniform float uFreq;\n' + NOISE + `
-      float bump(vec3 p){ return snoise(p * uFreq + vec3(0.0, uTime * 0.35, uTime * 0.2)) * uAmp; }
-      vec3 orth(vec3 v){ return normalize(abs(v.x) > abs(v.z) ? vec3(-v.y, v.x, 0.0) : vec3(0.0, -v.z, v.y)); }
-    ` + sh.vertexShader
-      .replace('#include <beginnormal_vertex>', `
-        vec3 nrm = normalize(position);
-        vec3 tg = orth(nrm); vec3 bt = normalize(cross(nrm, tg));
-        vec3 pa = normalize(position + tg * 0.01), pb = normalize(position + bt * 0.01);
-        vec3 d0 = nrm * (1.0 + bump(nrm)), da = pa * (1.0 + bump(pa)), db = pb * (1.0 + bump(pb));
-        vec3 objectNormal = normalize(cross(da - d0, db - d0));
-        if (dot(objectNormal, nrm) < 0.0) objectNormal = -objectNormal;
-        #ifdef USE_TANGENT
-          vec3 objectTangent = vec3(tangent.xyz);
-        #endif`)
-      .replace('#include <begin_vertex>', 'vec3 transformed = d0;');
-  };
-  const blob = new Mesh(new IcosahedronGeometry(1, mobile || lowEnd ? 24 : 64), blobMat);
-  blob.visible = false;
-  scene.add(blob);
-  const lightA = new PointLight(0xff4d5e, 0, 0, 2);
-  const lightB = new PointLight(0xfff1dc, 0, 0, 2);
-  const bulbGeo = new SphereGeometry(0.06, 24, 16);
-  const bulbA = new Mesh(bulbGeo, new MeshBasicMaterial({ color: 0xff6b78 }));
-  const bulbB = new Mesh(bulbGeo, new MeshBasicMaterial({ color: 0xffffff }));
-  lightA.add(bulbA);
-  lightB.add(bulbB);
-  scene.add(lightA, lightB);
-  // Compile every program once up front (blob, lit materials with both lights, mirror), so the
-  // first visit to the lab doesn't freeze on shader compilation mid-scroll. Lights stay in the
-  // scene at intensity 0 — toggling their visibility would trigger recompiles.
-  blob.visible = true;
-  renderer.compile(scene, camera);
-  blob.visible = false;
 
   // ---- Floating parts at several depths (mid and far planes).
   const parts = [];
@@ -291,9 +190,7 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
     svcOn: 0,                 // services scene on screen, 0 → 1
     svc: 0,                   // chapter position inside services, 0 → 4
     fin: 0,                   // contact section in view, 0 → 1
-    labOn: 0,                 // lab scene on screen, 0 → 1
     scrollY: 0,               // written by the page ticker (no layout read here)
-    lab: 0,                   // chapter position inside the lab, 0 → 3
   };
   const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
   window.addEventListener('pointermove', (e) => {
@@ -323,9 +220,7 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
     out.x = ringC.x + Math.cos(a) * 52; out.y = ringC.y + Math.sin(a) * 40; out.z = Math.sin(a) * 18;
   }
   let time = 0, last = performance.now(), raf = 0, running = true;
-  const sm = { out: 0, fin: 0, on: 0, k: 0, labOn: 0, lab: 0, vel: 0 };
-  let lastScroll = 0;
-  const BB = { x: 0, y: 0, r: 1, o: 0 }, MB = { x: 0, y: 0, r: 1, o: 0 }; // reused per frame
+  const sm = { out: 0, fin: 0, on: 0, k: 0 };
 
   function frame(now) {
     if (!running) return;
@@ -339,16 +234,10 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
     sm.fin = damp(sm.fin, state.fin, 7, dt);
     sm.on = damp(sm.on, state.svcOn, 7, dt);
     sm.k = damp(sm.k, state.svc, 6, dt);
-    sm.labOn = damp(sm.labOn, state.labOn, 7, dt);
-    sm.lab = damp(sm.lab, state.lab, 5, dt);
-    const sy = state.scrollY;
-    sm.vel = damp(sm.vel, Math.min(3, Math.abs(sy - lastScroll) / Math.max(dt, 0.001) / 1500), 5, dt);
-    lastScroll = sy;
     const { out, fin, on, k } = sm;
-    const labOn = sm.labOn;
 
     const heroVis = 1 - out;
-    const visible = heroVis > 0.005 || on > 0.005 || fin > 0.005 || labOn > 0.005;
+    const visible = heroVis > 0.005 || on > 0.005 || fin > 0.005;
     canvas.style.visibility = visible ? 'visible' : 'hidden';
     if (!visible) return; // nothing on screen: skip the GPU work
 
@@ -377,21 +266,6 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
       MathUtils.lerp(w0 * 8, o.z, w1),
     );
     dot.visible = d > 0.001;
-    for (let i = 0; i < trail.length; i++) {
-      const m = trail[i];
-      orbit(orbitA - (i + 1) * 0.16, O2);
-      m.position.set(O2.x, O2.y, O2.z);
-      m.scale.setScalar(1 - (i + 1) * 0.08);
-      m.material.opacity = w1 * (0.42 - i * 0.045);
-      m.visible = w1 > 0.01;
-    }
-    edgeMat.opacity = Math.min(1, w0 * 1.1 + w2 * 0.8);
-    wireMat.opacity = w0 * 0.28;
-    ringGhost.visible = stemGhost.visible = w0 > 0.01;
-    ringGhost.position.set(ring.position.x - w0 * 30, ring.position.y + w0 * 6, ring.position.z - w0 * 46);
-    ringGhost.rotation.copy(ring.rotation);
-    stemGhost.position.set(stem.position.x + w0 * 26, stem.position.y + w0 * 4, stem.position.z - w0 * 40);
-    stemGhost.rotation.copy(stem.rotation);
     grid.material.opacity = w2 * 0.16;
     grid.visible = w2 > 0.01;
 
@@ -449,49 +323,15 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
       m.rotation.y += u.spin.y * dt * idle;
     }
 
-    // ---- Lab: liquid chrome in three modes (flow → mirror → moving light).
-    blob.visible = labOn > 0.005;
-    const lk = sm.lab;
-    const L0 = 1 - sstep(0.65, 1.15, lk), L2 = sstep(1.65, 2.15, lk), L1 = Math.max(0, 1 - L0 - L2);
-    let blobOn = false;
-    if (blob.visible) {
-      const rad = mobile ? Math.min(worldW * 0.26, worldH * 0.15) : Math.min(worldW * 0.15, worldH * 0.27);
-      const dir = state.lab < 1.5 ? 1 : -1; // enter from below, leave upward
-      const bx = mobile ? 0 : worldW * 0.2;
-      const by = (mobile ? worldH * 0.18 : 0.02 * worldH) - (1 - labOn) * worldH * 0.9 * dir;
-      blob.position.set(bx, by + Math.sin(time * 0.8) * 0.04 * idle, 0);
-      blob.scale.setScalar(rad);
-      blob.rotation.set(time * 0.15 * idle + mouse.y * 0.4, time * 0.22 * idle + mouse.x * 0.6, 0);
-      const mo = reduced ? 0 : 1; // reduced motion: a still sculpture, no flow
-      blobU.uTime.value += dt * (0.6 + L0 * 0.9 + sm.vel * 1.5) * mo;
-      blobU.uAmp.value = 0.24 * L0 + 0.015 * L1 + 0.09 * L2 + sm.vel * 0.05 * (1 - L1) * mo;
-      blobU.uFreq.value = 1.25 * L0 + 0.8 * L1 + 2.1 * L2;
-      blobMat.roughness = 0.05 + L2 * 0.08;
-      const a = time * 1.1;
-      lightA.position.set(bx + Math.cos(a) * rad * 1.9, by + Math.sin(a * 0.7) * rad * 0.6, Math.sin(a) * rad * 1.9);
-      lightB.position.set(bx + Math.cos(a + Math.PI) * rad * 1.7, by + rad * 0.5, Math.sin(a + Math.PI) * rad * 1.7);
-      lightA.intensity = lightB.intensity = L2 * labOn * 18 * rad * rad;
-      bulbA.visible = bulbB.visible = L2 * labOn > 0.05; // unlit meshes: toggling is free
-      blobOn = true;
-      BB.x = bx; BB.y = by - rad * 1.12; BB.r = rad * 2.2; BB.o = 0.28 + L1 * 0.32;
-    } else {
-      lightA.intensity = lightB.intensity = 0;
-      bulbA.visible = bulbB.visible = false;
-    }
-
-    // ---- Mirror floor under whichever object owns the screen.
+    // ---- Mirror floor under the mark.
     if (mirror) {
       const markOn = (1 - fin) * Math.max(heroVis * Math.min(r, s), on * (1 - w2));
-      MB.x = mark.position.x; MB.y = mark.position.y - sc * 0.42; MB.r = sc * 1.4; MB.o = 0.34;
-      const lo = blobOn ? labOn : 0;
-      const wB = lo / (lo + markOn + 1e-5); // blend smoothly between the two owners: no pop
-      const bx2 = MathUtils.lerp(MB.x, BB.x, wB), by2 = MathUtils.lerp(MB.y, BB.y, wB);
-      const strength = Math.max(lo, markOn);
-      mirror.visible = strength > 0.01;
-      mirror.position.set(bx2, by2, 0);
-      mirror.material.uniforms.uCenter.value.set(bx2, 0);
-      mirror.material.uniforms.uRadius.value = MathUtils.lerp(MB.r, BB.r, wB);
-      mirror.material.uniforms.uOpacity.value = MathUtils.lerp(MB.o, BB.o, wB) * strength;
+      const mx = mark.position.x, my = mark.position.y - sc * 0.42;
+      mirror.visible = markOn > 0.01;
+      mirror.position.set(mx, my, 0);
+      mirror.material.uniforms.uCenter.value.set(mx, 0);
+      mirror.material.uniforms.uRadius.value = sc * 1.4;
+      mirror.material.uniforms.uOpacity.value = 0.34 * markOn;
       shadow.material.opacity *= 0.55; // the reflection now carries most of the grounding
     }
 

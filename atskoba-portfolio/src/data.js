@@ -148,6 +148,7 @@ export const PROJECTS = [
 
 export const T = {
   en: {
+    'work.concept': 'Concept', 'clients.kicker': 'Clients', 'ticker': ['3D & WebGL', 'Motion design', 'Art direction', 'Development', 'Multilingual sites'],
     'mirror.cap': '3D · Motion · Web — made in Tbilisi',
     'lab.kicker': 'Lab', 'lab.title': 'Beyond finished projects',
     'lab.sub': 'Live experiments we can build into your site — scroll and move the cursor.',
@@ -183,6 +184,7 @@ export const T = {
     'wp.back': 'Home',
   },
   ka: {
+    'work.concept': 'კონცეფცია', 'clients.kicker': 'კლიენტები', 'ticker': ['3D და WebGL', 'მოუშენ-დიზაინი', 'არტ-დირექშენი', 'დეველოპმენტი', 'მრავალენოვანი საიტები'],
     'mirror.cap': '3D · მოუშენი · ვები — თბილისიდან',
     'lab.kicker': 'ლაბორატორია', 'lab.title': 'მზა პროექტების მიღმა',
     'lab.sub': 'ცოცხალი ექსპერიმენტები, რომლებსაც თქვენს საიტზე ავაწყობთ — ასქროლეთ და გაამოძრავეთ კურსორი.',
@@ -218,6 +220,7 @@ export const T = {
     'wp.back': 'მთავარი',
   },
   ru: {
+    'work.concept': 'Концепт', 'clients.kicker': 'Клиенты', 'ticker': ['3D и WebGL', 'Моушн-дизайн', 'Арт-дирекшн', 'Разработка', 'Мультиязычные сайты'],
     'mirror.cap': '3D · Моушн · Веб — из Тбилиси',
     'lab.kicker': 'Лаборатория', 'lab.title': 'Не только готовые сайты',
     'lab.sub': 'Живые эксперименты, которые мы можем встроить в ваш сайт — прокрутите и подвигайте курсором.',

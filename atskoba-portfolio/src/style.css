@@ -103,15 +103,6 @@ html.ready .curtain { pointer-events: none; }
 .progress { position: fixed; left: 0; right: 0; top: 0; height: 2px; z-index: 60; pointer-events: none; }
 .progress i { display: block; height: 100%; background: var(--wine); transform-origin: left; transform: scaleX(0); }
 
-/* ---------- Sound toggle ---------- */
-.sound { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; opacity: .55; transition: opacity .3s; }
-.sound:hover, .sound.is-on { opacity: 1; }
-.sound .bars { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
-.sound .bars i { width: 2px; height: 3px; background: currentColor; border-radius: 1px; }
-.sound.is-on .bars i { animation: eq 1s ease-in-out infinite; }
-.sound.is-on .bars i:nth-child(2) { animation-delay: -.3s; } .sound.is-on .bars i:nth-child(3) { animation-delay: -.6s; } .sound.is-on .bars i:nth-child(4) { animation-delay: -.15s; }
-@keyframes eq { 0%, 100% { height: 3px; } 50% { height: 14px; } }
-
 /* ---------- Buttons ---------- */
 .pill {
   position: relative; display: inline-flex; align-items: center; gap: 12px; isolation: isolate; overflow: hidden;
@@ -200,7 +191,7 @@ main { position: relative; z-index: 2; }
 :lang(ka) .statement-text { letter-spacing: -0.01em; line-height: 1.24; font-size: clamp(24px, 3.3vw, 58px); max-width: 26ch; }
 
 /* ---------- Mirror word ---------- */
-.mirror { position: relative; height: 230vh; }
+.mirror { position: relative; height: 150vh; }
 .mirror-pin { position: sticky; top: 0; height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
 .mword {
   --sheen: 120%;
@@ -227,14 +218,6 @@ main { position: relative; z-index: 2; }
 }
 .mw-flip { transform: scaleY(-1); }
 .mirror-cap { margin: clamp(10px, 2vh, 24px) 0 0; font-size: clamp(13px, 1vw, 16px); color: var(--mute); letter-spacing: .02em; }
-
-/* ---------- Lab ---------- */
-.lab { position: relative; height: 330vh; }
-.lab-pin { position: sticky; top: 0; height: 100svh; overflow: hidden; display: flex; align-items: center; }
-.lab-copy { position: relative; z-index: 4; width: 100%; max-width: var(--max); margin: 0 auto; padding: 0 var(--gut); }
-.lab-copy .h2 { max-width: 11ch; }
-.lab-sub { margin: 18px 0 0; max-width: 38ch; color: var(--ink-2); }
-.lab-chapters { margin-top: clamp(28px, 5vh, 56px); }
 
 /* ---------- Featured ---------- */
 .featured { padding-bottom: clamp(100px, 14vw, 200px); }
@@ -269,12 +252,10 @@ main { position: relative; z-index: 2; }
 .case-tags { margin: 6px 0 0; font-size: 14px; color: var(--mute); }
 .case-desc { margin: 0; color: var(--ink-2); max-width: 44ch; }
 .all-wrap { display: flex; justify-content: center; padding: 0 var(--gut); }
-.more-head { margin-bottom: clamp(28px, 3vw, 44px); }
-.grid-home { padding-bottom: clamp(64px, 8vw, 120px); }
 .case { margin-bottom: clamp(100px, 13vw, 200px); }
 
 /* ---------- Services: pinned 3D chapters ---------- */
-.svc3d { position: relative; height: 420vh; }
+.svc3d { position: relative; height: 320vh; }
 .svc-pin { position: sticky; top: 0; height: 100svh; overflow: hidden; display: flex; align-items: center; }
 .svc-copy { position: relative; z-index: 4; width: 100%; max-width: var(--max); margin: 0 auto; padding: 0 var(--gut); }
 .svc-copy .h2 { max-width: 12ch; }
@@ -309,6 +290,12 @@ main { position: relative; z-index: 2; }
 .ticker-in { display: inline-flex; gap: clamp(32px, 4vw, 72px); will-change: transform; }
 .ticker-in span { font-weight: 500; font-size: clamp(28px, 3.6vw, 60px); letter-spacing: -0.045em; display: inline-flex; align-items: center; gap: clamp(32px, 4vw, 72px); }
 .ticker-in span::after { content: ''; width: .22em; height: .22em; border-radius: 50%; background: var(--wine); }
+
+/* ---------- Clients ---------- */
+.clients { max-width: var(--max); margin: 0 auto; padding: clamp(56px, 8vw, 110px) var(--gut); display: flex; align-items: baseline; gap: clamp(24px, 6vw, 120px); flex-wrap: wrap; }
+.clients .kicker { margin: 0; }
+.client-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 16px 48px; }
+.client-list li { font-weight: 500; font-size: clamp(26px, 3vw, 48px); letter-spacing: -0.04em; }
 
 /* ---------- Contact (dark) ---------- */
 .contact { position: relative; z-index: 2; background: var(--dark); color: var(--on-dark); }
@@ -402,11 +389,8 @@ main { position: relative; z-index: 2; }
   .card-tags { text-align: left; }
   .foot { justify-content: flex-start; }
   .contact-inner { padding-top: 34svh; }
-  .svc3d { height: 380vh; }
-  .lab { height: 300vh; }
-  .lab-pin { align-items: flex-end; padding-bottom: 6svh; }
-  .lab-sub { display: none; }
-  .mirror { height: 190vh; }
+  .svc3d { height: 300vh; }
+  .mirror { height: 125vh; }
   .svc-pin { align-items: flex-end; padding-bottom: 6svh; }
   .chapters { max-width: none; height: 200px; }
   .step { top: calc(88px + var(--i, 0) * 14px); } /* room for the 3D mark above the headline */
