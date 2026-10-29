@@ -808,6 +808,9 @@ let capBase = 0, capAnims = [];
 window.__capture = {
   async ready() { await startHero(); await startBottle(); return true; },
   begin() {
+    // Only the capture clock may move the timeline: detach the root update from the ticker
+    // (ScrollTrigger wakes the ticker, which would otherwise advance it in real time).
+    gsap.ticker.remove(gsap.updateRoot);
     gsap.ticker.sleep();
     capBase = gsap.ticker.time;
     capAnims = document.getAnimations();
