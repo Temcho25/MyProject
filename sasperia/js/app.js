@@ -5,8 +5,10 @@ const C = window.SASPERIA_CONTACT;
 const gsap = window.gsap;
 const ScrollTrigger = window.ScrollTrigger;
 gsap.registerPlugin(ScrollTrigger);
+window.SasperiaAudio = window.SasperiaAudio || { on: false, pluck() {}, async toggle() { return false; }, async renderOffline() { return null; } };
 
 const $ = (s, r = document) => r.querySelector(s);
+const pathLen = (p) => { try { return p.getTotalLength() || 0; } catch (e) { return 0; } };
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const smooth = (a, b, v) => { const t = clamp((v - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
@@ -45,6 +47,7 @@ function applyI18n() {
   $$('[data-lang]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
   renderStory(); renderSpecials(); renderQr(); renderCocktails(); renderArt(); renderWine(); renderAreas(); renderForm();
   if (!$('#menuApp').hidden) renderMenu();
+  if (sheetDish) fillSheet(sheetDish);
   if (bottleApi) bottleApi.setWines(sasperiaWines());
 }
 
@@ -93,13 +96,13 @@ function renderStory() {
 function renderSpecials() {
   $('#specialsTrack').innerHTML = SPECIALS.map((id, i) => {
     const d = dishById(id);
-    return `<article class="dish-card" data-dish="${d.id}" tabindex="0">
+    return `<article class="dish-card" data-dish="${d.id}" tabindex="0" role="button">
       <div class="dish-card__media">${photoOrPh(d)}<span class="dish-card__price">${d.price} ₾</span><span class="dish-card__idx">${['I', 'II', 'III', 'IV'][i]}</span></div>
       <h3>${esc(L(d.name))}</h3><p>${esc(L(d.desc))}</p></article>`;
   }).join('');
   $$('#specialsTrack .dish-card').forEach((c) => {
     c.addEventListener('click', () => openDishSheet(dishById(c.dataset.dish)));
-    c.addEventListener('keydown', (e) => { if (e.key === 'Enter') openDishSheet(dishById(c.dataset.dish)); });
+    c.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') e.preventDefault(), openDishSheet(dishById(c.dataset.dish)); });
   });
 }
 
@@ -304,17 +307,34 @@ $('#menuBody').addEventListener('click', (e) => {
   const b = e.target.closest('[data-dish]'); if (b) openDishSheet(dishById(b.dataset.dish));
 });
 
-let lastFocus = null;
-function openMenu(tab = 'food', origin) {
+/* Scroll lock + inert background shared by the menu, the dish sheet and the drawer */
+const locks = new Set();
+function lock(key, on) {
+  on ? locks.add(key) : locks.delete(key);
+  const any = locks.size > 0;
+  document.documentElement.classList.toggle('no-scroll', any);
+  if (lenis) any ? lenis.stop() : lenis.start();
+}
+function setInert(nodes, on) { nodes.forEach((n) => { if (n) n.inert = on; }); }
+const pageParts = () => [$('main'), $('#nav'), $('.footer')];
+const menuParts = () => ['.menu-app__top', '.menu-app__tabs', '.menu-app__tools', '#menuBody'].map((q) => $(q));
+
+let lastFocus = null, menuPushed = false, menuClosing = false;
+const menuHash = () => (app.tab === 'food' ? '#menu' : '#menu-' + app.tab);
+function openMenu(tab = 'food', origin, push = false) {
   app.tab = TABS.includes(tab) ? tab : 'food';
   const el = $('#menuApp');
-  const wasHidden = el.hidden;
-  lastFocus = document.activeElement;
+  gsap.killTweensOf(el);
+  const wasHidden = el.hidden || menuClosing;
+  menuClosing = false;
+  if (wasHidden) lastFocus = document.activeElement;
   renderMenu();
-  el.hidden = false;
-  document.body.style.overflow = 'hidden';
-  lenis && lenis.stop();
-  if (location.hash !== (app.tab === 'food' ? '#menu' : '#menu-' + app.tab)) history.replaceState(null, '', app.tab === 'food' ? '#menu' : '#menu-' + app.tab);
+  el.hidden = false; gsap.set(el, { clearProps: 'clipPath' });
+  lock('menu', true); setInert([...pageParts(), $('#drawer')], true);
+  if (location.hash !== menuHash()) {
+    if (push && wasHidden) { history.pushState({ menu: 1 }, '', menuHash()); menuPushed = true; }
+    else history.replaceState(history.state, '', menuHash());
+  }
   if (wasHidden && !reduce) {
     const x = origin ? origin.x : innerWidth / 2, y = origin ? origin.y : innerHeight / 2;
     gsap.fromTo(el, { clipPath: `circle(0px at ${x}px ${y}px)` }, { clipPath: `circle(${Math.hypot(innerWidth, innerHeight)}px at ${x}px ${y}px)`, duration: 0.9, ease: 'power3.inOut', clearProps: 'clipPath' });
@@ -323,22 +343,26 @@ function openMenu(tab = 'food', origin) {
   $('#menuClose').focus({ preventScroll: true });
   heroApi && heroApi.pause();
 }
-function closeMenu() {
-  const el = $('#menuApp'); if (el.hidden) return;
+function closeMenu(fromHistory = false) {
+  const el = $('#menuApp'); if (el.hidden || menuClosing) return;
+  menuClosing = true;
+  if (!fromHistory && menuPushed) { menuPushed = false; history.back(); }
+  else { menuPushed = false; if (/^#menu/.test(location.hash)) history.replaceState(null, '', location.pathname + location.search); }
   const done = () => {
-    el.hidden = true; document.body.style.overflow = ''; lenis && lenis.start();
-    history.replaceState(null, '', location.pathname + location.search);
+    if (!menuClosing) return;
+    menuClosing = false;
+    el.hidden = true; lock('menu', false); setInert([...pageParts(), $('#drawer')], false);
     if (!heroStarted) startHero(); else if (stageOn) heroApi && heroApi.resume();
     lastFocus && lastFocus.focus && lastFocus.focus({ preventScroll: true });
   };
   if (reduce) return done();
   gsap.to(el, { clipPath: `circle(0px at 40px 40px)`, duration: 0.6, ease: 'power3.in', onComplete: () => { gsap.set(el, { clearProps: 'clipPath' }); done(); } });
 }
-$('#menuClose').addEventListener('click', closeMenu);
+$('#menuClose').addEventListener('click', () => closeMenu());
 
 document.addEventListener('click', (e) => {
   const a = e.target.closest('[data-open-menu]');
-  if (a) { e.preventDefault(); closeDrawer(); openMenu(a.dataset.openMenu, { x: e.clientX, y: e.clientY }); return; }
+  if (a) { e.preventDefault(); closeDrawer(); openMenu(a.dataset.openMenu, { x: e.clientX, y: e.clientY }, true); return; }
   const link = e.target.closest('a[href^="#"]');
   if (link && link.getAttribute('href').length > 1) {
     const target = document.querySelector(link.getAttribute('href'));
@@ -348,40 +372,62 @@ document.addEventListener('click', (e) => {
 function routeHash() {
   const h = location.hash.replace('#', '');
   if (h === 'menu' || h.startsWith('menu-')) openMenu(h.split('-')[1] || 'food');
+  else if (!$('#menuApp').hidden) { menuPushed = false; closeMenu(true); }
 }
 window.addEventListener('hashchange', routeHash);
+window.addEventListener('popstate', routeHash);
 
 /* Dish sheet with drag-to-dismiss */
-function openDishSheet(d) {
-  if (!d) return;
+let sheetDish = null, sheetOpener = null;
+function fillSheet(d) {
   $('#sheetMedia').innerHTML = photoOrPh(d);
   $('#sheetName').textContent = L(d.name);
   $('#sheetPrice').textContent = d.price + ' ₾';
   $('#sheetDesc').textContent = L(d.desc);
-  const sh = $('#sheet'); sh.hidden = false;
-  if (!sh.closest('#menuApp') || $('#menuApp').hidden) document.body.appendChild(sh);
-  lenis && lenis.stop();
-  gsap.fromTo('#sheetCard', { yPercent: 100 }, { yPercent: 0, duration: reduce ? 0 : 0.55, ease: 'power3.out' });
+}
+function openDishSheet(d) {
+  if (!d) return;
+  sheetDish = d; sheetOpener = document.activeElement;
+  fillSheet(d);
+  const sh = $('#sheet');
+  gsap.killTweensOf(['#sheetCard', '.sheet__scrim']);
+  const inMenu = !$('#menuApp').hidden;
+  if (inMenu) $('#menuApp').appendChild(sh); else document.body.appendChild(sh);
+  sh.hidden = false;
+  lock('sheet', true);
+  setInert(inMenu ? menuParts() : [...pageParts(), $('#drawer')], true);
+  gsap.fromTo('#sheetCard', { yPercent: 100, y: 0 }, { yPercent: 0, duration: reduce ? 0 : 0.55, ease: 'power3.out' });
   gsap.fromTo('.sheet__scrim', { opacity: 0 }, { opacity: 1, duration: 0.4 });
   $('.sheet__close').focus({ preventScroll: true });
 }
 function closeSheet() {
   const sh = $('#sheet'); if (sh.hidden) return;
+  const inMenu = !!sh.closest('#menuApp');
   gsap.to('#sheetCard', { yPercent: 100, y: 0, duration: reduce ? 0 : 0.4, ease: 'power3.in', onComplete: () => {
-    sh.hidden = true; gsap.set('#sheetCard', { clearProps: 'all' });
-    if ($('#menuApp').hidden) { lenis && lenis.start(); } else $('#menuApp').appendChild(sh);
+    sh.hidden = true; sheetDish = null; gsap.set('#sheetCard', { clearProps: 'all' });
+    lock('sheet', false);
+    setInert(inMenu ? menuParts() : pageParts(), false);
+    if (!$('#menuApp').hidden) setInert([...pageParts(), $('#drawer')], true);
+    sheetOpener && sheetOpener.focus && sheetOpener.focus({ preventScroll: true });
   } });
   gsap.to('.sheet__scrim', { opacity: 0, duration: 0.3 });
 }
 $('#sheet').addEventListener('click', (e) => { if (e.target.closest('[data-close-sheet]')) closeSheet(); });
 (() => {
-  const card = $('#sheetCard'); let y0 = null, ts = 0, dy = 0;
-  card.addEventListener('pointerdown', (e) => { if (card.scrollTop > 0) return; y0 = e.clientY; ts = performance.now(); dy = 0; });
-  window.addEventListener('pointermove', (e) => { if (y0 == null) return; dy = Math.max(0, e.clientY - y0); gsap.set(card, { y: dy }); });
-  window.addEventListener('pointerup', () => {
-    if (y0 == null) return; const v = dy / Math.max(1, performance.now() - ts); y0 = null;
+  // Drag starts on the photo or the grab bar (touch-action:none there), so the text can still scroll.
+  const card = $('#sheetCard'); let y0 = null, ts = 0, dy = 0, pid = null;
+  const reset = () => { y0 = null; pid = null; };
+  card.addEventListener('pointerdown', (e) => {
+    if (!e.target.closest('.sheet__media, .sheet__grab') || card.scrollTop > 0) return;
+    y0 = e.clientY; ts = performance.now(); dy = 0; pid = e.pointerId;
+    try { card.setPointerCapture(pid); } catch (err) { /* capture optional */ }
+  });
+  card.addEventListener('pointermove', (e) => { if (y0 == null || e.pointerId !== pid) return; dy = Math.max(0, e.clientY - y0); gsap.set(card, { y: dy }); });
+  card.addEventListener('pointerup', () => {
+    if (y0 == null) return; const v = dy / Math.max(1, performance.now() - ts); reset();
     if (dy > 120 || (v > 0.6 && dy > 30)) closeSheet(); else gsap.to(card, { y: 0, duration: 0.4, ease: 'back.out(1.6)' });
   });
+  card.addEventListener('pointercancel', () => { if (y0 == null) return; reset(); gsap.to(card, { y: 0, duration: 0.3 }); });
 })();
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
@@ -394,11 +440,12 @@ function closeDrawer() {
   if (drawer.hidden) return;
   burger.setAttribute('aria-expanded', 'false');
   gsap.to(drawer, { opacity: 0, duration: 0.3, onComplete: () => { drawer.hidden = true; gsap.set(drawer, { clearProps: 'opacity' }); } });
-  lenis && lenis.start();
+  lock('drawer', false); setInert([$('main'), $('.footer')], false);
 }
 burger.addEventListener('click', () => {
   if (!drawer.hidden) return closeDrawer();
-  drawer.hidden = false; burger.setAttribute('aria-expanded', 'true'); lenis && lenis.stop();
+  gsap.killTweensOf(drawer);
+  drawer.hidden = false; burger.setAttribute('aria-expanded', 'true'); lock('drawer', true); setInert([$('main'), $('.footer')], true);
   gsap.fromTo(drawer, { opacity: 0 }, { opacity: 1, duration: 0.35 });
   gsap.from('.drawer__links a', { yPercent: 60, opacity: 0, duration: 0.6, stagger: 0.05, ease: 'power3.out', clearProps: 'all' });
 });
@@ -425,7 +472,7 @@ async function startHero() {
     const { initHero } = await import('./hero3d.js');
     heroApi = await initHero($('#heroCanvas'), { emblemUrl: 'assets/img/emblem.svg', quality: QUALITY });
     heroApi.setProgress(heroProgress);
-    if (reduce) heroApi.setIntro(1);
+    heroApi.setIntro(reduce ? 1 : intro.v);
     window.__hero = heroApi;
   } catch (err) {
     console.warn('WebGL hero unavailable:', err);
@@ -447,10 +494,9 @@ function storyWordTriggers() {
   if (reduce) return;
   $$('#storyParas p').forEach((p, i) => {
     const words = $$('.w', p);
-    ScrollTrigger.create({
-      id: 'para-' + i, trigger: p, start: 'top 82%', end: 'bottom 48%', scrub: true,
-      onUpdate: (s) => { const n = Math.round(s.progress * words.length); words.forEach((w, k) => w.classList.toggle('on', k < n)); },
-    });
+    const paint = (st) => { const n = Math.round(st.progress * words.length); words.forEach((w, k) => w.classList.toggle('on', k < n)); };
+    const st = ScrollTrigger.create({ id: 'para-' + i, trigger: p, start: 'top 82%', end: 'bottom 48%', scrub: true, onUpdate: paint });
+    paint(st);
   });
 }
 
@@ -505,7 +551,7 @@ function scenes() {
 
   /* Rivers draw and meet */
   const rA = $('#riverA'), rB = $('#riverB'), rC = $('#riverC');
-  [rA, rB, rC].forEach((p) => { const l = p.getTotalLength(); p.style.strokeDasharray = l; p.style.strokeDashoffset = reduce ? 0 : l; p.dataset.len = l; });
+  [rA, rB, rC].forEach((p) => { const l = pathLen(p); p.style.strokeDasharray = l; p.style.strokeDashoffset = reduce ? 0 : l; p.dataset.len = l; });
   if (!reduce) {
     let met = false;
     ScrollTrigger.create({
@@ -624,7 +670,7 @@ function scenes() {
     const m = document.createElementNS(ns, 'mask'); m.id = 'mRoute' + i;
     const mp = document.createElementNS(ns, 'path'); mp.setAttribute('d', p.getAttribute('d'));
     mp.setAttribute('stroke', '#fff'); mp.setAttribute('stroke-width', '14'); mp.setAttribute('fill', 'none'); mp.setAttribute('stroke-linecap', 'round');
-    const len = p.getTotalLength(); mp.style.strokeDasharray = len; mp.style.strokeDashoffset = reduce ? 0 : len;
+    const len = pathLen(p); mp.style.strokeDasharray = len; mp.style.strokeDashoffset = reduce ? 0 : len;
     m.appendChild(mp); defs.appendChild(m); p.setAttribute('mask', `url(#${m.id})`); return { mp, len };
   });
   if (!reduce) {
@@ -708,7 +754,7 @@ async function boot() {
 
   // Loader: the ring and figures of the emblem draw like a river line, then fill with gold.
   const paths = $$('#loaderEmblem path');
-  paths.forEach((p) => { const l = p.getTotalLength(); p.style.strokeDasharray = l; p.style.strokeDashoffset = l; });
+  paths.forEach((p) => { const l = pathLen(p); p.style.strokeDasharray = l; p.style.strokeDashoffset = l; });
   const tl = gsap.timeline();
   if (!menuFirst && !reduce && !CAPTURE) {
     tl.to(paths, { strokeDashoffset: 0, duration: 1.5, ease: 'power2.inOut', stagger: { each: 0.025, from: 'random' } })
@@ -739,7 +785,7 @@ async function boot() {
   const io = new IntersectionObserver(([en]) => { if (en.isIntersecting) { io.disconnect(); startBottle(); } }, { rootMargin: '600px' });
   io.observe($('#wine'));
 
-  window.addEventListener('load', () => ScrollTrigger.refresh());
+  if (document.readyState === 'complete') ScrollTrigger.refresh(); else window.addEventListener('load', () => ScrollTrigger.refresh());
 }
 
 function playIntro(menuFirst) {

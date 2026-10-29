@@ -242,7 +242,9 @@ export async function initHero(canvas, { emblemUrl, quality = 'high' } = {}) {
   }
   loop();
 
-  const onVis = () => { state.running = document.visibilityState === 'visible'; clock.getDelta(); };
+  let paused = false, hidden = document.visibilityState !== 'visible';
+  const sync = () => { state.running = !paused && !hidden; clock.getDelta(); };
+  const onVis = () => { hidden = document.visibilityState !== 'visible'; sync(); };
   document.addEventListener('visibilitychange', onVis);
 
   return {
@@ -250,8 +252,8 @@ export async function initHero(canvas, { emblemUrl, quality = 'high' } = {}) {
     setIntro(v) { state.intro = v; },
     setPointer(x, y) { state.px = x; state.py = y; },
     setVelocity(v) { state.vel = v; },
-    pause() { state.running = false; },
-    resume() { state.running = true; clock.getDelta(); },
+    pause() { paused = true; sync(); },
+    resume() { paused = false; sync(); },
     // Deterministic frame for video capture (time in seconds).
     renderAt(t) { state.external = true; state.spx = state.px; state.spy = state.py; frame(t); },
     dispose() {
