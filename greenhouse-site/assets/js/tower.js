@@ -175,12 +175,12 @@ function buildModel(mobile) {
 
 export function createTower(canvas, { mobile = false, onLand = () => {} } = {}) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: mobile, powerPreference: 'high-performance' });
-  const DPR = Math.min(window.devicePixelRatio, mobile ? 1.5 : 1.75);
+  let DPR = Math.min(window.devicePixelRatio, mobile ? 1.25 : 1.75);
   renderer.setPixelRatio(DPR);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.0;
-  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.enabled = !mobile;   // phones: a soft blob shadow instead of a shadow map
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.localClippingEnabled = true;
 
@@ -212,14 +212,15 @@ export function createTower(canvas, { mobile = false, onLand = () => {} } = {}) 
   const slabPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);     // keeps y > h
   const clip = [buildPlane];
   const wood = woodTexture();
+  const glassMat = o => (mobile ? new THREE.MeshStandardMaterial(o) : new THREE.MeshPhysicalMaterial({ ...o, clearcoat: 1 }));
   const M = {
     facade: new THREE.MeshStandardMaterial({ color: 0xd2d0ca, roughness: 0.82, clippingPlanes: clip }),
     band: new THREE.MeshStandardMaterial({ color: 0xeceae5, roughness: 0.7, clippingPlanes: clip }),
     wood: new THREE.MeshStandardMaterial({ color: 0xffffff, map: wood, roughness: 0.62, clippingPlanes: clip }),
     slat: new THREE.MeshStandardMaterial({ color: 0xffffff, map: wood, roughness: 0.6, clippingPlanes: clip }),
     metal: new THREE.MeshStandardMaterial({ color: 0x1b1e1d, roughness: 0.42, metalness: 0.6, clippingPlanes: clip }),
-    glass: new THREE.MeshPhysicalMaterial({ color: 0x24343a, roughness: 0.06, metalness: 0.2, envMapIntensity: 1.6, clearcoat: 1, clippingPlanes: clip }),
-    glassLit: new THREE.MeshPhysicalMaterial({ color: 0x2a3438, roughness: 0.08, metalness: 0.15, envMapIntensity: 1.4, emissive: 0xffc98a, emissiveIntensity: 0, clearcoat: 1, clippingPlanes: clip }),
+    glass: glassMat({ color: 0x24343a, roughness: 0.06, metalness: 0.2, envMapIntensity: 1.6, clippingPlanes: clip }),
+    glassLit: glassMat({ color: 0x2a3438, roughness: 0.08, metalness: 0.15, envMapIntensity: 1.4, emissive: 0xffc98a, emissiveIntensity: 0, clippingPlanes: clip }),
     led: new THREE.MeshBasicMaterial({ color: 0xffd7a0, toneMapped: false, clippingPlanes: clip }),
     core: new THREE.MeshStandardMaterial({ color: 0x2c2724, roughness: 0.9, clippingPlanes: clip }),
     plinth: new THREE.MeshStandardMaterial({ color: 0x8e8e88, roughness: 0.9, clippingPlanes: clip }),
@@ -254,7 +255,8 @@ export function createTower(canvas, { mobile = false, onLand = () => {} } = {}) 
 
   // ---- logo slabs ----
   const slabGeo = new RoundedBoxGeometry(W, H, D, 5, 0.05);
-  const slabMat = new THREE.MeshPhysicalMaterial({ color: 0xf7f7f3, roughness: 0.38, clearcoat: 0.5, clearcoatRoughness: 0.35, envMapIntensity: 0.7, clippingPlanes: [slabPlane] });
+  const slabOpts = { color: 0xf7f7f3, roughness: 0.38, envMapIntensity: 0.7, clippingPlanes: [slabPlane] };
+  const slabMat = mobile ? new THREE.MeshStandardMaterial(slabOpts) : new THREE.MeshPhysicalMaterial({ ...slabOpts, clearcoat: 0.5, clearcoatRoughness: 0.35 });
   const slabs = [];
   for (let i = 0; i < FLOORS; i++) {
     const m = new THREE.Mesh(slabGeo, slabMat);
@@ -279,8 +281,8 @@ export function createTower(canvas, { mobile = false, onLand = () => {} } = {}) 
   const lineMat = new THREE.MeshBasicMaterial({ color: 0xd8d6cf });
   for (let k = -12; k <= 12; k++) { const l = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.035, 0.05), lineMat); l.position.set(k * 1.4, 0.0, BD / 2 + 3.4); site.add(l); }
 
-  const TREES = [[-3.4, 2.6, 1.0], [3.6, 2.4, 1.15], [-4.2, -1.2, 1.25], [4.5, -0.6, 1.05], [-2.4, -3.4, 0.95], [2.6, -3.6, 1.2], [-6.5, 2.2, 1.3], [6.8, 2.6, 1.1], [-7.2, -3.0, 1.4], [7.4, -2.6, 1.3], [0.5, -5.2, 1.2], [-5.0, 5.8, 1.0], [5.6, 6.2, 1.15]].slice(0, mobile ? 9 : 13);
-  const crownGeo = new THREE.IcosahedronGeometry(0.62, 4);
+  const TREES = [[-3.4, 2.6, 1.0], [3.6, 2.4, 1.15], [-4.2, -1.2, 1.25], [4.5, -0.6, 1.05], [-2.4, -3.4, 0.95], [2.6, -3.6, 1.2], [-6.5, 2.2, 1.3], [6.8, 2.6, 1.1], [-7.2, -3.0, 1.4], [7.4, -2.6, 1.3], [0.5, -5.2, 1.2], [-5.0, 5.8, 1.0], [5.6, 6.2, 1.15]].slice(0, mobile ? 7 : 13);
+  const crownGeo = new THREE.IcosahedronGeometry(0.62, mobile ? 2 : 4);
   const crownMat = new THREE.MeshStandardMaterial({ color: 0x3f8f5c, roughness: 0.9 });
   const trunkGeo = new THREE.CylinderGeometry(0.04, 0.06, 1.3, 6);
   const trunkMat = new THREE.MeshStandardMaterial({ color: 0x5d4a3c, roughness: 0.9 });
@@ -302,6 +304,17 @@ export function createTower(canvas, { mobile = false, onLand = () => {} } = {}) 
     g.add(post, head); g.position.set(x, 0, BD / 2 + 2.05); site.add(g);
     return g;
   });
+
+  // phones: soft blob shadow under the building instead of real-time shadows
+  if (mobile) {
+    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const g = c.getContext('2d'), gr = g.createRadialGradient(64, 64, 8, 64, 64, 64);
+    gr.addColorStop(0, 'rgba(0,0,0,.55)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+    const blob = new THREE.Mesh(new THREE.PlaneGeometry(BW * 2.2, BD * 2.4), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false }));
+    blob.rotation.x = -Math.PI / 2; blob.position.set(0.6, 0.04, -0.4);
+    site.add(blob);
+  }
 
   // dust in the light
   const COUNT = mobile ? 200 : 420;
@@ -469,8 +482,30 @@ export function createTower(canvas, { mobile = false, onLand = () => {} } = {}) 
     camera.updateProjectionMatrix();
 
     if (composer) composer.render(); else renderer.render(scene, camera);
+
+    // adaptive resolution: a phone that can't hold ~45 fps renders fewer pixels
+    // measured only while the hero is on screen, so the resize never lands mid-scroll
+    if (cur.camT < 0.15 && intro.v >= 1 && perfChecks < 2) { perfT += dt; perfN++; }
+    if (perfN >= 90) {
+      const avg = perfT / perfN; perfT = 0; perfN = 0; perfChecks++;
+      const floor = mobile ? 0.85 : 1;
+      if (avg > 0.022 && DPR > floor) {
+        DPR = Math.max(floor, avg > 0.034 ? floor : DPR - 0.25);
+        renderer.setPixelRatio(DPR);
+        if (composer) { composer.setPixelRatio(DPR); composer.setSize(window.innerWidth, window.innerHeight); }
+      }
+    }
     requestAnimationFrame(frame);
   }
+  let perfT = 0, perfN = 0, perfChecks = 0;
+  // compile every shader now, behind the loader, so the moment the building
+  // first appears does not stall on shader compilation
+  building.visible = true; site.visible = true; slabs.forEach(s => { s.mesh.visible = true; });
+  buildPlane.constant = TOP; slabPlane.constant = -TOP / 2;
+  camera.position.set(14, 6, 18); camera.lookAt(0, 4, 0); camera.updateProjectionMatrix();
+  renderer.compile(scene, camera);
+  if (composer) composer.render(); else renderer.render(scene, camera);
+
   requestAnimationFrame(frame);
 
   return { target, intro, setActive(v) { active = v; } };

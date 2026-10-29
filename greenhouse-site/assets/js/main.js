@@ -165,7 +165,7 @@ if (tower) {
 gsap.to('.hero__title .char', {
   yPercent: i => -40 - (i % 3) * 30,
   rotate: i => (i % 2 ? 8 : -8),
-  opacity: 0, filter: 'blur(6px)',
+  opacity: 0, filter: mobile ? 'none' : 'blur(6px)',
   stagger: 0.02, ease: 'none',
   scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true },
 });
@@ -186,7 +186,7 @@ function setStat(i) {
   statItems.forEach((el, k) => el.classList.toggle('is-on', k === i));
   sound.sfx.tick();
   gsap.timeline()
-    .to([statNum, statUnit], { yPercent: -60 * dir, opacity: 0, filter: 'blur(8px)', duration: 0.25, ease: 'power2.in' })
+    .to([statNum, statUnit], { yPercent: -60 * dir, opacity: 0, filter: mobile ? 'none' : 'blur(8px)', duration: 0.25, ease: 'power2.in' })
     .add(() => {
       const end = parseFloat(li.dataset.val);
       const dec = li.dataset.val.includes('.') ? 1 : 0;
@@ -196,7 +196,7 @@ function setStat(i) {
       statUnit.textContent = li.dataset.unit || '';
       statLabel.textContent = li.textContent;
     })
-    .fromTo([statNum, statUnit], { yPercent: 60 * dir, opacity: 0, filter: 'blur(8px)' }, { yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: 0.6, ease: 'expo.out' });
+    .fromTo([statNum, statUnit], { yPercent: 60 * dir, opacity: 0, filter: mobile ? 'none' : 'blur(8px)' }, { yPercent: 0, opacity: 1, filter: mobile ? 'none' : 'blur(0px)', duration: 0.6, ease: 'expo.out' });
   gsap.fromTo(statLabel, { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.6, ease: 'expo.out', delay: 0.2 });
 }
 gsap.set(['.build__head', '.stat', '.stat__list'], { opacity: 0, y: 40 });
