@@ -1,0 +1,49 @@
+{
+  "exchanges": [
+    "binance",
+    "bybit",
+    "okx"
+  ],
+  "fiats": [
+    "GEL",
+    "USD"
+  ],
+  "trade_amount": {
+    "GEL": 1000,
+    "USD": 400
+  },
+  "payment_methods": [
+    "tbc",
+    "bog",
+    "liberty",
+    "credo"
+  ],
+  "pages": 2,
+  "filters": {
+    "min_orders": 50,
+    "min_completion": 0.95,
+    "blacklist_nicks": []
+  },
+  "fees": {
+    "taker_pct": 0.0,
+    "maker_pct": 0.2,
+    "withdraw_usdt": {
+      "binance": 1.0,
+      "bybit": 1.0,
+      "okx": 1.0
+    },
+    "bank_fx_spread_pct": 1.0
+  },
+  "alert_min_profit_pct": {
+    "cross": 0.3,
+    "maker": 1.0,
+    "fx": 0.7
+  },
+  "interval_sec": 60,
+  "cooldown_min": 30,
+  "resend_if_better_by_pct": 0.2,
+  "telegram": {
+    "bot_token": "123456:ABC-ваш_токен",
+    "chat_id": "123456789"
+  }
+}
