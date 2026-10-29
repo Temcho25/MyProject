@@ -7,7 +7,7 @@ import { createMark } from './mark3d.js';
 
 // Showcase: six projects that change on their own every few seconds.
 const SHOW = ['legal', 'rolex', 'coordinate', 'trio', 'orientiri', 'champions'].map((id) => PROJECTS.find((p) => p.id === id));
-const SLIDE_TIME = 4.5;
+const SLIDE_TIME = 4;
 
 $('#featured').innerHTML = `
   <div class="sc">
