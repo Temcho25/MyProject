@@ -63,10 +63,12 @@ export const EN = {
   about_eyebrow: 'About the developer',
   about_text: 'Green House Development has been operating since 2021, focusing on the construction of in-demand residential properties across Georgia.',
   call: 'Call',
+  concept: 'Concept · not the official Green House Development website',
 };
 
 export function getLang() {
-  const q = new URLSearchParams(location.search).get('lang');
+  const h = location.hash.slice(1);
+  const q = h === 'en' || h === 'ka' ? h : new URLSearchParams(location.search).get('lang');
   if (q === 'en' || q === 'ka') {
     try { localStorage.setItem('gh-lang', q); } catch (e) {}
     return q;

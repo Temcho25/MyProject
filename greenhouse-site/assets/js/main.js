@@ -22,7 +22,8 @@ applyLang(lang);
 $$('.lang a').forEach(a => a.addEventListener('click', e => {
   e.preventDefault();
   try { localStorage.setItem('gh-lang', a.dataset.lang); } catch (_) {}
-  location.href = location.pathname + '?lang=' + a.dataset.lang;
+  location.hash = a.dataset.lang;
+  location.reload();
 }));
 
 
