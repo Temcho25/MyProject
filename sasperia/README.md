@@ -26,6 +26,11 @@ the Instagram profile), captured on 2026-10-29. Russian is a translation of that
 Sound is off by default; the button in the top bar turns on a quiet river ambience with soft plucks
 at chapter changes (Web Audio, no files). The scene plan is in [docs/STORYBOARD.md](docs/STORYBOARD.md).
 
+## Live preview
+
+https://sasperia-concept.vercel.app — QR menu: https://sasperia-concept.vercel.app/#menu  
+The preview is marked `noindex` (meta tag + `X-Robots-Tag` in `vercel.json`) so search engines do not list it as Sasperia's site. Remove both when it goes live on sasperia.ge.
+
 ## Run locally
 
 ```bash
