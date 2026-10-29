@@ -1,7 +1,7 @@
 # Sasperia Restaurant — website concept
 
 A redesign proposal for **Sasperia Restaurant, Mtskheta** (sasperia.ge), built as a static site:
-3D hero, scroll-driven chapters, a standalone QR menu and three languages (ქართული / English / Русский).
+a photo hero, light scroll motion, a standalone QR menu and three languages (ქართული / English / Русский).
 
 All copy, prices, dishes, wines, hours, addresses and photos come from Sasperia's own published
 material (sasperia.ge, its menu, bar, wine and cocktail pages, the v-card, the reservation module and
@@ -9,22 +9,25 @@ the Instagram profile), captured on 2026-10-29. Russian is a translation of that
 
 ## What is inside
 
-| Chapter | What happens |
-|---|---|
-| Preloader | The emblem's lines draw like a river, then fill with gold |
-| Hero | Their vector emblem extruded in gold (three.js), floating over a moving night river; gold dust with depth of field; the camera arcs and dives on scroll |
-| About us | Two river lines (Aragvi, Mtkvari) draw and meet; their About text lights up word by word |
-| Our specials | The 4 dishes from their homepage on a pinned horizontal track; cards turn in 3D as they pass |
-| Digital menu + QR | A 3D phone showing the live menu, and a QR that opens the menu view |
-| Bar | Signature and classic cocktails with prices; a fan of their cocktail photos; the Sasperia Art cappuccino |
-| Wine | A 3D bottle that turns with scroll; its label changes between the four "Sasperia" wines on their list |
-| Spaces | Their interior photos on a 3D ring; the five areas from the booking form |
-| Location | Their Instagram map, redrawn: parking, crossing, Svetitskhoveli, 2 min; parking and walking texts from the booking module |
-| Booking | Same fields as their form; produces a request to call or e-mail |
-| QR menu (`#menu`) | 64 dishes with photos, bar, 31 wines, 12 cocktails; tabs, category chips, search, dish sheet with drag-to-close, language switch |
+The site is built to stay smooth on phones: no 3D engine, no animation libraries, no sound.
+Phones use native scrolling; motion is CSS only (`transform`/`opacity`), started once when a
+section appears. On a desktop with a mouse, a few scroll layouts are added by one light scroll
+handler (`.rich` mode).
 
-Sound is off by default; the button in the top bar turns on a quiet river ambience with soft plucks
-at chapter changes (Web Audio, no files). The scene plan is in [docs/STORYBOARD.md](docs/STORYBOARD.md).
+| Chapter | Phone | Desktop |
+|---|---|---|
+| Hero | Their photo of the gold medallion in the arch, full screen; title rises in | Same photo in an arched frame beside the title, slight parallax |
+| About us | Aragvi and Mtkvari lines draw and meet once; their About text | Same, rivers stay beside the text |
+| Our specials | Swipe carousel of the 4 dishes from their homepage | Pinned track moved by scroll, cards turn as they pass |
+| Digital menu + QR | Phone mockup with the live menu, QR card | Phone turns with scroll |
+| Bar | Signature/classic cocktails, fan of their photos, Sasperia Art cappuccino | Fan opens with scroll |
+| Wine | The four "Sasperia" wines with prices, their bottle photo, grape names | — |
+| Spaces | Swipe gallery of their interior photos; five areas | Photos on a ring that turns with scroll |
+| Location | Their Instagram map redrawn; parking and walking texts | — |
+| Booking | Same fields as their form; request to call or e-mail | — |
+| QR menu (`#menu`) | 64 dishes with photos, bar, 31 wines, 12 cocktails; tabs, chips, search, dish sheet | — |
+
+Scripts loaded: `qrcode-generator` (QR code), `js/data.js`, `js/i18n.js`, `js/app.js`.
 
 ## Live preview
 
@@ -63,11 +66,8 @@ their existing reservations plugin (`sasperia-reservations`) — the fields are 
 
 ## Promo video
 
-`tools/capture.js` renders the site frame by frame into an MP4 with the same ambient sound:
-
-```bash
-node tools/capture.js http://localhost:8080/index.html out 60 540 960 2 ka   # 1080×1920, 60 fps
-```
+The promo MP4 sent with the pitch was rendered from the first version of the site (with the 3D
+hero and sound), which was later replaced by this lighter build for phone performance.
 
 ## Notes for the pitch: issues on the current sasperia.ge
 
@@ -90,13 +90,10 @@ This concept fixes the English typos and the cheesecake line; everything else is
 ```
 index.html          page
 css/style.css       design tokens and layout (mobile first)
-js/app.js           languages, scroll scenes, QR menu, booking
-js/hero3d.js        3D emblem + river + dust (three.js)
-js/bottle3d.js      3D wine bottle
-js/audio.js         ambient sound (Web Audio)
+js/app.js           languages, reveals, desktop scroll scenes, QR menu, booking
 js/i18n.js          interface text (ka/en/ru) and contacts
 js/data.js          generated menu data
 assets/             their photos (WebP) and the vector emblem/wordmark
 docs/STORYBOARD.md  scene plan with the options considered
-tools/              data build, video capture
+tools/              data build
 ```

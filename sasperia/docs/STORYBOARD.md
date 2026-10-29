@@ -1,5 +1,8 @@
 # Sasperia — scroll storyboard
 
+> Update: the 3D hero, the 3D bottle and the sound were removed after phone testing (scroll lag).
+> The hero now uses their photo of the medallion in the arch; see README for the current build.
+
 **Thread.** The Sasperia medallion (two deer guarding a face, spirals of water) rises from the
 night river at Mtskheta, the camera follows the water to the confluence of the Aragvi and the
 Mtkvari, and the scroll then walks the guest through the kitchen, the bar, the wine, the rooms, the
