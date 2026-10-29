@@ -366,6 +366,87 @@ def tg_send(cfg: dict, text: str) -> bool:
         return False
 
 
+CHAT_FILE = os.path.join(HERE, "chat_id.txt")
+
+HELP = (
+    "🤖 <b>P2P-сканер USDT</b>\n"
+    "/scan — цены и окна прямо сейчас\n"
+    "/pause — выключить уведомления\n"
+    "/resume — включить уведомления\n"
+    "/help — эта справка"
+)
+
+
+class TgBot:
+    """Простой бот на long polling: принимает команды и шлёт сигналы."""
+
+    def __init__(self, cfg: dict):
+        self.cfg = cfg
+        self.token = cfg["telegram"]["bot_token"]
+        self.offset = 0
+        self.paused = False
+        if not cfg["telegram"]["chat_id"] and os.path.exists(CHAT_FILE):
+            cfg["telegram"]["chat_id"] = open(CHAT_FILE).read().strip()
+
+    @property
+    def chat_id(self) -> str:
+        return str(self.cfg["telegram"]["chat_id"] or "")
+
+    def poll(self, wait_sec: float, on_scan):
+        """Слушает команды до wait_sec секунд."""
+        end = time.time() + wait_sec
+        while time.time() < end:
+            t = max(1, min(25, int(end - time.time())))
+            try:
+                url = (f"https://api.telegram.org/bot{self.token}/getUpdates"
+                       f"?timeout={t}&offset={self.offset}")
+                d = http_json(url, timeout=t + 10)
+            except Exception as e:
+                log(f"Telegram polling ошибка: {e}")
+                time.sleep(5)
+                continue
+            for u in d.get("result", []):
+                self.offset = u["update_id"] + 1
+                msg = u.get("message") or {}
+                chat = str((msg.get("chat") or {}).get("id", ""))
+                text = (msg.get("text") or "").strip().split("@")[0].lower()
+                if not chat or not text.startswith("/"):
+                    continue
+                if not self.chat_id:  # первый, кто написал боту, становится владельцем
+                    self.cfg["telegram"]["chat_id"] = chat
+                    with open(CHAT_FILE, "w") as f:
+                        f.write(chat)
+                    log(f"Привязан chat_id {chat}")
+                if chat != self.chat_id:
+                    continue  # чужие чаты игнорируем
+                if text in ("/start", "/help"):
+                    tg_send(self.cfg, HELP)
+                elif text == "/pause":
+                    self.paused = True
+                    tg_send(self.cfg, "⏸ Уведомления выключены. /resume — включить.")
+                elif text == "/resume":
+                    self.paused = False
+                    tg_send(self.cfg, "▶️ Уведомления включены.")
+                elif text == "/scan":
+                    tg_send(self.cfg, "⏳ Сканирую…")
+                    try:
+                        on_scan()
+                    except Exception as e:
+                        tg_send(self.cfg, f"Ошибка сканирования: {e}")
+
+
+def book_text(book: Dict, nbg: Optional[float]) -> str:
+    lines = []
+    for fiat, exs in book.items():
+        lines.append(f"<b>{fiat}</b>" + (f" (НБГ {nbg:.4f})" if fiat == "USD" and nbg else ""))
+        lines.append("<code>биржа    купить  продать</code>")
+        for ex, s in exs.items():
+            ask, bid = s.get("ask"), s.get("bid")
+            lines.append(f"<code>{ex:<8}{(f'{ask.price:g}' if ask else '—'):>7}{(f'{bid.price:g}' if bid else '—'):>9}</code>")
+        lines.append("")
+    return "\n".join(lines)
+
+
 class Deduper:
     """Не шлёт одно и то же окно чаще cooldown, если прибыль заметно не выросла."""
 
@@ -458,7 +539,8 @@ def main():
     args = ap.parse_args()
 
     cfg = load_cfg(args.config)
-    tg_on = bool(cfg["telegram"]["bot_token"] and cfg["telegram"]["chat_id"])
+    bot = TgBot(cfg) if cfg["telegram"]["bot_token"] else None
+    tg_on = bool(bot and bot.chat_id)
 
     if args.test_telegram:
         ok = tg_send(cfg, "✅ P2P-сканер подключён к Telegram.")
@@ -469,7 +551,16 @@ def main():
     dedup = Deduper(cfg["cooldown_min"], cfg["resend_if_better_by_pct"])
     if not args.once:
         log(f"Старт: {', '.join(cfg['exchanges'])} | {', '.join(cfg['fiats'])} | "
-            f"каждые {cfg['interval_sec']} с | Telegram {'вкл' if tg_on else 'выкл'}")
+            f"каждые {cfg['interval_sec']} с | Telegram {'вкл' if bot else 'выкл'}")
+        if bot and not bot.chat_id:
+            log("Напиши своему боту /start в Telegram — он запомнит твой чат.")
+        elif bot:
+            tg_send(cfg, "✅ Сканер запущен.\n\n" + HELP)
+
+    def on_demand_scan():
+        book, opps, nbg = scan(cfg)
+        top = [o for o in opps if o.profit_pct >= th[o.kind]][:5] or opps[:3]
+        tg_send(cfg, book_text(book, nbg) + "<b>Лучшие окна:</b>\n\n" + "\n\n".join(o.text for o in top))
 
     while True:
         try:
@@ -484,7 +575,7 @@ def main():
             else:
                 top = opps[0] if opps else None
                 log("Выгодных окон нет" + (f" (лучшее: {top.kind} {top.profit_pct:+.2f}%)" if top else ""))
-            if tg_on:
+            if bot and bot.chat_id and not bot.paused:
                 for o in hits:
                     if dedup.should_send(o):
                         tg_send(cfg, o.text + "\n\n⚠️ Проверь продавца и чек перед сделкой.")
@@ -494,7 +585,10 @@ def main():
             log(f"Ошибка цикла: {e}")
         if args.once:
             break
-        time.sleep(cfg["interval_sec"])
+        if bot:
+            bot.poll(cfg["interval_sec"], on_demand_scan)
+        else:
+            time.sleep(cfg["interval_sec"])
 
 
 if __name__ == "__main__":

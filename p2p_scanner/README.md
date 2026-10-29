@@ -28,10 +28,15 @@ python3 scanner.py                   # работать постоянно
 TG_BOT_TOKEN=123:ABC TG_CHAT_ID=123456789 python3 scanner.py
 ```
 
-### Как получить токен и chat_id
-1. Напиши в Telegram боту [@BotFather](https://t.me/BotFather) команду `/newbot` и скопируй токен.
-2. Отправь своему боту любое сообщение.
-3. Открой `https://api.telegram.org/bot<ТОКЕН>/getUpdates`, там найди `"chat":{"id": ...}`. Это и есть chat_id.
+### Подключение к Telegram
+1. Напиши [@BotFather](https://t.me/BotFather) команду `/newbot` и скопируй токен.
+2. Запусти сканер с токеном: `TG_BOT_TOKEN=123:ABC python3 scanner.py`.
+3. Напиши своему боту `/start`. Бот запомнит твой чат и будет слушаться только тебя. chat_id хранится в `chat_id.txt`, искать его вручную не нужно.
+
+Команды бота:
+- `/scan` — цены и лучшие окна прямо сейчас
+- `/pause` и `/resume` — выключить или включить уведомления
+- `/help` — справка
 
 ### Чтобы работал 24/7
 - Простой путь: `nohup python3 scanner.py > scanner.log 2>&1 &` на любом VPS.
