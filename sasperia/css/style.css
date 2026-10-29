@@ -202,7 +202,7 @@ html[lang="ka"] .hero__meta { text-transform: none; letter-spacing: .02em; }
 .story__paras { display: grid; gap: 34svh; padding-bottom: 10svh; }
 .story__paras p {
   font-family: var(--f-display); font-size: clamp(1.45rem, 1.05rem + 2vw, 2.7rem); line-height: 1.22; margin: 0; max-width: 24ch;
-  padding: 1rem 0; text-wrap: pretty;
+  padding: 1rem 0; text-wrap: pretty; text-shadow: 0 0 6px var(--ink), 0 0 22px var(--ink), 0 0 40px var(--ink);
 }
 html[lang="ka"] .story__paras p { font-size: clamp(1.12rem, .95rem + 1.2vw, 1.85rem); line-height: 1.45; max-width: 34ch; }
 html[lang="ru"] .story__paras p { max-width: 26ch; }
@@ -305,8 +305,7 @@ html[lang="ka"] .cocktails .group { text-transform: none; letter-spacing: .05em;
 .ring { position: relative; width: 1px; height: 1px; transform-style: preserve-3d; will-change: transform; }
 .ring img { max-width: none; position: absolute; width: var(--card-w, 220px); height: calc(var(--card-w, 220px) * 1.3); left: calc(var(--card-w, 220px) / -2); top: calc(var(--card-w, 220px) * -.65); object-fit: cover; border-radius: 6px; backface-visibility: hidden; box-shadow: 0 30px 60px -30px #000; }
 .areas { list-style: none; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0; padding-block: 0; }
-.areas li { padding: 1.1rem .8rem; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.areas li + li { border-left: 1px solid var(--line); }
+.areas li { padding: 1.1rem .8rem; border: 1px solid var(--line); margin: 0 -1px -1px 0; }
 .areas strong { display: block; font-family: var(--f-display); font-weight: 400; font-size: var(--step-1); line-height: 1.2; }
 .areas span { color: var(--mute); font-size: var(--step--1); }
 
