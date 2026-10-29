@@ -398,7 +398,7 @@ html[lang="ka"] .cocktails .group { text-transform: none; letter-spacing: .05em;
 .menu-app { position: fixed; inset: 0; z-index: 120; background: var(--ink-2); display: flex; flex-direction: column; opacity: 0; transform: translate3d(0, 24px, 0); transition: opacity .3s, transform .3s var(--ease); }
 .menu-app.is-open { opacity: 1; transform: none; }
 .menu-app__top { display: flex; align-items: center; gap: .6rem; padding: calc(10px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px)); }
-.menu-app__brand { display: flex; align-items: center; gap: .5rem; margin-right: auto; font-family: var(--f-display); font-size: 1.25rem; letter-spacing: .12em; text-transform: uppercase; color: var(--gold-hi); }
+.menu-app__brand { text-decoration: none; display: flex; align-items: center; gap: .5rem; margin-right: auto; font-family: var(--f-display); font-size: 1.25rem; letter-spacing: .12em; text-transform: uppercase; color: var(--gold-hi); }
 .menu-app__brand img { width: 30px; height: 30px; }
 .lang--small button { min-width: 34px; height: 32px; }
 .menu-app__tabs { display: flex; gap: .3rem; overflow-x: auto; padding: 4px max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px)); scrollbar-width: none; }

@@ -339,6 +339,8 @@ window.addEventListener('popstate', routeHash);
 document.addEventListener('click', (e) => {
   const a = e.target.closest('[data-open-menu]');
   if (a) { e.preventDefault(); closeDrawer(); openMenu(a.dataset.openMenu, true); return; }
+  const home = e.target.closest('[data-home]');
+  if (home) { e.preventDefault(); goHome(); return; }
   const link = e.target.closest('a[href^="#"]');
   if (link && link.getAttribute('href').length > 1) {
     const target = document.querySelector(link.getAttribute('href'));
@@ -515,12 +517,29 @@ window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTi
 richMQ.addEventListener ? richMQ.addEventListener('change', measure) : richMQ.addListener(measure);
 
 /* ============================== boot ============================== */
+/* Logo: close any overlay and go back to the very top of the page. */
+function goHome() {
+  if (!$('#sheet').hidden) closeSheet();
+  closeDrawer();
+  if (!$('#menuApp').hidden) closeMenu();
+  history.replaceState(null, '', location.pathname + location.search);
+  window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+}
+
+/* Reload always starts at the top: drop section anchors (#story, #bar…) and reset the scroll. */
+function startAtTop() {
+  if (location.hash && !/^#menu/.test(location.hash)) history.replaceState(null, '', location.pathname + location.search);
+  window.scrollTo(0, 0);
+}
+startAtTop();
+window.addEventListener('pageshow', (e) => { if (e.persisted) startAtTop(); });
+
 function boot() {
   applyI18n();
   observeReveals();
   document.documentElement.classList.add('ready');
   routeHash();
-  window.addEventListener('load', measure);
+  window.addEventListener('load', () => { if (!/^#menu/.test(location.hash)) window.scrollTo(0, 0); measure(); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
 }
 boot();

@@ -16,7 +16,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Forum&family=Cormorant+Garamond:ital@1&family=Manrope:wght@400;600;700&family=Noto+Sans+Georgian:wght@400;600&family=Noto+Serif+Georgian&display=swap">
 <link rel="stylesheet" href="css/style.css">
-<script>document.documentElement.classList.add('js');</script>
+<script>document.documentElement.classList.add('js');
+/* Always open at the top on reload (a #menu link from the QR code still opens the menu). */
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';</script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Restaurant","name":"Sasperia Restaurant","servesCuisine":"Georgian","telephone":"+995 500 55 51 55","email":"info@sasperia.ge","url":"https://sasperia.ge","address":{"@type":"PostalAddress","streetAddress":"3 Sanapiro St.","addressLocality":"Mtskheta","addressCountry":"GE"},"openingHours":"Mo-Su 12:00-24:00","hasMenu":"https://sasperia.ge/#menu"}
 </script>
@@ -25,7 +27,7 @@
 
 <!-- ============ NAV ============ -->
 <header class="nav" id="nav">
-  <a class="nav__brand" href="#top" aria-label="Sasperia">
+  <a class="nav__brand" href="./" data-home aria-label="Sasperia">
     <img src="assets/img/emblem.svg" alt="" class="nav__emblem" width="34" height="34">
     <span class="nav__word">Sasperia</span>
   </a>
@@ -332,7 +334,7 @@
 <div class="menu-app" id="menuApp" role="dialog" aria-modal="true" aria-labelledby="menuTitle" hidden>
   <header class="menu-app__top">
     <button type="button" class="icon-btn menu-app__close" id="menuClose" data-i18n-aria="menu.back" aria-label="Back to the site"><span aria-hidden="true">←</span></button>
-    <div class="menu-app__brand"><img src="assets/img/emblem.svg" alt=""><span id="menuTitle">Sasperia</span></div>
+    <a class="menu-app__brand" href="./" data-home aria-label="Sasperia"><img src="assets/img/emblem.svg" alt=""><span id="menuTitle">Sasperia</span></a>
     <div class="lang lang--small" role="group" aria-label="Language">
       <button type="button" data-lang="ka">KA</button><button type="button" data-lang="en">EN</button><button type="button" data-lang="ru">RU</button>
     </div>
