@@ -90,3 +90,34 @@ a low whoosh on page transitions.
 ## Showreel
 Per vizavi-motion defaults: a 1920×1080 60 fps H.264 + AAC MP4 scroll-through of the site,
 rendered frame by frame with a controlled clock and a matching soundtrack — usable on Upwork.
+
+---
+
+# v4 — mirror motion, lab, new project mix
+
+Owner feedback: the 3D "a" works; add mirror-like motion; drop Angels, Mgrand, Roof and
+Town Square from the home page; show more than finished sites.
+
+## Hero mirror floor
+Options: contact shadow (v3) · **planar mirror under the mark, reflection fading into the page**
+· chrome floor plate · water ripple.
+The lacquer mark (and the floating parts) are reflected in a soft mirror that dissolves into
+the stone background, so the object reads as standing on a polished surface.
+
+## Mirror word
+Options: plain section title · **"atskoba." rises out of a mirror line while its reflection sinks
+symmetrically, then a chrome sheen sweeps across** · split text · marquee.
+One scrubbed scene: letters rise from the centre outward, the hairline mirror line draws,
+the sheen passes, the caption settles.
+
+## Lab — beyond finished projects
+Options: GIF demos · video · code snippets · **pinned live WebGL lab: a liquid-chrome object
+in three modes driven by scroll and cursor**.
+- Liquid chrome — the surface flows (noise displacement with real normals).
+- Mirror surfaces — it calms into a perfect mirror sphere standing on the mirror floor.
+- Light that moves — two lights orbit; their highlights slide across the chrome.
+Camera keeps drifting; chapter titles change through masks like the services scene.
+
+## Home project mix
+Big cases: Rolex Submariner, Coordinate, Trio Group. Cards: Orientiri, Dream Palace,
+Champions Academy, Chicos — real estate, hospitality and sport, not one genre.

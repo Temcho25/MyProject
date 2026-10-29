@@ -100,44 +100,69 @@ function setupScroll() {
   });
 
   setupChapters();
+  setupMirror();
   setupStack();
   gsap.fromTo('.all-wrap .pill', { y: 30, opacity: 0 }, {
     y: 0, opacity: 1, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: '.all-wrap', start: 'top 92%', once: true },
   });
 }
 
-/* ------------------------------------------------------------------ services: pinned 3D chapters */
-let chapter = 0;
-function showChapter(next) {
-  if (next === chapter) return;
-  const chaps = $$('.chap');
-  const prev = chaps[chapter], cur = chaps[next];
-  const dir = next > chapter ? 1 : -1;
-  chapter = next;
-  prev.classList.remove('is-on'); cur.classList.add('is-on');
-  gsap.killTweensOf([prev, cur, $('.ln > span', prev), $('.ln > span', cur), $('.chap-d', prev), $('.chap-d', cur)]);
-  gsap.to($('.ln > span', prev), { yPercent: -110 * dir, duration: M.dur.normal, ease: M.ease.out });
-  gsap.to($('.chap-d', prev), { y: -20 * dir, opacity: 0, duration: M.dur.fast, ease: M.ease.in });
-  gsap.fromTo($('.ln > span', cur), { yPercent: 110 * dir }, { yPercent: 0, duration: M.dur.slow, ease: M.ease.out, delay: 0.08 });
-  gsap.fromTo($('.chap-d', cur), { y: 24 * dir, opacity: 0 }, { y: 0, opacity: 1, duration: M.dur.slow, ease: M.ease.out, delay: 0.18 });
-  chime(next);
-}
-function setupChapters() {
-  const chaps = $$('.chap');
+/* ------------------------------------------------------------------ pinned chapter scenes (services, lab) */
+// One controller per pinned section: chapter titles swap through masks, bars show progress,
+// and onK(k) drives the 3D scene with a continuous chapter position (0..n).
+function chapterScene(section, root, bars, onK, noteBase = 0) {
+  const chaps = $$('.chap', root);
+  const n = chaps.length;
+  let cur = 0;
   chaps.forEach((c, i) => {
     gsap.set($('.ln > span', c), { yPercent: i === 0 ? 0 : 110 });
     gsap.set($('.chap-d', c), { opacity: i === 0 ? 1 : 0 });
   });
-  const bars = $$('.chap-bars i');
+  const show = (next) => {
+    if (next === cur) return;
+    const prev = chaps[cur], nxt = chaps[next];
+    const dir = next > cur ? 1 : -1;
+    cur = next;
+    prev.classList.remove('is-on'); nxt.classList.add('is-on');
+    gsap.killTweensOf([$('.ln > span', prev), $('.ln > span', nxt), $('.chap-d', prev), $('.chap-d', nxt)]);
+    gsap.to($('.ln > span', prev), { yPercent: -110 * dir, duration: M.dur.normal, ease: M.ease.out });
+    gsap.to($('.chap-d', prev), { y: -20 * dir, opacity: 0, duration: M.dur.fast, ease: M.ease.in });
+    gsap.fromTo($('.ln > span', nxt), { yPercent: 110 * dir }, { yPercent: 0, duration: M.dur.slow, ease: M.ease.out, delay: 0.08 });
+    gsap.fromTo($('.chap-d', nxt), { y: 24 * dir, opacity: 0 }, { y: 0, opacity: 1, duration: M.dur.slow, ease: M.ease.out, delay: 0.18 });
+    chime(noteBase + next);
+  };
   ScrollTrigger.create({
-    trigger: '.svc3d', start: 'top top', end: 'bottom bottom',
+    trigger: section, start: 'top top', end: 'bottom bottom',
     onUpdate: (st) => {
-      const k = st.progress * 4;
-      if (mark) mark.state.svc = k;
+      const k = st.progress * n;
+      onK(k);
       bars.forEach((b, i) => b.style.setProperty('--p', Math.min(1, Math.max(0, k - i)).toFixed(3)));
-      showChapter(Math.min(3, Math.floor(k)));
+      show(Math.min(n - 1, Math.floor(k)));
     },
   });
+}
+function setupChapters() {
+  chapterScene('.svc3d', $('#chapters'), $$('.svc3d .chap-bars i'), (k) => { if (mark) mark.state.svc = k; });
+  chapterScene('.lab', $('#labChapters'), $$('.lab .chap-bars i'), (k) => { if (mark) mark.state.lab = k; }, 1);
+}
+
+/* ------------------------------------------------------------------ mirror word */
+function setupMirror() {
+  const letters = $$('.mw-top .ml'), refl = $$('.mw-bot .ml');
+  const mid = (letters.length - 1) / 2;
+  const order = (i) => Math.abs(i - mid); // rise from the centre outward
+  gsap.set([letters, refl], { yPercent: 105 });
+  gsap.set('.mw-line', { scaleX: 0 });
+  gsap.set('.mirror-cap', { opacity: 0, y: 20 });
+  const tl = gsap.timeline({ scrollTrigger: { trigger: '.mirror', start: 'top top', end: 'bottom bottom', scrub: 0.6 } });
+  tl.to('.mw-line', { scaleX: 1, duration: 0.3, ease: 'power2.inOut' }, 0);
+  letters.forEach((el, i) => {
+    // Same tween on the letter and its reflection: the flipped container mirrors the motion.
+    tl.to([el, refl[i]], { yPercent: 0, duration: 0.35, ease: 'power3.out' }, 0.08 + order(i) * 0.05);
+  });
+  tl.fromTo('.mword', { '--sheen': '120%' }, { '--sheen': '-20%', duration: 0.4, ease: 'none' }, 0.5);
+  tl.to('.mirror-cap', { opacity: 1, y: 0, duration: 0.2 }, 0.62);
+  tl.to({}, { duration: 0.1 }); // short hold before the section scrolls away
 }
 
 /* ------------------------------------------------------------------ approach: stacked cards */
@@ -165,11 +190,14 @@ ScrollTrigger.addEventListener('refresh', measureTicker);
 document.fonts?.ready.then(measureTicker);
 const contact = $('#contact');
 const svcEl = $('.svc3d');
-let contactTop = 0, svcTop = 0, svcH = 0;
+const labEl = $('.lab');
+let contactTop = 0, svcTop = 0, svcH = 0, labTop = 0, labH = 0;
 const measure = () => {
   contactTop = contact.getBoundingClientRect().top + window.scrollY;
   const r = svcEl.getBoundingClientRect();
   svcTop = r.top + window.scrollY; svcH = r.height;
+  const l = labEl.getBoundingClientRect();
+  labTop = l.top + window.scrollY; labH = l.height;
 };
 ScrollTrigger.addEventListener('refresh', measure);
 
@@ -191,6 +219,8 @@ gsap.ticker.add(() => {
     const inn = Math.min(1, Math.max(0, (vh - top) / (vh * 0.7)));
     const outn = Math.min(1, Math.max(0, bottom / (vh * 0.7)));
     mark.state.svcOn = Math.min(inn, outn);
+    const lt = labTop - y, lb = labTop + labH - y;
+    mark.state.labOn = Math.min(Math.min(1, Math.max(0, (vh - lt) / (vh * 0.7))), Math.min(1, Math.max(0, lb / (vh * 0.7))));
   }
 });
 

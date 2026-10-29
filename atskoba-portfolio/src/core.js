@@ -24,8 +24,9 @@ export const M = {
   dur: { fast: 0.4, normal: 0.9, slow: 1.3, crawl: 1.7 },
 };
 // Low-end devices get the lighter path (no floating parts, lower pixel ratio, no tilt).
-export const lowEnd = (navigator.hardwareConcurrency || 8) <= 2 || (navigator.deviceMemory || 8) <= 2
-  || (mobile && (navigator.hardwareConcurrency || 8) <= 4);
+// Low-end devices get the lighter path. iOS Safari always reports 4 cores, so core count alone
+// must not switch it off on iPhones; only clearly weak devices (≤2 cores or ≤2 GB) qualify.
+export const lowEnd = (navigator.hardwareConcurrency || 8) <= 2 || (navigator.deviceMemory || 8) <= 2;
 
 /* ------------------------------------------------------------------ language */
 function pickLang() {
