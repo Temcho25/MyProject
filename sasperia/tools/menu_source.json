@@ -1,0 +1,1022 @@
+{
+ "ka": [
+  {
+   "cat": "-OyYS7xdWvWF_68VVBmb",
+   "title": "საფირმო კერძი",
+   "items": [
+    {
+     "id": "signature_ribs",
+     "img": "/menu/img/menu/signature_ribs/20260722-133725-ed3c972554.webp",
+     "price": "85 ₾",
+     "name": "საფირმო კერძი",
+     "desc": "ღორის ნეკნი, თაფლი, კარტოფილი, პომიდორი, ნიორი და ტყემალი."
+    }
+   ]
+  },
+  {
+   "cat": "starters",
+   "title": "ცივი კერძები",
+   "items": [
+    {
+     "id": "-OxpeR8aorhlx5ZEmEMX",
+     "img": "/menu/img/menu/-OxpeR8aorhlx5ZEmEMX/20261018-102552-9b25e4c251.webp",
+     "price": "29 ₾",
+     "name": "ქართული ფხალის ნაირსახეობა",
+     "desc": "ისპანახი, ჭარხალი, ხახვი, ბადრიჯანი, ნიგოზი, სუნელები."
+    },
+    {
+     "id": "-OxpcXXiX9Y_-TA2JaO8",
+     "img": "/menu/img/menu/-OxpcXXiX9Y_-TA2JaO8/20260727-105045-f3f5eda715.webp",
+     "price": "32 ₾",
+     "name": "ქართული ყველის დაფა",
+     "desc": "სულგუნი, იმერული, ქარხნის ყველი, შებოლილი სულგუნი."
+    },
+    {
+     "id": "-OxpermAgWWTyVg65z7s",
+     "img": "/menu/img/menu/-OxpermAgWWTyVg65z7s/20260727-105158-661daa6edb.webp",
+     "price": "22 ₾",
+     "name": "ნადუღი სულგუნის ფირფიტებში",
+     "desc": "ნადუღი, სულგუნის ფირფიტა, პიტნა, არაჟანი."
+    },
+    {
+     "id": "-OxpfD9QIqHzmRfNTruX",
+     "img": "/menu/img/menu/-OxpfD9QIqHzmRfNTruX/20260727-105308-d48c4cb044.webp",
+     "price": "48 ₾",
+     "name": "ორაგული ქინძმარში",
+     "desc": "ორაგული, ქინძი, ძმარი, წითელი წიწაკა, ლიმონის წვენი, ზეითუნის ზეთი."
+    },
+    {
+     "id": "-OxpfYHA9VuAWIUy5JwS",
+     "img": "/menu/img/menu/-OxpfYHA9VuAWIUy5JwS/20260727-105337-1f553266b4.webp",
+     "price": "32 ₾",
+     "name": "სოფლის დედალი საცივის სოუსში",
+     "desc": "სოფლის დედალი, ნიგოზი, ხახვი, ზეთი, სუნელები."
+    },
+    {
+     "id": "-OxpgL2R7eUN3A5tF6XG",
+     "img": "/menu/img/menu/-OxpgL2R7eUN3A5tF6XG/20260727-105721-1c71a5291f.webp",
+     "price": "18 ₾",
+     "name": "გამომცხვარი ჭარხალი ღოღნაშოს საწებლით",
+     "desc": "ჭარხალი, ღოღნოშოს საწებელი, ქინძი, ნიორი."
+    },
+    {
+     "id": "-P2q9nFCdsWo8SDY9G3g",
+     "img": "/menu/img/menu/-P2q9nFCdsWo8SDY9G3g/20261001-063343-4ea4f618c0.webp",
+     "price": "20 ₾",
+     "name": "ეკალა ნიგვზით",
+     "desc": "ეკალა, ნიგოზი, ქინძი, ნიორი, სუნელები"
+    }
+   ]
+  },
+  {
+   "cat": "salads",
+   "title": "სალათები",
+   "items": [
+    {
+     "id": "georgian_salad",
+     "img": "/menu/img/menu/georgian_salad/20260727-103511-4aa735094b.webp",
+     "price": "19 ₾",
+     "name": "ქართული სალათი(შერჩევით: ნიგვზით, გურული აჯიკით)",
+     "desc": "კიტრი, პომიდორი, წითელი ხახვი, ოხრახუში და კახური ზეთი."
+    },
+    {
+     "id": "-Oxpl6do5Yi7X3vWsyzs",
+     "img": "/menu/img/menu/-Oxpl6do5Yi7X3vWsyzs/20260727-105704-2860ebab1b.webp",
+     "price": "17 ₾",
+     "name": "ქართული სალათი კახური ზეთით",
+     "desc": "კიტრი, პომიდორი, წითელი ხახვი, მარილი, ოხრახუში, კახური ზეთი."
+    },
+    {
+     "id": "-Oxpp-5s9ksq7SWWdtV_",
+     "img": "/menu/img/menu/-Oxpp-5s9ksq7SWWdtV_/20260727-110235-29946673dd.webp",
+     "price": "26 ₾",
+     "name": "ქათმის სალათი ნადუღით",
+     "desc": "სალათის ფოთოლი, მწვანე ვაშლი, ქათმის ფილე, ნადუღი, ნაღები, ქართული პურის ჩიფსი."
+    },
+    {
+     "id": "-Oxpr1RZlvI-XHK0gnvh",
+     "img": "/menu/img/menu/-Oxpr1RZlvI-XHK0gnvh/20260727-105211-23543f8f98.webp",
+     "price": "21 ₾",
+     "name": "აჯაფსანდალი სულგუნით და გახუხული პურით",
+     "desc": "ბადრიჯანი, ბულგარული (წითელი, მწვანე), ხახვი, პომიდორი, ქინძი, ქართული პურის ჩიფსი."
+    }
+   ]
+  },
+  {
+   "cat": "soups",
+   "title": "წვნიანი",
+   "items": [
+    {
+     "id": "chikhirtma",
+     "img": "/menu/img/menu/chikhirtma/20260727-105931-89fdc835fc.webp",
+     "price": "21 ₾",
+     "name": "ჩიხირთმა",
+     "desc": "ქათამი, ბულიონი, ქინძი, ნიორი, კვერცხი და ფქვილი."
+    },
+    {
+     "id": "-OxprxVffXd1clbHyyDS",
+     "img": "/menu/img/menu/-OxprxVffXd1clbHyyDS/20261001-065444-9115ca85ad.webp",
+     "price": "28 ₾",
+     "name": "სუპ-ხარჩო",
+     "desc": "საქონლის ხორცი, ბრინჯი, ქინძი, ნიორი, სუნელები"
+    },
+    {
+     "id": "-Oxpt1DBjSWkKJzIgdc0",
+     "img": "/menu/img/menu/-Oxpt1DBjSWkKJzIgdc0/20260727-105910-f6e5dcca31.webp",
+     "price": "18 ₾",
+     "name": "სოკოს კრემსუპი",
+     "desc": "ქამა სოკო, ხის სოკო, ნაღები, ქართული პურის ჩიფსი, ნაღები სურვილისამებრ."
+    },
+    {
+     "id": "-Oxptpa3yj5DvY1wnHNo",
+     "img": "/menu/img/menu/-Oxptpa3yj5DvY1wnHNo/20260727-110024-c946987eaf.webp",
+     "price": "17 ₾",
+     "name": "გოგრის კრემსუპი",
+     "desc": "გოგრა, სტაფილო, ხახვი, ნაღები სურვილისამებრ."
+    }
+   ]
+  },
+  {
+   "cat": "oven",
+   "title": "ცომეული",
+   "items": [
+    {
+     "id": "-Oxpv2OXja8TpA8brGsb",
+     "img": "/menu/img/menu/-Oxpv2OXja8TpA8brGsb/20260727-110154-ed73635438.webp",
+     "price": "25 ₾",
+     "name": "აჭარული ხაჭაპური",
+     "desc": "ფქვილი, კვერცხი, კარაქი, საფუარი, ყველი."
+    },
+    {
+     "id": "khachapuri",
+     "img": "/menu/img/menu/khachapuri/20260727-103716-16da60d8c1.webp",
+     "price": "25 ₾",
+     "name": "იმერული ხაჭაპური",
+     "desc": "ფქვილი, კვერცხი, ყველი და კარაქი."
+    },
+    {
+     "id": "-Oxpup7bO6pwdwoQV31L",
+     "img": "/menu/img/menu/-Oxpup7bO6pwdwoQV31L/20260727-110112-a800d3d3b8.webp",
+     "price": "28 ₾",
+     "name": "მეგრული ხაჭაპური",
+     "desc": "ფქვილი, კვერცხი, კარაქი, საფუარი, ყველი"
+    },
+    {
+     "id": "-OxpvGf_8gg2KhodqbNj",
+     "img": "/menu/img/menu/-OxpvGf_8gg2KhodqbNj/20260727-110224-213d50bc15.webp",
+     "price": "18 ₾",
+     "name": "ლობიანი",
+     "desc": "ლობიო, ხახვი, ზეთი, საფუარი, კარაქი სურვილისამებრ."
+    },
+    {
+     "id": "-OxpvSWJrJnQLJq-tI4B",
+     "img": "/menu/img/menu/-OxpvSWJrJnQLJq-tI4B/20260727-110255-4cf3e96872.webp",
+     "price": "5 ₾",
+     "name": "შოთის პური",
+     "desc": "ფქვილი, მარილი, საფუარი."
+    },
+    {
+     "id": "-OxpveZH6B6245lY2pRZ",
+     "img": "/menu/img/menu/-OxpveZH6B6245lY2pRZ/20260727-110313-8bcb5d3bff.webp",
+     "price": "5 ₾",
+     "name": "მჭადი",
+     "desc": "სიმინდის ფქვილი, მინერალური წყალი."
+    },
+    {
+     "id": "-OxpvsTfkXJu0ImMnvP9",
+     "img": "/menu/img/menu/-OxpvsTfkXJu0ImMnvP9/20260727-110324-47a0117444.webp",
+     "price": "9 ₾",
+     "name": "ჭვიშტარი",
+     "desc": "სიმინდის ფქვილი, მინერალური წყალი, სულგუნი, კვერცხი."
+    },
+    {
+     "id": "-P2qFLf4L3vvaSsOtVY4",
+     "img": "/menu/img/menu/-P2qFLf4L3vvaSsOtVY4/20261001-065758-6819fbd20c.webp",
+     "price": "25 ₾",
+     "name": "ლობიანი რაჭული ლორით",
+     "desc": "ლობიო, რაჭული ლორი"
+    },
+    {
+     "id": "-P2qFqlKS3PKWMmCcJEH",
+     "img": "/menu/img/menu/-P2qFqlKS3PKWMmCcJEH/20261001-070010-11929dca84.webp",
+     "price": "20 ₾",
+     "name": "ფხლოვანა ყველით",
+     "desc": "ჭარხლის ფოთოლი, ყველი"
+    }
+   ]
+  },
+  {
+   "cat": "mains",
+   "title": "ცხელი კერძები",
+   "items": [
+    {
+     "id": "-Oxpz5MJgU2q2gVzVH0R",
+     "img": "/menu/img/menu/-Oxpz5MJgU2q2gVzVH0R/20260727-110608-8df94ce135.webp",
+     "price": "42 ₾",
+     "name": "შქმერული",
+     "desc": "წიწილა, ნიორი, მარილი, პილპილი, კარაქი."
+    },
+    {
+     "id": "-Oxq-KJoBkEfa2vZnbWN",
+     "img": "/menu/img/menu/-Oxq-KJoBkEfa2vZnbWN/20260727-110655-e03420cc3a.webp",
+     "price": "23 ₾",
+     "name": "კალმახა სოკოს ჩაშუშული",
+     "desc": "კალმახა სოკო, სუნელები, ქინძი, ნიორი, პომიდორი, ხახვი, კარაქი."
+    },
+    {
+     "id": "-Oxq0p_i9zYe-3VgRuDx",
+     "img": "/menu/img/menu/-Oxq0p_i9zYe-3VgRuDx/20260727-110653-db9823b4e3.webp",
+     "price": "38 ₾",
+     "name": "მეგრული კუპატი მობრაწული ელარჯით",
+     "desc": "მეგრული კუპატი ღერღილი, ფქვილი სულგუნი."
+    },
+    {
+     "id": "-Oxq1zmrSNTEXERPOfwQ",
+     "img": "/menu/img/menu/-Oxq1zmrSNTEXERPOfwQ/20260727-111037-8e1e13eb8f.webp",
+     "price": "24 ₾",
+     "name": "ამოლესილი ლობიო მჭადით და მწნილით",
+     "desc": "ლობიო, ქინძი , ხახვი, კარაქი, ნიახური, ნიგოზი, მჟავე, მჭადი, ყველი."
+    },
+    {
+     "id": "-P2qItXEg-NqISKWw91m",
+     "img": "/menu/img/menu/-P2qItXEg-NqISKWw91m/20261001-071327-63d7dc9cdf.webp",
+     "price": "28 ₾",
+     "name": "ხინკლუკები ნაღების სოუსით",
+     "desc": "ფქვილი, საქონლის ხორცი, ნაღები, პარმეზანი"
+    },
+    {
+     "id": "-P2qJvhVyHIWRRwCt1Xr",
+     "img": "/menu/img/menu/-P2qJvhVyHIWRRwCt1Xr/20261001-071758-41278381f2.webp",
+     "price": "28 ₾",
+     "name": "ამოლესილი ლობიო რაჭული ლორით, მჭადით და მწნილით",
+     "desc": "ლობიო, ქინძი , ხახვი, კარაქი, ნიახური, ნიგოზი, მჟავე, მჭადი, ყველი, რაჭული ლორი"
+    },
+    {
+     "id": "-P2qKTvG6nzn7jNaAedp",
+     "img": "/menu/img/menu/-P2qKTvG6nzn7jNaAedp/20261001-072022-222e0f4557.webp",
+     "price": "28 ₾",
+     "name": "ოჯახური ღორის ხორცით კეცზე",
+     "desc": "ღორის ხორცი, კარტოფილი, ბოსტნეული, სუნელები, ქინძი, ნიორი"
+    },
+    {
+     "id": "-OxpzWShA53kkLIrSS3_",
+     "img": "/menu/img/menu/-OxpzWShA53kkLIrSS3_/20260727-110607-30743ee2a8.webp",
+     "price": "24 ₾",
+     "name": "ქამა სოკო სულგუნით",
+     "desc": "ქამა სოკო, მარილი, პილპილი, სულგუნი."
+    },
+    {
+     "id": "-Oxq1L0vbVs1ATbQBK8V",
+     "img": "/menu/img/menu/-Oxq1L0vbVs1ATbQBK8V/20260727-110734-db21f4deaf.webp",
+     "price": "16 ₾",
+     "name": "ხინკალი 5 ცალი",
+     "desc": "შერეული ფარში, ხახვი, ქინძი, ძირა, პილპილი, დაღერღილი წიწაკა, ფქვილი."
+    },
+    {
+     "id": "-P2qGTlKJSeCioWNeKnr",
+     "img": "/menu/img/menu/-P2qGTlKJSeCioWNeKnr/20261001-070253-b5663159c0.webp",
+     "price": "35 ₾",
+     "name": "ხბოს ჩაქაფული",
+     "desc": "ხბოს ხორცი, მწვანილები, თეთრი ღვინო, წიწაკა"
+    },
+    {
+     "id": "-P2qGaZIWG2ciMI4pJyA",
+     "img": "/menu/img/menu/-P2qGaZIWG2ciMI4pJyA/20261001-070325-b85c024690.webp",
+     "price": "35 ₾",
+     "name": "ოსტრი",
+     "desc": "საქონლის ხორცი, სუნელები, ქინძი, ნიორი"
+    }
+   ]
+  },
+  {
+   "cat": "grill",
+   "title": "მაყალი",
+   "items": [
+    {
+     "id": "-OxqzrxxxPWIq-C5Dpt5",
+     "img": "/menu/img/menu/-OxqzrxxxPWIq-C5Dpt5/20260727-111110-f99f6f55e0.webp",
+     "price": "20 ₾",
+     "name": "ქათმის მწვადი",
+     "desc": "ქათმის ხორცი, ხახვი, მარილი, პილპილი, მაწონი, არაჟანი."
+    },
+    {
+     "id": "-Oxr-LAzgPwW5uCLKDwq",
+     "img": "/menu/img/menu/-Oxr-LAzgPwW5uCLKDwq/20260727-111132-64071ef695.webp",
+     "price": "26 ₾",
+     "name": "ქაბაბი",
+     "desc": "ღორის ხორცი, საქონლის ხორცი, ქინძი, ხახვი, ქონდარი, მარილი, პილპილი, ბებოს ლავაში."
+    },
+    {
+     "id": "-Oxr-ZcT1aDcMUZFIODd",
+     "img": "/menu/img/menu/-Oxr-ZcT1aDcMUZFIODd/20260727-111154-09893992ff.webp",
+     "price": "21 ₾",
+     "name": "ქათმის ქაბაბი",
+     "desc": "ქათმის ხორცი, საქონლის მუცლის ცხიმი, ხახვი, ქინძი, ქონდარი, მარილი, პილპილი, ბებოს ლავაში."
+    },
+    {
+     "id": "-Oxr-nmu5nEN8SoLoA_p",
+     "img": "/menu/img/menu/-Oxr-nmu5nEN8SoLoA_p/20260727-111226-076274c475.webp",
+     "price": "33 ₾",
+     "name": "ცხვრის ქაბაბი",
+     "desc": "ცხვრის ხორცი, ნიორი, ქინძი, ხახვი, მარილი, პილპილი, ბებოს ლავაში."
+    },
+    {
+     "id": "-Oxr08pU5XmIh0bYea--",
+     "img": "/menu/img/menu/-Oxr08pU5XmIh0bYea--/20260727-111244-7d72b8b31b.webp",
+     "price": "25 ₾",
+     "name": "მდინარის კალმახი",
+     "desc": "კალმახი, ლიმონი, მაშარაფი."
+    },
+    {
+     "id": "-Oxr0SH7JZArjrnRTo4E",
+     "img": "/menu/img/menu/-Oxr0SH7JZArjrnRTo4E/20260727-111300-5afe7593d0.webp",
+     "price": "68 ₾",
+     "name": "ნორვეგიული ორაგული ნაკვერჩხალზე",
+     "desc": "ორაგულის ფილე, მაშარაფი, ლიმონი."
+    },
+    {
+     "id": "pork_bbq",
+     "img": "/menu/img/menu/pork_bbq/20260727-110041-fe9156516e.webp",
+     "price": "25 ₾",
+     "name": "ღორის მწვადი",
+     "desc": "ღორის ხორცი, ხახვი, მარილი და შავი პილპილი."
+    },
+    {
+     "id": "-OxqzPw5Bk0JkiEztmgq",
+     "img": "/menu/img/menu/-OxqzPw5Bk0JkiEztmgq/20260727-110736-83aa918c2e.webp",
+     "price": "38 ₾",
+     "name": "ხბოს მწვადი",
+     "desc": "ხბოს ხორცი, ხახვი, მარილი, პილპილი."
+    }
+   ]
+  },
+  {
+   "cat": "-OyYRRVFuGCe2GVJ3Hdd",
+   "title": "გარნირი",
+   "items": [
+    {
+     "id": "-OyYX1Mxhz5USHJLbyWq",
+     "img": "/menu/img/menu/-OyYX1Mxhz5USHJLbyWq/20260727-122357-76cfaf9400.webp",
+     "price": "18 ₾",
+     "name": "თაშმიჯაბი",
+     "desc": "კარტოფილი, სულგუნი, მარილი, პილპილი, კარაქი, რძე."
+    },
+    {
+     "id": "-OyYXETXWiOo0WDAPG_i",
+     "img": "/menu/img/menu/-OyYXETXWiOo0WDAPG_i/20260727-125611-07f1078dd2.webp",
+     "price": "15 ₾",
+     "name": "კარტოფილი გლეხურად",
+     "desc": "კარტოფილი, მზესუმზირის ზეთი, ხახვი (სურვილის შემთხვევაში)."
+    },
+    {
+     "id": "-OyYXYvSAjyzrXvOgVRV",
+     "img": "/menu/img/menu/-OyYXYvSAjyzrXvOgVRV/20260727-122615-536d1421ba.webp",
+     "price": "14 ₾",
+     "name": "კარტოფილი ფრი",
+     "desc": "კარტოფილი ფრი, მცენარეული ზეთი, კეჩუპი, მარილი."
+    },
+    {
+     "id": "-OyYXih_X9qtkRc5Rh36",
+     "img": "/menu/img/menu/-OyYXih_X9qtkRc5Rh36/20260727-125652-e0fbaa6181.webp",
+     "price": "22 ₾",
+     "name": "ბოსტნეული გრილზე",
+     "desc": "პომიდორი, ბადრიჯანი, ქამა სოკო, კალმახა სოკო, ბულგარული (წითელი, მწვანე), ყაბაყი, ხახვი. შერჩევით: ტყემალი, საწებელი, მაშარაფი."
+    },
+    {
+     "id": "-OyYY7g2LtP8j440uDGu",
+     "img": "/menu/img/menu/-OyYY7g2LtP8j440uDGu/20260727-125732-baef0a8bac.webp",
+     "price": "16 ₾",
+     "name": "ბრინჯი ბოსტნეულით",
+     "desc": "ბრინჯი, ბულგარული (წითელი, მწვანე), სტაფილო, ოხრახუში, სოიოს სოუსი."
+    },
+    {
+     "id": "-OyYYIyIGKaqS-3AvlTi",
+     "img": "/menu/img/menu/-OyYYIyIGKaqS-3AvlTi/20261001-073206-b73a4e7318.webp",
+     "price": "18 ₾",
+     "name": "ელარჯი",
+     "desc": "ღერღილი, სულგუნი"
+    },
+    {
+     "id": "-P2qNKOsb_kQ0yHHvzAo",
+     "img": "/menu/img/menu/-P2qNKOsb_kQ0yHHvzAo/20261001-073250-aff875fa77.webp",
+     "price": "17 ₾",
+     "name": "მექსიკური კარტოფილი",
+     "desc": "კარტოფილი, წიწაკა, პაპრიკა"
+    }
+   ]
+  },
+  {
+   "cat": "-OyYRZKEcPqvJ0q0kYk0",
+   "title": "სოუსები",
+   "items": [
+    {
+     "id": "-OyYZMVHCJ3sBLNMIwCG",
+     "img": "/menu/img/menu/-OyYZMVHCJ3sBLNMIwCG/20260727-125902-5238ecf530.webp",
+     "price": "5 ₾",
+     "name": "ტყემალი",
+     "desc": "ტყემალი, ქინძი, ომბალო, კამა, ნიორი, მარილი, წით წიწაკა."
+    },
+    {
+     "id": "-OyYZWx7uI3kRh-utxFJ",
+     "img": "/menu/img/menu/-OyYZWx7uI3kRh-utxFJ/20261001-073525-283e44731c.webp",
+     "price": "5 ₾",
+     "name": "პომიდვრის საწებელი",
+     "desc": "პომიდორი, ტომატ პასტა, ქინძი, ხახვი თეთრი, უცხო სუნელი, ხმელი ქინძი, მარილი."
+    },
+    {
+     "id": "-OyYZjLdxkTjfseVX8B7",
+     "img": "/menu/img/menu/-OyYZjLdxkTjfseVX8B7/20261001-073510-0522163b7c.webp",
+     "price": "5 ₾",
+     "name": "ნარშარაფი",
+     "desc": "ბროწეული, შაქარი."
+    },
+    {
+     "id": "-OyYZtEXzde1np8DgZeW",
+     "img": "/menu/img/menu/-OyYZtEXzde1np8DgZeW/20261001-073446-3b06ede284.webp",
+     "price": "5 ₾",
+     "name": "კეტჩუპი",
+     "desc": "ტომატის პასტა პომიდორი, ვაშლის პიურე, შაქარი, მარილი, სახამებელი, ხახვი, ნიორი, წითელი წიწაკა."
+    },
+    {
+     "id": "-OyY_FAGojYwUK7X_soL",
+     "img": "/menu/img/menu/-OyY_FAGojYwUK7X_soL/20261001-073459-f4448cb1ae.webp",
+     "price": "5 ₾",
+     "name": "მეგრული აჯიკა",
+     "desc": "წითელი წიწაკა, უცხო სუნელი, ხმელი ქინძი, ზეთი, მარილი, ნიორი"
+    },
+    {
+     "id": "-OyY_R6kWyU52Tcu2IBe",
+     "img": "/menu/img/menu/-OyY_R6kWyU52Tcu2IBe/20261001-073409-928832e883.webp",
+     "price": "7 ₾",
+     "name": "გურული აჯიკა",
+     "desc": "მწვანე წიწაკა, ქინძი, თხილი, ნიგოზი, ზეთი, მარილი, უცხო სუნელი, ხმელი ქინძი, ნიორი."
+    },
+    {
+     "id": "-OyY_d1k_xpeAJ1x0nfZ",
+     "img": "/menu/img/menu/-OyY_d1k_xpeAJ1x0nfZ/20261001-073348-11ec78ee09.webp",
+     "price": "12 ₾",
+     "name": "ბაჟე",
+     "desc": "ნიგოზი, მარილი, უცხო სუნელი, ხმელი ქინძი ყვითელი ყვავილი, ნიორი."
+    }
+   ]
+  },
+  {
+   "cat": "dessert",
+   "title": "დესერტი",
+   "items": [
+    {
+     "id": "-Oxr6o5sYNXZSf6MfOMR",
+     "img": "/menu/img/menu/-Oxr6o5sYNXZSf6MfOMR/20260727-120937-d1399a0f8c.webp",
+     "price": "17 ₾",
+     "name": "სეზონური ხილის ღვეზელი",
+     "desc": "ფქვილი, ვაშლი, დარიჩინი, კვერცხი, მარილი, კარაქი."
+    },
+    {
+     "id": "-Oxr7Sey3VjBobPkLaXG",
+     "img": "/menu/img/menu/-Oxr7Sey3VjBobPkLaXG/20260727-121028-22667c1676.webp",
+     "price": "22 ₾",
+     "name": "ნიგვზის ნამცხვარი",
+     "desc": "ფქვილი, ნიგოზი, ფისტაშკა, ნუში, თხილი, კარაქი, კვერცხი."
+    },
+    {
+     "id": "-Oxr8BaFoIerq04JWXIX",
+     "img": "/menu/img/menu/-Oxr8BaFoIerq04JWXIX/20260727-120948-188ef446f0.webp",
+     "price": "22 ₾",
+     "name": "ყველის ნამცხვარი",
+     "desc": "ნაღები, კრემყველი, კვერცხი, შაქარი, ფქვილი."
+    },
+    {
+     "id": "-OxrASpumr4c88nofj_g",
+     "img": "/menu/img/menu/-OxrASpumr4c88nofj_g/20260727-121039-afe8df4ecf.webp",
+     "price": "15 ₾",
+     "name": "ნაყინი შერჩევით",
+     "desc": "ვანილის, შოკოლადის."
+    },
+    {
+     "id": "-P2qOvgN6meahH8xmkLR",
+     "img": "/menu/img/menu/-P2qOvgN6meahH8xmkLR/20261001-073949-4087b6cb21.webp",
+     "price": "21 ₾",
+     "name": "ლავა ქეიქი ნაყინით",
+     "desc": "ფქვილი, შაქარი, კვერცხი, კარაქი, შავი შოკოლადი, მარილი"
+    },
+    {
+     "id": "-Oxr95jmHbJ9Qz-bj-6g",
+     "img": "/menu/img/menu/-Oxr95jmHbJ9Qz-bj-6g/20260727-110831-5a0b517880.webp",
+     "price": "32 ₾",
+     "name": "სეზონური ხილის თეფში",
+     "desc": "ანანასი, ფორთოხალი, გრეიფრუტი, მწვანე ვაშლი, ბანანი, კივი, ყურძენი."
+    }
+   ]
+  }
+ ],
+ "en": [
+  {
+   "cat": "-OyYS7xdWvWF_68VVBmb",
+   "title": "Signature Dish",
+   "items": [
+    {
+     "id": "signature_ribs",
+     "img": "/menu/img/menu/signature_ribs/20260722-133725-ed3c972554.webp",
+     "price": "85 ₾",
+     "name": "Signature Dish",
+     "desc": "Pork ribs, honey, potatoes, tomatoes, garlic and tkemali."
+    }
+   ]
+  },
+  {
+   "cat": "starters",
+   "title": "Starters",
+   "items": [
+    {
+     "id": "-OxpeR8aorhlx5ZEmEMX",
+     "img": "/menu/img/menu/-OxpeR8aorhlx5ZEmEMX/20261018-102552-9b25e4c251.webp",
+     "price": "29 ₾",
+     "name": "Pkhali Plate",
+     "desc": "Spinach, beetroot, onion, eggplant, walnuts, and spices."
+    },
+    {
+     "id": "-OxpcXXiX9Y_-TA2JaO8",
+     "img": "/menu/img/menu/-OxpcXXiX9Y_-TA2JaO8/20260727-105045-f3f5eda715.webp",
+     "price": "32 ₾",
+     "name": "Georgian Cheese Plate",
+     "desc": "Sulguni, Imeretian cheese, factory-made cheese, smoked Sulguni."
+    },
+    {
+     "id": "-OxpermAgWWTyVg65z7s",
+     "img": "/menu/img/menu/-OxpermAgWWTyVg65z7s/20260727-105158-661daa6edb.webp",
+     "price": "22 ₾",
+     "name": "Nadughi In Sulguni Plates",
+     "desc": "Nadugi cheese, Sulguni slices, mint, and sour cream."
+    },
+    {
+     "id": "-OxpfD9QIqHzmRfNTruX",
+     "img": "/menu/img/menu/-OxpfD9QIqHzmRfNTruX/20260727-105308-d48c4cb044.webp",
+     "price": "48 ₾",
+     "name": "Salmon With kindzmari Sauce",
+     "desc": "Salmon, coriander, vinegar, red pepper, lemon juice, and olive oil."
+    },
+    {
+     "id": "-OxpfYHA9VuAWIUy5JwS",
+     "img": "/menu/img/menu/-OxpfYHA9VuAWIUy5JwS/20260727-105337-1f553266b4.webp",
+     "price": "32 ₾",
+     "name": "Village Hen with Satsivi Sauce",
+     "desc": "Free-range chicken, walnuts, onion, oil, and spices."
+    },
+    {
+     "id": "-OxpgL2R7eUN3A5tF6XG",
+     "img": "/menu/img/menu/-OxpgL2R7eUN3A5tF6XG/20260727-105721-1c71a5291f.webp",
+     "price": "18 ₾",
+     "name": "Baked Betroot With Ghoghnosho Sauce",
+     "desc": "Beetroot, Ghohnosho sauce, coriander, and garlic"
+    },
+    {
+     "id": "-P2q9nFCdsWo8SDY9G3g",
+     "img": "/menu/img/menu/-P2q9nFCdsWo8SDY9G3g/20261001-063343-4ea4f618c0.webp",
+     "price": "20 ₾",
+     "name": "Ekala Phkhali/Walnut",
+     "desc": "Ekala, walnut, Coriander, garlic, spices"
+    }
+   ]
+  },
+  {
+   "cat": "salads",
+   "title": "Salads",
+   "items": [
+    {
+     "id": "georgian_salad",
+     "img": "/menu/img/menu/georgian_salad/20260727-103511-4aa735094b.webp",
+     "price": "19 ₾",
+     "name": "Georgian salad (choice of: with walnuts, with Gurian adjika)",
+     "desc": "Cucumber, tomato, red onion, parsley and Kakhetian oil."
+    },
+    {
+     "id": "-Oxpl6do5Yi7X3vWsyzs",
+     "img": "/menu/img/menu/-Oxpl6do5Yi7X3vWsyzs/20260727-105704-2860ebab1b.webp",
+     "price": "17 ₾",
+     "name": "Georgian Salad With Kakhetian Oil",
+     "desc": "Cucumber, tomato, red onion, salt, parsley, and Kakhetian oil."
+    },
+    {
+     "id": "-Oxpp-5s9ksq7SWWdtV_",
+     "img": "/menu/img/menu/-Oxpp-5s9ksq7SWWdtV_/20260727-110235-29946673dd.webp",
+     "price": "26 ₾",
+     "name": "Chicken Salad With Nadughi",
+     "desc": "Lettuce, green apple, chicken fillet, Nadugi cheese, cream, and Georgian bread chips."
+    },
+    {
+     "id": "-Oxpr1RZlvI-XHK0gnvh",
+     "img": "/menu/img/menu/-Oxpr1RZlvI-XHK0gnvh/20260727-105211-23543f8f98.webp",
+     "price": "21 ₾",
+     "name": "Adjaphsandali Salad",
+     "desc": "Eggplant, bell peppers (red and green), onion, tomato, coriander, and Georgian bread chips."
+    }
+   ]
+  },
+  {
+   "cat": "soups",
+   "title": "Soups",
+   "items": [
+    {
+     "id": "chikhirtma",
+     "img": "/menu/img/menu/chikhirtma/20260727-105931-89fdc835fc.webp",
+     "price": "21 ₾",
+     "name": "Chikhirtma",
+     "desc": "Chicken, broth, coriander, garlic, butter, egg and flour."
+    },
+    {
+     "id": "-OxprxVffXd1clbHyyDS",
+     "img": "/menu/img/menu/-OxprxVffXd1clbHyyDS/20261001-065444-9115ca85ad.webp",
+     "price": "28 ₾",
+     "name": "Soup Kharcho",
+     "desc": "Beef, rice, cilantro, garlic, spices"
+    },
+    {
+     "id": "-Oxpt1DBjSWkKJzIgdc0",
+     "img": "/menu/img/menu/-Oxpt1DBjSWkKJzIgdc0/20260727-105910-f6e5dcca31.webp",
+     "price": "18 ₾",
+     "name": "Mushroom Cream-soup",
+     "desc": "Button mushrooms, wild mushrooms, cream, and Georgian bread chips. Optional: Extra cream."
+    },
+    {
+     "id": "-Oxptpa3yj5DvY1wnHNo",
+     "img": "/menu/img/menu/-Oxptpa3yj5DvY1wnHNo/20260727-110024-c946987eaf.webp",
+     "price": "17 ₾",
+     "name": "Pumpkin Cream-soup",
+     "desc": "Pumpkin, carrot, and onion. Optional: Cream."
+    }
+   ]
+  },
+  {
+   "cat": "oven",
+   "title": "From the Oven",
+   "items": [
+    {
+     "id": "-Oxpv2OXja8TpA8brGsb",
+     "img": "/menu/img/menu/-Oxpv2OXja8TpA8brGsb/20260727-110154-ed73635438.webp",
+     "price": "25 ₾",
+     "name": "Adjarian Khachapuri",
+     "desc": "Flour, egg, butter, yeast, and cheese."
+    },
+    {
+     "id": "khachapuri",
+     "img": "/menu/img/menu/khachapuri/20260727-103716-16da60d8c1.webp",
+     "price": "25 ₾",
+     "name": "Imeretian Khachapuri",
+     "desc": "Flour, egg, cheese and butter."
+    },
+    {
+     "id": "-Oxpup7bO6pwdwoQV31L",
+     "img": "/menu/img/menu/-Oxpup7bO6pwdwoQV31L/20260727-110112-a800d3d3b8.webp",
+     "price": "28 ₾",
+     "name": "Megrelian Khachapuri",
+     "desc": "Flour, egg, butter, yeast, and cheese."
+    },
+    {
+     "id": "-OxpvGf_8gg2KhodqbNj",
+     "img": "/menu/img/menu/-OxpvGf_8gg2KhodqbNj/20260727-110224-213d50bc15.webp",
+     "price": "18 ₾",
+     "name": "Lobiani",
+     "desc": "Beans, onion, oil, and yeast. Optional: Butter."
+    },
+    {
+     "id": "-OxpvSWJrJnQLJq-tI4B",
+     "img": "/menu/img/menu/-OxpvSWJrJnQLJq-tI4B/20260727-110255-4cf3e96872.webp",
+     "price": "5 ₾",
+     "name": "Georgian Bread",
+     "desc": "Flour, salt, and yeast."
+    },
+    {
+     "id": "-OxpveZH6B6245lY2pRZ",
+     "img": "/menu/img/menu/-OxpveZH6B6245lY2pRZ/20260727-110313-8bcb5d3bff.webp",
+     "price": "5 ₾",
+     "name": "Mtchadi",
+     "desc": "Cornmeal and mineral water."
+    },
+    {
+     "id": "-OxpvsTfkXJu0ImMnvP9",
+     "img": "/menu/img/menu/-OxpvsTfkXJu0ImMnvP9/20260727-110324-47a0117444.webp",
+     "price": "9 ₾",
+     "name": "Chvishtari",
+     "desc": "Cornmeal, mineral water, Sulguni cheese, and egg."
+    },
+    {
+     "id": "-P2qFLf4L3vvaSsOtVY4",
+     "img": "/menu/img/menu/-P2qFLf4L3vvaSsOtVY4/20261001-065758-6819fbd20c.webp",
+     "price": "25 ₾",
+     "name": "Lobiani with Rachuli Lori",
+     "desc": "Lobio, Rachuli Lori"
+    },
+    {
+     "id": "-P2qFqlKS3PKWMmCcJEH",
+     "img": "/menu/img/menu/-P2qFqlKS3PKWMmCcJEH/20261001-070010-11929dca84.webp",
+     "price": "20 ₾",
+     "name": "Pkhlovana with cheese",
+     "desc": "Beet greens, Cheese"
+    }
+   ]
+  },
+  {
+   "cat": "mains",
+   "title": "Main Dishes",
+   "items": [
+    {
+     "id": "-Oxpz5MJgU2q2gVzVH0R",
+     "img": "/menu/img/menu/-Oxpz5MJgU2q2gVzVH0R/20260727-110608-8df94ce135.webp",
+     "price": "42 ₾",
+     "name": "Chicken Shkmeruli",
+     "desc": "Chicken, garlic, salt, black pepper, and butter."
+    },
+    {
+     "id": "-Oxq-KJoBkEfa2vZnbWN",
+     "img": "/menu/img/menu/-Oxq-KJoBkEfa2vZnbWN/20260727-110655-e03420cc3a.webp",
+     "price": "23 ₾",
+     "name": "Oyster Mushroom Stew",
+     "desc": "Oyster mushrooms, spices, coriander, garlic, tomato, onion, and butter."
+    },
+    {
+     "id": "-Oxq0p_i9zYe-3VgRuDx",
+     "img": "/menu/img/menu/-Oxq0p_i9zYe-3VgRuDx/20260727-110653-db9823b4e3.webp",
+     "price": "38 ₾",
+     "name": "Megrelian Kupati With Crispy Elarji",
+     "desc": "Megrelian kupati sausage, corn grits, flour, and Sulguni cheese."
+    },
+    {
+     "id": "-Oxq1zmrSNTEXERPOfwQ",
+     "img": "/menu/img/menu/-Oxq1zmrSNTEXERPOfwQ/20260727-111037-8e1e13eb8f.webp",
+     "price": "24 ₾",
+     "name": "Mashed beans with mchadi and pickles",
+     "desc": "Beans, coriander, onion, butter, celery, walnuts, pickles, mchadi (cornbread), and cheese."
+    },
+    {
+     "id": "-P2qItXEg-NqISKWw91m",
+     "img": "/menu/img/menu/-P2qItXEg-NqISKWw91m/20261001-071327-63d7dc9cdf.webp",
+     "price": "28 ₾",
+     "name": "Mini Khinkalis w/ Sour Cream",
+     "desc": "Beef, cream, Parmesan"
+    },
+    {
+     "id": "-P2qJvhVyHIWRRwCt1Xr",
+     "img": "/menu/img/menu/-P2qJvhVyHIWRRwCt1Xr/20261001-071758-41278381f2.webp",
+     "price": "28 ₾",
+     "name": "Mashed beans with mchadi and pickles | Rachuli Lori",
+     "desc": "Beans, cilantro, onion, butter, celery, walnuts, pickles, mchadi, cheese, Rachuli Lori"
+    },
+    {
+     "id": "-P2qKTvG6nzn7jNaAedp",
+     "img": "/menu/img/menu/-P2qKTvG6nzn7jNaAedp/20261001-072022-222e0f4557.webp",
+     "price": "28 ₾",
+     "name": "Pork w/ Home-Style Potatoes",
+     "desc": "Pork, potatoes, vegetables, spices, coriander, garlic"
+    },
+    {
+     "id": "-OxpzWShA53kkLIrSS3_",
+     "img": "/menu/img/menu/-OxpzWShA53kkLIrSS3_/20260727-110607-30743ee2a8.webp",
+     "price": "24 ₾",
+     "name": "Mushroom With Sulguni Cheese",
+     "desc": "Button mushrooms, salt, black pepper, and Sulguni cheese."
+    },
+    {
+     "id": "-Oxq1L0vbVs1ATbQBK8V",
+     "img": "/menu/img/menu/-Oxq1L0vbVs1ATbQBK8V/20260727-110734-db21f4deaf.webp",
+     "price": "16 ₾",
+     "name": "Khinkali",
+     "desc": "Mixed minced meat, onion, coriander, cumin, black pepper, crushed red pepper, and flour."
+    },
+    {
+     "id": "-P2qGTlKJSeCioWNeKnr",
+     "img": "/menu/img/menu/-P2qGTlKJSeCioWNeKnr/20261001-070253-b5663159c0.webp",
+     "price": "35 ₾",
+     "name": "Veal Chakapuli",
+     "desc": "Veal, herbs, white wine, pepper"
+    },
+    {
+     "id": "-P2qGaZIWG2ciMI4pJyA",
+     "img": "/menu/img/menu/-P2qGaZIWG2ciMI4pJyA/20261001-070325-b85c024690.webp",
+     "price": "35 ₾",
+     "name": "Ostri",
+     "desc": "Beef, spices, coriander, garlic"
+    }
+   ]
+  },
+  {
+   "cat": "grill",
+   "title": "Grill",
+   "items": [
+    {
+     "id": "-OxqzrxxxPWIq-C5Dpt5",
+     "img": "/menu/img/menu/-OxqzrxxxPWIq-C5Dpt5/20260727-111110-f99f6f55e0.webp",
+     "price": "20 ₾",
+     "name": "Chicken Barbecue",
+     "desc": "Chicken, onion, salt, black pepper, matsoni, and sour cream."
+    },
+    {
+     "id": "-Oxr-LAzgPwW5uCLKDwq",
+     "img": "/menu/img/menu/-Oxr-LAzgPwW5uCLKDwq/20260727-111132-64071ef695.webp",
+     "price": "26 ₾",
+     "name": "Kebab",
+     "desc": "Pork, beef, coriander, onion, savory (khondari), salt, black pepper, and traditional lavash."
+    },
+    {
+     "id": "-Oxr-ZcT1aDcMUZFIODd",
+     "img": "/menu/img/menu/-Oxr-ZcT1aDcMUZFIODd/20260727-111154-09893992ff.webp",
+     "price": "21 ₾",
+     "name": "Chicken Kebab",
+     "desc": "Chicken, beef fat, onion, coriander, savory (khondari), salt, black pepper, and traditional lavash."
+    },
+    {
+     "id": "-Oxr-nmu5nEN8SoLoA_p",
+     "img": "/menu/img/menu/-Oxr-nmu5nEN8SoLoA_p/20260727-111226-076274c475.webp",
+     "price": "33 ₾",
+     "name": "Lamb Kebab",
+     "desc": "Lamb, garlic, coriander, onion, salt, black pepper, and traditional lavash."
+    },
+    {
+     "id": "-Oxr08pU5XmIh0bYea--",
+     "img": "/menu/img/menu/-Oxr08pU5XmIh0bYea--/20260727-111244-7d72b8b31b.webp",
+     "price": "25 ₾",
+     "name": "River Trout",
+     "desc": "Trout, lemon, and pomegranate molasses (nasharapi)."
+    },
+    {
+     "id": "-Oxr0SH7JZArjrnRTo4E",
+     "img": "/menu/img/menu/-Oxr0SH7JZArjrnRTo4E/20260727-111300-5afe7593d0.webp",
+     "price": "68 ₾",
+     "name": "Charcoal-Grilled Norvegian Salmon",
+     "desc": "Salmon fillet, pomegranate molasses (nasharapi), and lemon."
+    },
+    {
+     "id": "pork_bbq",
+     "img": "/menu/img/menu/pork_bbq/20260727-110041-fe9156516e.webp",
+     "price": "25 ₾",
+     "name": "Pork Barbecue",
+     "desc": "Pork, onion, salt and black pepper."
+    },
+    {
+     "id": "-OxqzPw5Bk0JkiEztmgq",
+     "img": "/menu/img/menu/-OxqzPw5Bk0JkiEztmgq/20260727-110736-83aa918c2e.webp",
+     "price": "38 ₾",
+     "name": "Veal Barbecue",
+     "desc": "Veal, onion, salt, and black pepper."
+    }
+   ]
+  },
+  {
+   "cat": "-OyYRRVFuGCe2GVJ3Hdd",
+   "title": "Garnish",
+   "items": [
+    {
+     "id": "-OyYX1Mxhz5USHJLbyWq",
+     "img": "/menu/img/menu/-OyYX1Mxhz5USHJLbyWq/20260727-122357-76cfaf9400.webp",
+     "price": "18 ₾",
+     "name": "Tashmijab",
+     "desc": "Potatoes, Sulguni cheese, salt, black pepper, butter, and milk."
+    },
+    {
+     "id": "-OyYXETXWiOo0WDAPG_i",
+     "img": "/menu/img/menu/-OyYXETXWiOo0WDAPG_i/20260727-125611-07f1078dd2.webp",
+     "price": "15 ₾",
+     "name": "Homemade Potatos",
+     "desc": "Potatoes, sunflower oil, onion (optional)."
+    },
+    {
+     "id": "-OyYXYvSAjyzrXvOgVRV",
+     "img": "/menu/img/menu/-OyYXYvSAjyzrXvOgVRV/20260727-122615-536d1421ba.webp",
+     "price": "14 ₾",
+     "name": "French Fries",
+     "desc": "French fries, vegetable oil, ketchup, and salt."
+    },
+    {
+     "id": "-OyYXih_X9qtkRc5Rh36",
+     "img": "/menu/img/menu/-OyYXih_X9qtkRc5Rh36/20260727-125652-e0fbaa6181.webp",
+     "price": "22 ₾",
+     "name": "Grilled Vegetables",
+     "desc": "Tomato, eggplant, button mushrooms, oyster mushrooms, bell peppers (red and green), zucchini, and onion. Tkemali, sauce, or pomegranate molasses (nasharapi)."
+    },
+    {
+     "id": "-OyYY7g2LtP8j440uDGu",
+     "img": "/menu/img/menu/-OyYY7g2LtP8j440uDGu/20260727-125732-baef0a8bac.webp",
+     "price": "16 ₾",
+     "name": "Rice With Vegetables",
+     "desc": "Rice, bell peppers (red and green), carrot, parsley, and soy sauce."
+    },
+    {
+     "id": "-OyYYIyIGKaqS-3AvlTi",
+     "img": "/menu/img/menu/-OyYYIyIGKaqS-3AvlTi/20261001-073206-b73a4e7318.webp",
+     "price": "18 ₾",
+     "name": "Elarji",
+     "desc": "Corn grits, Sulguni cheese"
+    },
+    {
+     "id": "-P2qNKOsb_kQ0yHHvzAo",
+     "img": "/menu/img/menu/-P2qNKOsb_kQ0yHHvzAo/20261001-073250-aff875fa77.webp",
+     "price": "17 ₾",
+     "name": "Mexican-Style Fries",
+     "desc": "Potato, pepper, paprika"
+    }
+   ]
+  },
+  {
+   "cat": "-OyYRZKEcPqvJ0q0kYk0",
+   "title": "Souces",
+   "items": [
+    {
+     "id": "-OyYZMVHCJ3sBLNMIwCG",
+     "img": "/menu/img/menu/-OyYZMVHCJ3sBLNMIwCG/20260727-125902-5238ecf530.webp",
+     "price": "5 ₾",
+     "name": "Tkemali",
+     "desc": "(sour plum), coriander, ombalo (marsh mint), dill, garlic, salt, and red pepper."
+    },
+    {
+     "id": "-OyYZWx7uI3kRh-utxFJ",
+     "img": "/menu/img/menu/-OyYZWx7uI3kRh-utxFJ/20261001-073525-283e44731c.webp",
+     "price": "5 ₾",
+     "name": "Tomato Sauce",
+     "desc": "Tomato, tomato paste, coriander, white onion, Georgian spice mix (utskho suneli), dried coriander, and salt."
+    },
+    {
+     "id": "-OyYZjLdxkTjfseVX8B7",
+     "img": "/menu/img/menu/-OyYZjLdxkTjfseVX8B7/20261001-073510-0522163b7c.webp",
+     "price": "5 ₾",
+     "name": "Narsharab",
+     "desc": "Pomegranate and sugar."
+    },
+    {
+     "id": "-OyYZtEXzde1np8DgZeW",
+     "img": "/menu/img/menu/-OyYZtEXzde1np8DgZeW/20261001-073446-3b06ede284.webp",
+     "price": "5 ₾",
+     "name": "Ketchup",
+     "desc": "Tomato paste, tomato, apple puree, sugar, salt, starch, onion, garlic, and red pepper."
+    },
+    {
+     "id": "-OyY_FAGojYwUK7X_soL",
+     "img": "/menu/img/menu/-OyY_FAGojYwUK7X_soL/20261001-073459-f4448cb1ae.webp",
+     "price": "5 ₾",
+     "name": "Megrelian Ajika",
+     "desc": "Red pepper, Georgian spice mix (utskho suneli), dried coriander, oil, salt, and garlic"
+    },
+    {
+     "id": "-OyY_R6kWyU52Tcu2IBe",
+     "img": "/menu/img/menu/-OyY_R6kWyU52Tcu2IBe/20261001-073409-928832e883.webp",
+     "price": "7 ₾",
+     "name": "Guruli Ajika",
+     "desc": "Green pepper, coriander, hazelnuts, walnuts, oil, salt, Georgian spice mix (utskho suneli), dried coriander, and garlic"
+    },
+    {
+     "id": "-OyY_d1k_xpeAJ1x0nfZ",
+     "img": "/menu/img/menu/-OyY_d1k_xpeAJ1x0nfZ/20261001-073348-11ec78ee09.webp",
+     "price": "12 ₾",
+     "name": "Bazhe",
+     "desc": "Walnuts, salt, Georgian spice mix (utskho suneli), dried coriander, yellow flower spice, and garlic."
+    }
+   ]
+  },
+  {
+   "cat": "dessert",
+   "title": "Dessert",
+   "items": [
+    {
+     "id": "-Oxr6o5sYNXZSf6MfOMR",
+     "img": "/menu/img/menu/-Oxr6o5sYNXZSf6MfOMR/20260727-120937-d1399a0f8c.webp",
+     "price": "17 ₾",
+     "name": "Seasonal Fruit Pie",
+     "desc": "Flour, apple, cinnamon, egg, salt, and butter."
+    },
+    {
+     "id": "-Oxr7Sey3VjBobPkLaXG",
+     "img": "/menu/img/menu/-Oxr7Sey3VjBobPkLaXG/20260727-121028-22667c1676.webp",
+     "price": "22 ₾",
+     "name": "Walnut Cake",
+     "desc": "Flour, walnuts, pistachios, almonds, hazelnuts, butter, and eggs."
+    },
+    {
+     "id": "-Oxr8BaFoIerq04JWXIX",
+     "img": "/menu/img/menu/-Oxr8BaFoIerq04JWXIX/20260727-120948-188ef446f0.webp",
+     "price": "22 ₾",
+     "name": "Cheese Cake",
+     "desc": "Flour, walnuts, pistachios, almonds, hazelnuts, butter, and eggs."
+    },
+    {
+     "id": "-OxrASpumr4c88nofj_g",
+     "img": "/menu/img/menu/-OxrASpumr4c88nofj_g/20260727-121039-afe8df4ecf.webp",
+     "price": "15 ₾",
+     "name": "Ice Cream Selection",
+     "desc": "Vanilla or chocolate."
+    },
+    {
+     "id": "-P2qOvgN6meahH8xmkLR",
+     "img": "/menu/img/menu/-P2qOvgN6meahH8xmkLR/20261001-073949-4087b6cb21.webp",
+     "price": "21 ₾",
+     "name": "Lava Cake",
+     "desc": "Flour, sugar, eggs, butter, dark chocolate, salt"
+    },
+    {
+     "id": "-Oxr95jmHbJ9Qz-bj-6g",
+     "img": "/menu/img/menu/-Oxr95jmHbJ9Qz-bj-6g/20260727-110831-5a0b517880.webp",
+     "price": "32 ₾",
+     "name": "Seasonal Fruit Plate",
+     "desc": "Pineapple, orange, grapefruit, green apple, banana, kiwi, and grapes."
+    }
+   ]
+  }
+ ]
+}

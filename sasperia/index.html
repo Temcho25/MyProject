@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="ka">
+<head>
+<meta charset="utf-8">
+<title>Sasperia Restaurant</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Sasperia Restaurant — Cuisine of ancient Georgia. Mtskheta, 3 Sanapiro St. Everyday 12:00–00:00.">
+<meta name="theme-color" content="#0b100e">
+<meta property="og:title" content="Sasperia Restaurant · Mtskheta">
+<meta property="og:description" content="Cuisine of ancient Georgia. Everyday 12:00–00:00.">
+<meta property="og:image" content="assets/img/017A2729.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Forum&family=Cormorant+Garamond:ital,wght@1,400;1,500&family=Manrope:wght@400;500;600;700&family=Noto+Sans+Georgian:wght@400;500;600&family=Noto+Serif+Georgian:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Restaurant","name":"Sasperia Restaurant","servesCuisine":"Georgian","telephone":"+995 500 55 51 55","email":"info@sasperia.ge","url":"https://sasperia.ge","address":{"@type":"PostalAddress","streetAddress":"3 Sanapiro St.","addressLocality":"Mtskheta","addressCountry":"GE"},"openingHours":"Mo-Su 12:00-24:00","hasMenu":"https://sasperia.ge/#menu"}
+</script>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+</script>
+</head>
+<body class="is-loading">
+
+<!-- ============ PRELOADER ============ -->
+<div class="loader" id="loader" aria-hidden="true">
+  <svg class="loader__emblem" id="loaderEmblem" viewBox="233.5 34.8 533.1 535.5"><path d="M588.5,398c10,10.6,13.5-17.3,16.8-23.1,2.2-3.9,22.6-21,7.7-20-11,.7-30.7,36.3-24.5,43"/><path d="M517.8,366.6c-8.9,1.8-20.1,1.5-29,.3-6.9-.9-28.8-9.7-30.4-9.3-1.4.4-6.8,9.8-6.4,11.5,2.8,12.1,87.1,13.3,93.8.8.5-.9-4.1-10.7-5.1-11-4.8-1.6-18.6,6.9-22.9,7.8"/><path d="M421.6,347.4c.7,8.4-3.8,9.6-3.9,16.9,29,3.6-1.5-52.6-7.5-51.9-9.2,1.1,10.9,28,11.4,35.1"/><path d="M602,287.1c3.9-3.2,12.4-37,3.7-39.4l-2,.3c-1.7.3-2.9,1.5-3.2,3.2-2,11.4-14.3,48.9,1.4,35.9"/><path d="M573,368.2c13.4,4.7.2-10.9-.6-13.2-6-17.8,24.3-36,18.9-41.4-6.4-6.4-45.4,45.1-18.3,54.6"/><path d="M608.8,75.9c-29.5-16.6-58.2,10.3-41.9,41.7,2.1,4.1,11.1,15.5,12,5.9.4-4.3-21.4-28.1,1.4-41.1,31.3-18,44.7,33.8,17.2,28-14.5-3.1-.8-15.4-2.2-16.4-7.9-6-20,8.5-6.9,20,21.9,19.1,48.9-21.9,20.3-38"/><path d="M580.3,145.5c-1.3,3,31.1,14.4,24.6,5-.8-1.1-22.3-10.4-24.6-5"/><path d="M558.1,390.3c-.2-20.1-22.9-2.6-35.4-.3-27.8,5.1-52.1.5-77.5-10.6-9.4,14.6,7.3,16.4,19.3,19.9,33.9,9.8,61.8,5.1,93.6-9"/><path d="M611.6,514.2c-.1,0-.2,0-.4,0-.7.2-1.8.6-3.1,1.2-.5.2-1.1.5-1.7.8-.6.3-1.2.6-1.9,1-5.6,2.9-12.6,7.3-14.8,10.6-.6,1-.9,1.9-.5,2.6.5,1.1,1.6,1.6,3,1.7,2.5.1,6.2-1.1,10.1-2.9.5-.3,1.1-.5,1.6-.8,1.6-.9,3.3-1.8,4.8-2.8,8.7-5.7,14.7-12.9,2.9-11.3"/><path d="M571.6,404.6c-11.7,0-36.3,7.5-45.8,14.6-22.4,16.7-27.5,46.6-22.7,72.8,1.4,3.2,5.3-.4,5.6-.7,6.7-8.9-7.6-41.8,21.3-65.1,42.5-34.4,94.2,4.2,76.1,55.2-21.7,61.3-113.7,1.5-65.7-38,32.4-26.6,64.8,12.9,44,36.5-20.4,23-46.4-17.1-25.2-23.3,25.1-7.3-6.3,22.2,11.4,18.4,11.2-2.4,9.6-24.5-2.4-26.6-34.1-6-34.5,51.8,5.7,46.3,40.8-5.6,31.3-81.3-24-65-52.4,15.4-30.6,98.5,30.5,83.9,55.6-13.3,49.3-108.6-8.9-108.9"/><path d="M412.3,261.9c20.1,93.6,109,131.3,160.5,32.5,20.5-39.4,30.1-81.7-31.8-77-50.4,3.9-14.7,47.1-25.4,78.3h-33.8c-9-37,24.6-81.5-37.3-78.3-33.6,1.7-38.7,14.2-32.2,44.5M502.4,341.1c-17.2,1-26.5-12.5-16.6-12.5s17.4-1,22.1,0c11.4,2.6,6.1,11.8-5.5,12.5M561.4,230.1c12.9,6,13.7,21.3-.4,10.7.6,13.5-14.8,19.1-25.5,12.3-5.6-3.5-5.7-10.6-6.2-11-1.7-1.3-8.2,7-11.1,1.8,1-19.7,30.3-20,43.3-13.9M520.4,320.5c-1.2,1.5-31-1.1-37.6-1-.3,0-3.4,0-8.2-1.2-.5-.1-3.5-2.9-3.3-4.1,5.4-11.2,60.6-7.3,49,6.3M476.9,245c-17.5-4.6-5,2.7-15.8,6.9-21.7,8.4-25.4-8.8-26.9-9.6-.6-.3-10.8,6.7-11.1-.7-.9-17.9,57.1-21.8,53.9,3.4"/><path d="M295.4,441c.7-8.4-5.9-6.7-10.6-15.1-2.5-4.4-12.1-28-12-32.1.1-9.9,15.4-22.2,17.5-32.2,1.8-8.6-2.4-17.8-.5-23.8,6-19.4,59.3,16.4,72.8,1.8-.7,10.9-15.3,17-15.1,27.9,0,2.9,11.4,53.6,12.7,56.1,1.4,2.6,5.2,5.2,8.9,6.7,2.4,1,5.1-.8,5.3-3.4.5-6.3-4.7-6.2-6.2-11.3-1.6-5.3-7.2-39.2-7-43.8.5-9.9,13.3-22.2,16.1-34.7,9.9-44-20.5-71.4-34.3-107.7-.7-1.8-5.6-19.2-5.1-20,4.5-6.9,27.2,9.3,30.9,9.5,12.3,0-4.2-36.3-3.4-44.6.5-5.3,7.8-9.4,9.6-15.1,5.7-18-16.5-52.1-18-38.5-.9,8.2,22.4,35,4.8,43.2,0,0-5.4-26.8-13.7-36.6-10.1-12-11-2.4-6,8.2,4.3,9.2,10.4,22.2,7.2,28.3-8.7,16.5-17.2-6.6-30.6-10.5-6.8-2-30.3-3.8-23.8,7.2,12.6.6,37.6.4,34.4,18.3-5.6-.3-38.2,1.1-38.4,7.7-.3,8.6,27.4-3.2,31.7,5.5-5.4,10-10.1,26.7-9.7,38.4.6,18.8,24,51.5,4.9,65.1-23,16.5-82.6-10.1-82.1,46,0,5.7,7.4,35.6,16.7,26.8,1.7-1.6-11.4-38.3,2.7-44.6,3.9-1.5-1,13.5.3,18.9,1.7,7.2,12.2,14.6,12.2,26.4,0,9.3-9,19.4-8.3,27.3.2,2.5,12,23.1,14.4,28.3,6.7,15.1.1,18.5,18.6,19.1,1.7,0,3.1-1.2,3.3-2.9M356.9,183.2c4.8,4.5-1,21.4-10.7,12-7.8-7.6,8.1-14.4,10.7-12"/><path d="M274.2,274.5c-.5,10.8,28-4.3,27.7-27.5-.5-32-43.7-32.1-45.6-6.8-2.5,33,42.7,21.2,29.5,2.1-7.9-11.4-24.5,6.9-6.1,4-15.5,32.5-25.1-33.3,5.4-14.3,27.6,17.2-10.8,39.9-10.9,42.5"/><path d="M493.6,207.7c-4.7-3.1-1.4-44.7-3.9-51.7-34.4-5.9-67.2,24-74.9,56,21.2-6.8,73.7-12.8,78.6,17.2,2.6,15.7-1.9,37.8,0,54.2h9.7c2.1-2,.2-50.7,1.5-58.2,4.3-25.2,59.2-19.7,77.1-13.9-4.8-24.5-28.3-47.4-52.1-53.8-23.6-6.3-28.1-7.5-27.9,18.2,0,4.3,8,42.6-8,32M448.7,199.6c-31.9-8.6,3.2-38.7,11.6-16.4-1.1.9-21.1-2.7-15.2,4.9,5.5,4.3,12.5,3.9,19,2.8,2.6-.4,4.5-2.7,4.4-5.3-.2-6.9-.5-18.2,0-19.5,1.2-2.6,11.7-4.8,13.4,1.7,7,26.3-7.8,38.7-33.3,31.9M515.1,164.1c1.3-.4,8.2,1,8.5,1.4,1.7,2.4-2,21.5,3.6,25.9,9.2,7.2,39.5-9.3,4.9-8.3,3.8-19.6,29.3-1.6,20.8,11.8-3.6,5.6-30.8,8.5-36.6,1.9-4-4.6-8.1-30.3-1.2-32.7"/><path d="M414.2,530.4c3.4-6.7-25.8-15.9-31.1-16.5-5.9,5.6,27.4,23.8,31.1,16.5"/><path d="M456.9,409.6c-75.2-21.9-87.6,79.6-26.3,83.8,54.3,3.7,50.9-71.2,5.8-68.5-38.7,2.3-30.2,60.8,5,46.2,18.2-7.6,6.4-35.7-12.2-25.9-1.1.6-1.9,1.8-1.9,3-.5,13.9,10.9,1.7,13.6,4.2,6,16.5-20.1,16.3-23,1.6-5.2-27.2,42.7-31.5,45.3,1.7,2.7,34.2-55.8,40.5-63.9,4.5-9.4-41.7,43.5-62.7,71.6-34.9,26.4,26.1,10.4,81-31.8,81.9-6.7.1-36.6-9.7-38-4.8-1.8,6.3,28.7,12.8,33.7,13,65.1,3,77.7-89.6,22.2-105.8"/><path d="M390.8,247.6c-8.4,1.8,3.6,38.1,6.4,39.6,1.1.6,4,.7,6.3.2,1.8-.4,3-2.2,2.7-4.1-1.9-10.2-6.3-37.6-15.3-35.7"/><path d="M390,232.6c1.8,3.3,6.6,2.2,6.9,0,.2-1.7,3.6-25.9,6.6-33.9,19.8-51.7,81.1-71,131.5-54.9,32.7,10.4,50.1,35,61.8,66.1.6,1.5,9.4,42.3,12.4,19.4,3.1-23.8-25.4-66.4-44.7-79.8-68.6-47.7-175.9-4.3-174.5,83.2"/><path d="M680.9,483.7c7.7-37-50.4-43.1-49.7-7.6.5,23.7,31.4,23.9,33.1,5.4,1.6-17.2-23.4-11.9-16.5-4.7.7.7,8.2-2.1,7,6.2-.9,6.4-16,4.8-15.4-9.5.9-21,38.2-20.7,32.8,13.3-2.9,18.1-54.1,46.9-70.9,54.3-27.1,12-57.6,19.9-87.3,20.8,23.6-12.2,21.4-54.5-7.8-56.1-32.9-1.8-32.4,41.2-8.2,39.6,18.4-1.2,17-29,.9-17.1,12.7,6.7-5.7,13.5-10,4.5-10.3-21.4,35.6-30.5,32.9,3.6-2.6,33.6-59.8,22.7-81.1,18.3-39.9-8.2-79-30.7-109.3-57.3-6.9-6.1-33.2-37.1-35.8-38.5-3.5-1.9-6.7-1.4-10.4-1.3,55.1,80.4,150.7,122.6,248.4,110.8,47.9-5.8,100.8-30,137.6-60.7,5.6-4.7,48.1-46.6,42.7-51.5-7.1-5.8-28.6,33.1-33.1,27.4"/><path d="M675.4,417.1c-5.7,7.1-13.3,6.3-11,15.8,10.3,5.9,45.7-40.2,46.3-43.9,1.1-7.8-20.5-32.5-10.4-46.7-.6-.9-11.6-.7-12.4,0-1,.8-1.6,22.3-1.2,25.2,1.1,8.1,8.2,14,6.5,23.1-.7,4-14.3,22.1-17.7,26.4"/><path d="M611.4,58.9C433.4-21.9,229.7,111.2,233.6,303.9c2.2,4,5.9,3.1,7.3-1,3.4-10.2,2.5-39.5,5.1-53.9,19.5-106.5,137.9-213.4,249.5-207.3,2.8.2,4.1-.9,3.5,2.8-52,5.8-48.4,88.3,9.4,74.6,24.3-5.8,28.8-52.3.8-55.2-30.8-3.2-37.4,33.8-13.6,37,9.9,1.3,16.3-1.2,14.5-12.4-38.1,14.1-14.4-30.3,6.3-13.8,17,13.5-8,57.3-37.3,31.6-46.7-40.9,60.6-88.6,60-17.1,0,6.7-12.9,37.8.6,26.7,17.6-14.4,2.4-68.9-24.1-71.3,132.6,1.1,241.6,121,242.6,251.1,0,2.3,1.9,4.1,4.2,4.1s4.2-1.8,4.2-4.1c.6-100.9-63.9-195.5-155-236.9"/><path d="M726.4,246.3c1.8-10.3-13.4-11.1-15.2-2-4.3,22.4,36.6,24.3,28.4-10.5-8.3-35-68.3,0-35.5,34.4,3.3,3.5,22.3,16.3,26.5,12.4,5.3-4.9-11.1-9.7-13.7-11.8-37.7-30.4,16.4-59.3,16.5-27.3,0,24.4-30.2,3.1-6.9,4.8"/><path d="M749.2,308c-22.1-19.4-69.2,1.7-76.7-22.5-6-19.6,15.2-65.5,1.5-90l25.4,1.4c5.2-15.2-37-5.3-31-19.8,3-7.2,34.7-2.3,35.9-3.6,9.3-9.5-20.5-9.5-23.9-9.1-8.9,1-23.2,11-29.9.3-7.7-12.2,24.2-25.8,22.1-30.2-3.4-7.1-21.6,5.9-24.7,9.5-6.5,7.5-3.8,16.1-9.6,19.9-15.1-15.3,12.8-35.6,12.4-37.7-2.6-12.5-28,7.7-23.1,32.6,1.1,5.6,6.3,9.1,6.5,13.9.2,5.3-17.8,48.8-6.3,47.4,1.9-.2,30-24,32.5-4.8.9,7.1-35.8,67-39.5,86.9-7.2,39.5,26.6,66.7,11.7,111.8-1.7,5.1-9.2,9.5-9.1,12.4.3,11.5,13.7.3,16.4-6.5,1.1-2.7,10.6-52.3,10.6-55.3-.1-12-10.3-16.5-12-27.8,17.7,15.7,44.5-10.4,64-5.4,13,3.3,5.9,22.4,8.7,31.1,2.8,8.9,16.6,14.1,18.1,25.8,1.2,9-10.4,37.2-17.1,43.2-2.2,2-8,1.3-9.1,3.6-4.4,9.6,10.6,8.7,15.6,5.9,2.5-1.4,21.3-47.6,21.6-53,.5-9.8-5-14.5-5.5-23.1-.8-15,10.7-29.1,2.8-46,21,2.5,5,44.9,6.9,46.6,9.7,9,28.6-37,4.9-57.7M640.1,198.4c-8-6.7.5-20.2,10.3-13.7,4.3,2.8,0,22.2-10.3,13.7"/><path d="M292.5,392.1c.7,3,35.9,45.9,44.2,40.9,7.2-11.3-2.2-6.8-7.4-11.6-2-1.9-22.7-28.8-23.1-30.7-1.7-8.3,13.3-35.5,5-45.3-1.4-1.6-8.5-.4-10.7-.2,4.9,13-10.2,36.8-8,46.9"/><path d="M383.2,94.8c-4.3,33.2,45.5,29.9,32.7,2.9-6.9-14.5-30.4,1.8-5.8,4.5,4.2,7.6-14.1,12.2-18,2.7-10.5-25.9,31.3-33.9,36.4-1.9,4.1,25.7-15.7,22.4-22.1,31.4-9.8,13.9,17.8-.2,23-6.6,32.9-39.8-40.5-77.6-46.3-33"/><path d="M356.7,479.4c7.4-4.7-5.4-18.6-12.9-12.2-8.6,7.4,7.5,15.6,12.9,12.2"/><path d="M390.8,379.4c4.1,8.1,4.8,26.8,14.8,24.1,1.3-.4,2.2-1.6,2.1-2.9-1.5-17.9-9.5-40.9-28.7-45.2-6.4,7,6.9,14.5,11.8,24"/><path d="M355.9,495.8c29.6-4.2,25.2-55.5-11.7-48.7-29,5.3-21.5,53.5,11.7,48.7M359.6,457c20.5,10.9-1.9,45-20.1,26.2-12.9-13.2-.4-37.2,20.1-26.2"/></svg>
+  <div class="loader__bar"><i id="loaderBar"></i></div>
+</div>
+
+<!-- ============ 3D STAGE ============ -->
+<div class="stage" id="stage" aria-hidden="true">
+  <canvas id="heroCanvas"></canvas>
+  <div class="stage__fallback"><img src="assets/img/emblem.svg" alt=""></div>
+  <div class="stage__vignette"></div>
+</div>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav">
+  <a class="nav__brand" href="#top" aria-label="Sasperia">
+    <img src="assets/img/emblem.svg" alt="" class="nav__emblem">
+    <span class="nav__word">Sasperia</span>
+  </a>
+  <nav class="nav__links" aria-label="Sections">
+    <a href="#story" data-i18n="nav.story">About us</a>
+    <a href="#menu" data-open-menu="food" data-i18n="nav.menu">Menu</a>
+    <a href="#bar" data-i18n="nav.bar">Bar</a>
+    <a href="#wine" data-i18n="nav.wine">Wine</a>
+    <a href="#spaces" data-i18n="nav.spaces">Spaces</a>
+    <a href="#route" data-i18n="nav.route">Location</a>
+  </nav>
+  <div class="nav__tools">
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="ka">KA</button><button type="button" data-lang="en">EN</button><button type="button" data-lang="ru">RU</button>
+    </div>
+    <button type="button" class="icon-btn sound" id="soundBtn" aria-pressed="false" data-i18n-aria="nav.sound" aria-label="Sound">
+      <span class="sound__bars"><i></i><i></i><i></i><i></i></span>
+    </button>
+    <a class="btn btn--gold nav__cta" href="#reserve" data-i18n="nav.reserve">Book a table</a>
+    <button type="button" class="icon-btn burger" id="burger" aria-expanded="false" aria-controls="drawer" data-i18n-aria="nav.openNav" aria-label="Navigation"><i></i><i></i></button>
+  </div>
+</header>
+
+<div class="drawer" id="drawer" hidden>
+  <nav class="drawer__links" aria-label="Sections">
+    <a href="#story" data-i18n="nav.story">About us</a>
+    <a href="#menu" data-open-menu="food" data-i18n="nav.menu">Menu</a>
+    <a href="#bar" data-i18n="nav.bar">Bar</a>
+    <a href="#wine" data-i18n="nav.wine">Wine</a>
+    <a href="#spaces" data-i18n="nav.spaces">Spaces</a>
+    <a href="#route" data-i18n="nav.route">Location</a>
+    <a href="#reserve" data-i18n="nav.reserve">Book a table</a>
+  </nav>
+  <div class="drawer__foot">
+    <a class="drawer__phone" data-phone></a>
+    <span data-i18n="hero.hours">Everyday · 12:00 — 00:00</span>
+  </div>
+</div>
+
+<main id="top">
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="hero">
+  <div class="hero__inner wrap">
+    <p class="eyebrow hero__eyebrow" data-i18n="hero.eyebrow">life is beautiful</p>
+    <h1 class="hero__title" data-skew>
+      <span class="sr-only">Sasperia</span>
+      <span class="hero__letters" aria-hidden="true">SASPERIA</span>
+    </h1>
+    <img class="hero__wordmark" src="assets/img/wordmark.svg" alt="სასპერია">
+    <p class="hero__tagline" data-i18n="hero.tagline">Cuisine of ancient Georgia</p>
+    <div class="hero__meta">
+      <span data-i18n="hero.hours">Everyday · 12:00 — 00:00</span>
+      <span class="dot" aria-hidden="true"></span>
+      <span data-i18n="hero.place">Mtskheta · Georgia</span>
+    </div>
+    <div class="hero__cta">
+      <a class="btn btn--gold magnetic" href="#reserve" data-i18n="hero.ctaReserve">Book a table</a>
+      <a class="btn btn--line magnetic" href="#menu" data-open-menu="food" data-i18n="hero.ctaMenu">Food Menu</a>
+    </div>
+  </div>
+  <p class="hero__welcome wrap" data-i18n="hero.welcome">Hello* Welcome to Sasperia, Georgian Café &amp; Restaurant</p>
+  <div class="scroll-cue" aria-hidden="true"><span data-i18n="hero.scroll">Scroll</span><i></i></div>
+</section>
+
+<!-- ============ STORY / CONFLUENCE ============ -->
+<section class="story" id="story">
+  <div class="story__pin">
+    <svg class="rivers" id="rivers" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <linearGradient id="gRiverA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7fa9a2" stop-opacity="0"/><stop offset=".45" stop-color="#9cc3bb"/><stop offset="1" stop-color="#d5b784"/></linearGradient>
+        <linearGradient id="gRiverB" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fa9a2" stop-opacity="0"/><stop offset=".45" stop-color="#9cc3bb"/><stop offset="1" stop-color="#d5b784"/></linearGradient>
+      </defs>
+      <path id="riverA" class="river river--a" d="M-40,80 C180,150 260,320 380,430 C460,505 480,560 500,620"/>
+      <path id="riverB" class="river river--b" d="M1040,40 C820,180 760,300 650,420 C570,505 520,560 500,620"/>
+      <path id="riverC" class="river river--c" d="M500,620 C520,720 470,820 500,1040"/>
+      <text class="river__label"><textPath href="#riverA" startOffset="18%" data-i18n="story.rivers.0">Aragvi</textPath></text>
+      <text class="river__label"><textPath href="#riverB" startOffset="18%" data-i18n="story.rivers.1">Mtkvari</textPath></text>
+      <circle class="confluence" cx="500" cy="620" r="9"/>
+    </svg>
+    <div class="story__text wrap">
+      <p class="eyebrow" data-i18n="story.title">About us</p>
+      <div class="story__paras" id="storyParas"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SPECIALS ============ -->
+<section class="specials" id="specials">
+  <div class="specials__pin">
+    <header class="section-head wrap">
+      <p class="eyebrow" data-i18n="specials.eyebrow">The best from Sasperia</p>
+      <h2 class="h2" data-skew data-i18n="specials.title">Our Specials</h2>
+    </header>
+    <div class="specials__viewport">
+      <div class="specials__track" id="specialsTrack"></div>
+    </div>
+    <div class="specials__progress wrap"><i id="specialsBar"></i></div>
+  </div>
+</section>
+
+<!-- ============ QR MENU ============ -->
+<section class="qr" id="qrmenu">
+  <div class="qr__grid wrap">
+    <div class="qr__copy">
+      <p class="eyebrow" data-i18n="qr.eyebrow">Ancient cuisine of Georgia</p>
+      <h2 class="h2" data-skew data-i18n="qr.title">Sasperia Digital Menu</h2>
+      <p class="lead" data-i18n="qr.lead">History, tradition and contemporary Georgian gastronomy in one experience.</p>
+      <ul class="qr__cats" id="qrCats"></ul>
+      <div class="qr__actions">
+        <a class="btn btn--gold magnetic" href="#menu" data-open-menu="food" data-i18n="qr.open">Open the menu</a>
+      </div>
+    </div>
+    <div class="qr__scene">
+      <div class="phone" id="phone">
+        <div class="phone__body">
+          <div class="phone__screen"><div class="phone__feed" id="phoneFeed"></div></div>
+          <div class="phone__notch"></div>
+        </div>
+      </div>
+      <figure class="qr-card" id="qrCard">
+        <div class="qr-card__code" id="qrCode"></div>
+        <img src="assets/img/emblem.svg" alt="" class="qr-card__emblem">
+        <figcaption data-i18n="qr.scan">Scan to open the menu</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BAR ============ -->
+<section class="bar" id="bar">
+  <div class="bar__pin">
+    <div class="bar__grid wrap">
+      <div class="bar__copy">
+        <p class="eyebrow" data-i18n="bar.eyebrow">Sasperia Bar</p>
+        <h2 class="h2" data-skew data-i18n="bar.title">Our Signature Cocktails</h2>
+        <p class="lead lead--italic" data-i18n="bar.sub">Every Moment Has a Story</p>
+        <ol class="cocktails" id="cocktailList"></ol>
+      </div>
+      <div class="deck" id="deck">
+        <img src="assets/img/017A3112.webp" alt="" loading="lazy">
+        <img src="assets/img/017A3080.webp" alt="" loading="lazy">
+        <img src="assets/img/017A3146.webp" alt="" loading="lazy">
+        <img src="assets/img/017A3163.webp" alt="" loading="lazy">
+        <img src="assets/img/017A3023.webp" alt="" loading="lazy">
+        <img src="assets/img/017A3095.webp" alt="" loading="lazy">
+      </div>
+    </div>
+  </div>
+  <div class="art wrap" id="art">
+    <div class="art__cup" aria-hidden="true">
+      <div class="art__foam"><img src="assets/img/emblem.svg" alt=""></div>
+    </div>
+    <div class="art__copy">
+      <p class="eyebrow"><span data-i18n="bar.artTitle">Sasperia Art</span> · <span data-i18n="bar.artTag">Logo or photo</span></p>
+      <h3 class="h3"><span id="artName"></span> <span class="price" id="artPrice"></span></h3>
+      <p id="artDesc"></p>
+      <a class="link-arrow" href="#menu-bar" data-open-menu="bar" data-i18n="bar.open">Bar menu</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WINE ============ -->
+<section class="wine" id="wine">
+  <div class="wine__pin">
+    <div class="wine__grid wrap">
+      <div class="wine__copy">
+        <p class="eyebrow" data-i18n="wine.eyebrow">Sasperia</p>
+        <h2 class="h2" data-skew data-i18n="wine.title">From Our Vineyards</h2>
+        <ul class="wine__list" id="wineList"></ul>
+        <a class="link-arrow" href="#menu-wine" data-open-menu="wine" data-i18n="wine.open">Wine menu</a>
+      </div>
+      <div class="wine__stage">
+        <canvas id="bottleCanvas" aria-hidden="true"></canvas>
+        <img class="wine__fallback" src="assets/img/017A3046.webp" alt="">
+      </div>
+    </div>
+  </div>
+  <div class="marquee" aria-hidden="true"><div class="marquee__row" id="grapes"></div></div>
+</section>
+
+<!-- ============ SPACES ============ -->
+<section class="spaces" id="spaces">
+  <div class="spaces__pin">
+    <header class="section-head wrap">
+      <p class="eyebrow" data-i18n="spaces.eyebrow">Sasperia · Mtskheta</p>
+      <h2 class="h2" data-skew data-i18n="spaces.title">Art in Details</h2>
+    </header>
+    <div class="ring-scene">
+      <div class="ring" id="ring">
+        <img src="assets/img/017A2729.webp" alt="">
+        <img src="assets/img/017A2670-HDR-1.webp" alt="">
+        <img src="assets/img/017A2676.webp" alt="">
+        <img src="assets/img/017A2722-1.webp" alt="">
+        <img src="assets/img/017A2667.webp" alt="">
+        <img src="assets/img/017A2697-1.webp" alt="">
+        <img src="assets/img/017A2732.webp" alt="">
+        <img src="assets/img/017A2679-HDR.webp" alt="">
+        <img src="assets/img/017A2747.webp" alt="">
+        <img src="assets/img/017A7579.webp" alt="">
+      </div>
+    </div>
+    <ul class="areas wrap" id="areas"></ul>
+  </div>
+</section>
+
+<!-- ============ ROUTE ============ -->
+<section class="route" id="route">
+  <div class="route__bg" aria-hidden="true"><img src="assets/img/IMG7621.webp" alt="" loading="lazy"></div>
+  <div class="route__grid wrap">
+    <div class="route__copy">
+      <h2 class="h2" data-skew data-i18n="route.title">All roads lead to Sasperia</h2>
+      <a class="route__address" target="_blank" rel="noopener" data-map="restaurant"><span data-i18n="route.address">3 Sanapiro St., Mtskheta, Georgia</span> <span data-i18n="route.mapLink">Google Maps ↗</span></a>
+      <div class="route__cards">
+        <article class="route-card">
+          <span class="route-card__icon" aria-hidden="true">P</span>
+          <h3 data-i18n="route.car">Arriving by car?</h3>
+          <p data-i18n="route.carText">Please use our designated parking area for your arrival.</p>
+          <a target="_blank" rel="noopener" data-map="parking" data-i18n="route.carLink">Parking location ↗</a>
+        </article>
+        <article class="route-card">
+          <span class="route-card__icon" aria-hidden="true">✚</span>
+          <h3 data-i18n="route.walk">Coming from Svetitskhoveli?</h3>
+          <p data-i18n="route.walkText">Access from this direction is pedestrian only.</p>
+          <a target="_blank" rel="noopener" data-map="walk" data-i18n="route.walkLink">Walking directions ↗</a>
+        </article>
+      </div>
+    </div>
+    <div class="map" id="map">
+      <svg viewBox="0 0 600 600" role="img" aria-labelledby="mapTitle">
+        <title id="mapTitle">Map: parking, river crossing, Sasperia, Svetitskhoveli</title>
+        <defs>
+          <pattern id="streets" width="60" height="60" patternUnits="userSpaceOnUse" patternTransform="rotate(18)">
+            <path d="M0 30H60M30 0V60" stroke="currentColor" stroke-width="1" opacity=".12"/>
+          </pattern>
+        </defs>
+        <rect width="600" height="600" fill="url(#streets)" class="map__streets"/>
+        <path class="map__river" d="M-20,330 C80,300 150,380 260,360 C360,342 420,260 520,250 C580,244 610,262 640,280 L640,380 C600,360 560,350 520,356 C430,368 370,450 260,462 C150,474 70,410 -20,430 Z"/>
+        <text class="map__rivername" x="420" y="330" data-i18n="route.river">Mtkvari</text>
+        <path class="map__route" id="mapRoute" d="M110,470 C150,430 170,400 200,380 C230,360 250,330 290,300"/>
+        <path class="map__route map__route--walk" id="mapWalk" d="M290,300 C300,250 310,200 330,150"/>
+        <g class="map__pin" transform="translate(110 470)"><circle r="22"/><text y="8">P</text></g>
+        <g class="map__boat" transform="translate(196 384)"><circle r="16"/><path d="M-9 1h18l-4 6h-10z M-4 -7h6v8h-6z"/></g>
+        <g class="map__home" transform="translate(290 300)"><circle r="30"/><image href="assets/img/emblem.svg" x="-22" y="-22" width="44" height="44"/></g>
+        <text class="map__label" x="330" y="312" data-i18n="route.restaurant">Sasperia</text>
+        <g class="map__church" transform="translate(330 150)"><circle r="20"/><path d="M-8 8V-2l8-8 8 8V8z M-1 -14h2v-6h-2z M-4 -18h8v2h-8z"/></g>
+        <text class="map__label" x="360" y="140" data-i18n="route.church">Svetitskhoveli</text>
+        <g class="map__min" transform="translate(338 225)"><rect x="-26" y="-14" width="52" height="28" rx="14"/><text y="5" data-i18n="route.min">2 min</text></g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESERVE ============ -->
+<section class="reserve" id="reserve">
+  <div class="reserve__grid wrap">
+    <div class="reserve__head">
+      <h2 class="h2" data-skew data-i18n="reserve.title">Reserve a Table</h2>
+      <p class="reserve__phone"><a data-phone></a></p>
+      <p class="reserve__mail"><a data-email></a></p>
+      <p class="muted" data-i18n="footer.hours">Everyday · 12:00 — 00:00</p>
+    </div>
+    <form class="form" id="reserveForm" novalidate>
+      <div class="form__row">
+        <label class="field"><span data-i18n="reserve.name">Name</span><input id="fName" name="name" autocomplete="name" required></label>
+        <label class="field"><span data-i18n="reserve.phone">Phone</span><input id="fPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+995" required></label>
+      </div>
+      <div class="form__row">
+        <label class="field"><span data-i18n="reserve.date">Date</span><input id="fDate" name="date" type="date" required></label>
+        <label class="field"><span data-i18n="reserve.guests">Number of guests</span><select id="fGuests" name="guests"></select></label>
+      </div>
+      <fieldset class="field field--chips">
+        <legend><span data-i18n="reserve.time">Select time</span> <small data-i18n="reserve.timeHint">12:00 — 00:00, every 30 minutes</small></legend>
+        <div class="chips" id="timeChips"></div>
+      </fieldset>
+      <fieldset class="field field--areas">
+        <legend data-i18n="reserve.area">Select an area</legend>
+        <div class="area-pick" id="areaPick"></div>
+      </fieldset>
+      <label class="field"><span><span data-i18n="reserve.comment">Comment</span> <small data-i18n="reserve.optional">Optional</small></span><textarea id="fComment" name="comment" rows="2"></textarea></label>
+      <p class="form__error" id="formError" role="alert" hidden></p>
+      <button class="btn btn--gold btn--wide magnetic" type="submit" data-i18n="reserve.submit">Book a table</button>
+    </form>
+    <div class="summary" id="summary" hidden>
+      <p class="eyebrow" data-i18n="reserve.summary">Your request</p>
+      <pre class="summary__text" id="summaryText"></pre>
+      <p data-i18n="reserve.sendNote">Send your request by phone or e-mail:</p>
+      <div class="summary__actions">
+        <a class="btn btn--gold" data-phone-btn><span data-i18n="reserve.call">Call</span></a>
+        <a class="btn btn--line" id="mailBtn" data-i18n="reserve.email">E-mail</a>
+        <button class="btn btn--line" type="button" id="copyBtn" data-i18n="reserve.copy">Copy text</button>
+        <button class="btn btn--ghost" type="button" id="editBtn" data-i18n="reserve.edit">Edit</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="footer__mark wrap"><img src="assets/img/wordmark.svg" alt="Sasperia"></div>
+  <div class="footer__grid wrap">
+    <div>
+      <h4 data-i18n="footer.hoursTitle">Working hours</h4>
+      <p data-i18n="footer.hours">Everyday · 12:00 — 00:00</p>
+    </div>
+    <div>
+      <h4 data-i18n="footer.contact">Contact</h4>
+      <p><a data-phone></a><br><a data-email></a><br><a target="_blank" rel="noopener" data-map="restaurant" data-i18n="route.address">3 Sanapiro St., Mtskheta, Georgia</a></p>
+    </div>
+    <div>
+      <h4>Social</h4>
+      <ul class="social" id="social"></ul>
+    </div>
+  </div>
+  <p class="footer__discover wrap" data-i18n="footer.discover">Discover a new experience in Mtskheta</p>
+  <p class="footer__rights wrap" data-i18n="footer.rights">© 2026 Sasperia Restaurant · All rights reserved</p>
+</footer>
+
+<!-- ============ QR MENU APP ============ -->
+<div class="menu-app" id="menuApp" role="dialog" aria-modal="true" aria-labelledby="menuTitle" hidden>
+  <header class="menu-app__top">
+    <button type="button" class="icon-btn menu-app__close" id="menuClose" data-i18n-aria="menu.back" aria-label="Back to the site"><span aria-hidden="true">←</span></button>
+    <div class="menu-app__brand"><img src="assets/img/emblem.svg" alt=""><span id="menuTitle">Sasperia</span></div>
+    <div class="lang lang--small" role="group" aria-label="Language">
+      <button type="button" data-lang="ka">KA</button><button type="button" data-lang="en">EN</button><button type="button" data-lang="ru">RU</button>
+    </div>
+  </header>
+  <div class="menu-app__tabs" role="tablist" id="menuTabs">
+    <button role="tab" data-tab="food" data-i18n="menu.food">Food Menu</button>
+    <button role="tab" data-tab="bar" data-i18n="menu.bar">Bar Menu</button>
+    <button role="tab" data-tab="wine" data-i18n="menu.wine">Wine Menu</button>
+    <button role="tab" data-tab="cocktails" data-i18n="menu.cocktails">Cocktail Menu</button>
+  </div>
+  <div class="menu-app__tools">
+    <label class="search"><span class="sr-only" data-i18n="menu.search">Search the menu</span><input id="menuSearch" type="search" autocomplete="off" data-i18n-placeholder="menu.search" placeholder="Search the menu"></label>
+    <div class="menu-app__chips" id="menuChips"></div>
+  </div>
+  <div class="menu-app__body" id="menuBody"></div>
+  <div class="sheet" id="sheet" hidden>
+    <div class="sheet__scrim" data-close-sheet></div>
+    <article class="sheet__card" id="sheetCard" role="document">
+      <div class="sheet__grab" aria-hidden="true"></div>
+      <div class="sheet__media" id="sheetMedia"></div>
+      <div class="sheet__info">
+        <h3 class="h3" id="sheetName"></h3>
+        <p class="price price--lg" id="sheetPrice"></p>
+        <p id="sheetDesc"></p>
+      </div>
+      <button type="button" class="icon-btn sheet__close" data-close-sheet data-i18n-aria="nav.close" aria-label="Close">×</button>
+    </article>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/audio.js"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
