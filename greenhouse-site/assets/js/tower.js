@@ -159,8 +159,12 @@ export function createTower(canvas, { mobile = false, onLand = () => {} } = {}) 
     return o;
   }
 
+  let lastW = 0, lastH = 0;
   function resize() {
     const w = window.innerWidth, h = window.innerHeight;
+    // iOS toolbar show/hide: ignore small height-only changes
+    if (w === lastW && Math.abs(h - lastH) < 120) return;
+    lastW = w; lastH = h;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     states = S();

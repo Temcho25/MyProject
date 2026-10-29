@@ -2,6 +2,12 @@ import { EN, getLang, applyLang } from './i18n.js';
 import { createSound } from './sound.js';
 
 const { gsap, ScrollTrigger, Lenis } = window;
+if (!gsap || !ScrollTrigger) {
+  // libraries blocked or failed: show the static page instead of a stuck loader
+  document.querySelector('.loader')?.remove();
+  document.body.classList.remove('is-loading');
+  throw new Error('GSAP unavailable');
+}
 gsap.registerPlugin(ScrollTrigger);
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -47,7 +53,13 @@ function splitChars(el) {
 }
 function splitWords(el) {
   const words = el.textContent.trim().split(/\s+/);
-  el.innerHTML = words.map(w => `<span class="word">${w}</span>`).join(' ');
+  el.textContent = '';
+  words.forEach((w, i) => {
+    const s = document.createElement('span');
+    s.className = 'word'; s.textContent = w;
+    el.appendChild(s);
+    if (i < words.length - 1) el.appendChild(document.createTextNode(' '));
+  });
   return $$('.word', el);
 }
 $$('[data-split]').forEach(splitChars);
@@ -55,7 +67,7 @@ $$('[data-words]').forEach(splitWords);
 
 // ---------- smooth scroll ----------
 let lenis = null;
-if (!reduced) {
+if (!reduced && Lenis) {
   lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 1, smoothWheel: true });
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add(t => lenis.raf(t * 1000));
@@ -84,13 +96,11 @@ const soundBtn = $('.sound');
 soundBtn.addEventListener('click', () => soundBtn.setAttribute('aria-pressed', String(sound.toggle())));
 
 // ---------- 3D ----------
-let tower = null;
-try {
-  const { createTower } = await import('./tower.js');
-  tower = createTower($('.webgl'), { mobile, onLand: () => sound.sfx.thud(1) });
-} catch (err) {
-  console.warn('WebGL scene unavailable', err);
-}
+// don't let a slow CDN hold the whole page on the loader
+const tower = await Promise.race([
+  import('./tower.js').then(m => m.createTower($('.webgl'), { mobile, onLand: () => sound.sfx.thud(1) })),
+  new Promise(r => setTimeout(() => r(null), window.__capture ? 60000 : 6000)),
+]).catch(err => { console.warn('WebGL scene unavailable', err); return null; });
 const TT = tower ? tower.target : {};
 
 // ---------- loader → hero intro ----------
@@ -126,13 +136,14 @@ $$('.hero__title .char').forEach(c => { c.style.fontStretch = 'calc(var(--w, 100
 
 // ---------- header behaviour ----------
 const hdr = $('.hdr');
-let lastY = 0;
+let lastY = 0, hdrHidden = false;
 ScrollTrigger.create({
   start: 0, end: 'max',
   onUpdate: self => {
     const y = self.scroll();
     hdr.classList.toggle('is-solid', y > window.innerHeight * 0.6);
-    hdr.classList.toggle('is-hidden', y > lastY && y > window.innerHeight);
+    const hide = y > lastY && y > window.innerHeight;
+    if (hide !== hdrHidden) { hdrHidden = hide; gsap.to(hdr, { yPercent: hide ? -110 : 0, duration: 0.45, ease: 'power3.out', overwrite: 'auto' }); }
     lastY = y;
   },
 });
@@ -164,7 +175,7 @@ gsap.to(['.hero__sub', '.hero__eyebrow', '.hero__foot'], {
 // ---------- the build scene ----------
 const statNum = $('.stat__num'), statUnit = $('.stat__unit'), statLabel = $('.stat__label');
 const statItems = $$('.stat__list li');
-let statIdx = -1;
+let statIdx = -1, countTween = null;
 function setStat(i) {
   if (i === statIdx) return;
   const dir = i > statIdx ? 1 : -1;
@@ -178,7 +189,8 @@ function setStat(i) {
       const end = parseFloat(li.dataset.val);
       const dec = li.dataset.val.includes('.') ? 1 : 0;
       const o = { v: end > 100 ? end - 6 : 0 };
-      gsap.to(o, { v: end, duration: 0.9, ease: 'expo.out', onUpdate: () => { statNum.textContent = o.v.toFixed(dec); } });
+      countTween?.kill();
+      countTween = gsap.to(o, { v: end, duration: 0.9, ease: 'expo.out', onUpdate: () => { statNum.textContent = o.v.toFixed(dec); } });
       statUnit.textContent = li.dataset.unit || '';
       statLabel.textContent = li.textContent;
     })
@@ -408,16 +420,18 @@ gsap.ticker.add((time, dt) => {
   const av = Math.abs(vel);
 
   // gallery rail: perspective cards, depth-of-field blur off-centre, motion blur on speed
-  if (railPin.getBoundingClientRect().bottom > 0 && railPin.getBoundingClientRect().top < window.innerHeight) {
+  const pr = railPin.getBoundingClientRect();
+  if (pr.bottom > 0 && pr.top < window.innerHeight) {
     const vw = window.innerWidth;
     const maxX = track.scrollWidth - vw;
     railX += (-maxX * railP - railX) * 0.14;
     track.style.transform = `translate3d(${railX}px,0,0)`;
     railWord.style.transform = `translate3d(${railX * 0.35}px,0,0)`;
-    cards.forEach(c => {
-      const r = c.getBoundingClientRect();
+    const rects = cards.map(c => c.getBoundingClientRect());
+    cards.forEach((c, i) => {
+      const r = rects[i];
       const n = clamp(((r.left + r.width / 2) - vw / 2) / vw, -1.2, 1.2);
-      const blur = Math.min(10, Math.abs(n) * 5 + av * 0.12);
+      const blur = mobile ? 0 : Math.min(10, Math.abs(n) * 5 + av * 0.12);
       c.style.transform = `rotateY(${n * -26}deg) translateZ(${-Math.abs(n) * 280}px) skewX(${clamp(vel * -0.08, -6, 6)}deg)`;
       c.style.filter = blur > 0.3 ? `blur(${blur.toFixed(2)}px)` : 'none';
       c.firstElementChild.firstElementChild.style.transform = `translate3d(${n * -7}%,0,0) scale(1.05)`;
@@ -429,8 +443,7 @@ gsap.ticker.add((time, dt) => {
   const sgn = vel < -0.2 ? -1 : 1;
   marquees.forEach(m => {
     m.x -= m.dir * sgn * boost * dt * 0.06;
-    if (m.x <= -m.w) m.x += m.w;
-    if (m.x > 0) m.x -= m.w;
+    if (m.w) m.x = ((m.x % m.w) - m.w) % m.w;
     m.row.style.transform = `translate3d(${m.x}px,0,0) skewX(${clamp(-vel * 0.25, -10, 10)}deg)`;
   });
 });
