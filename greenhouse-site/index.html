@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="ka">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>მწვანე სახლი — Green House Development</title>
+<meta name="description" content="Green House Development — დეველოპერული კომპანია. Green House Isani, ლეხ კაჩინსკის ქუჩა 2ა, თბილისი.">
+<meta name="theme-color" content="#16774C">
+<link rel="icon" href="assets/img/logo-mark.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wdth,wght@62.5..100,100..900&family=Manrope:wght@300..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body class="is-loading">
+
+<!-- loader: logo slabs stack, then the screen splits along the slab gaps -->
+<div class="loader" aria-hidden="true">
+  <div class="loader__bands"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="loader__inner">
+    <span class="mark mark--loader"></span>
+    <div class="loader__word">მწვანე სახლი</div>
+    <div class="loader__sub" data-i18n="tagline">დეველოპერული კომპანია</div>
+  </div>
+</div>
+
+<canvas class="webgl" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="hdr">
+  <a class="hdr__brand" href="#top" aria-label="მწვანე სახლი">
+    <span class="mark mark--hdr"></span>
+    <span class="hdr__word">მწვანე სახლი</span>
+  </a>
+  <nav class="hdr__nav">
+    <a href="#isani">Green House Isani</a>
+    <a href="#vazisubani">Green House Vazisubani</a>
+    <a href="#contact" data-i18n="nav_contact">კონტაქტი</a>
+  </nav>
+  <div class="hdr__tools">
+    <button class="sound" type="button" aria-pressed="false" aria-label="Sound">
+      <span class="sound__bars"><i></i><i></i><i></i><i></i></span>
+    </button>
+    <div class="lang"><a href="?lang=ka" data-lang="ka">ქარ</a><a href="?lang=en" data-lang="en">EN</a></div>
+    <a class="hdr__phone" href="tel:+995571001144">571 00 11 44</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO: the 3D tower opens in the exact angle of the logo -->
+  <section class="hero" id="hero">
+    <div class="hero__copy">
+      <p class="eyebrow hero__eyebrow">Green House Development</p>
+      <h1 class="hero__title" aria-label="მწვანე სახლი">
+        <span class="hero__line" data-split>მწვანე</span>
+        <span class="hero__line" data-split>სახლი</span>
+      </h1>
+      <p class="hero__sub" data-i18n="tagline">დეველოპერული კომპანია</p>
+    </div>
+    <div class="hero__foot">
+      <div class="hero__addr">
+        <span class="pin"></span>
+        <span data-i18n="addr_isani">ისანი, ლეხ კაჩინსკის 2ა</span>
+      </div>
+      <div class="scrollcue"><span></span></div>
+    </div>
+  </section>
+
+  <!-- ISANI: pinned build scene — floors stack while the facts appear -->
+  <section class="build" id="isani">
+    <div class="build__pin">
+      <div class="build__head">
+        <p class="eyebrow" data-i18n="isani_status">შენდება · ჩაბარება 2 კვ. 2028</p>
+        <h2 class="build__title"><span data-split>Green House</span><span data-split class="accent">Isani</span></h2>
+        <p class="build__addr" data-i18n="isani_addr">თბილისი, ლეხ კაჩინსკის ქუჩა, 2ა</p>
+      </div>
+      <div class="stat">
+        <div class="stat__val"><span class="stat__num">7</span><span class="stat__unit"></span></div>
+        <div class="stat__label">სართულიანობა</div>
+      </div>
+      <ul class="stat__list" aria-label="Green House Isani">
+        <li data-val="7" data-unit="" data-i18n="s_floors">სართულიანობა</li>
+        <li data-val="25" data-unit="" data-i18n="s_apts">ბინების რაოდენობა</li>
+        <li data-val="3.0" data-unit="მ" data-i18n="s_ceiling">ჭერის სიმაღლე</li>
+        <li data-val="13" data-unit="" data-i18n="s_parking">მიწისქვეშა პარკინგი, ავტოსადგომი</li>
+        <li data-val="2028" data-unit="" data-i18n="s_delivery">ჩაბარება, 2 კვარტალი</li>
+      </ul>
+      <div class="build__rail"><i></i></div>
+    </div>
+  </section>
+
+  <!-- ISANI: description, revealed word by word -->
+  <section class="manifest">
+    <p class="manifest__text" data-words data-i18n="isani_desc">საცხოვრებელი კომპლექსი Green House Isani თბილისში არის ელეგანტური შენობა ფართო ბინებით, რომლებიც დეტალურადაა დაპროექტებული.</p>
+  </section>
+
+  <!-- ISANI: renders on a 3D rail -->
+  <section class="rail" id="gallery">
+    <div class="rail__pin">
+      <div class="rail__track">
+        <figure class="card"><div class="card__in"><img src="assets/img/isani-1.webp" alt="Green House Isani" loading="lazy"></div></figure>
+        <figure class="card"><div class="card__in"><img src="assets/img/isani-2.webp" alt="Green House Isani" loading="lazy"></div></figure>
+        <figure class="card"><div class="card__in"><img src="assets/img/isani-3.webp" alt="Green House Isani" loading="lazy"></div></figure>
+      </div>
+      <div class="rail__word" aria-hidden="true">Green House Isani</div>
+    </div>
+  </section>
+
+  <!-- ADVANTAGES -->
+  <section class="adv">
+    <h2 class="sec-title" data-split data-i18n="adv_title">უპირატესობები</h2>
+    <div class="marquee" data-dir="1">
+      <div class="marquee__row">
+        <span data-i18n="a1">მეტროსთან ახლოს</span><b></b>
+        <span data-i18n="a2">მრავალდონიანი ფასადის განათება</span><b></b>
+        <span data-i18n="a3">ლანდშაფტით მოწყობილი ეზო</span><b></b>
+        <span data-i18n="a4">ბავშვთა სათამაშო ზონა</span><b></b>
+        <span data-i18n="a5">24-საათიანი დაცვის სისტემა</span><b></b>
+        <span data-i18n="a6">პანორამული ფანჯრები</span><b></b>
+      </div>
+    </div>
+    <div class="marquee marquee--ghost" data-dir="-1">
+      <div class="marquee__row">
+        <span data-i18n="a7">ევროპული სტილის სართულის გეგმარები</span><b></b>
+        <span data-i18n="a8">ბინების შეზღუდული რაოდენობა</span><b></b>
+        <span data-i18n="a9">დაბალი ხმაურის უცხოური წარმოების ლიფტები</span><b></b>
+        <span data-i18n="a10">თანამედროვე შენობის არქიტექტურა</span><b></b>
+        <span data-i18n="a11">სანდო სამშენებლო ტექნოლოგიები</span><b></b>
+      </div>
+    </div>
+    <div class="specs">
+      <div class="spec"><span class="spec__k" data-i18n="k_tech">მშენებლობის ტექნოლოგია</span><span class="spec__v" data-i18n="v_tech">მონოლითური-ჩარჩო</span></div>
+      <div class="spec"><span class="spec__k" data-i18n="k_walls">გარე კედლები</span><span class="spec__v" data-i18n="v_walls">თბობლოკი</span></div>
+      <div class="spec"><span class="spec__k" data-i18n="k_lift">ლიფტი</span><span class="spec__v" data-i18n="v_lift">დაბალი ხმაურის</span></div>
+      <div class="spec"><span class="spec__k" data-i18n="k_balcony">აივნები</span><span class="spec__v" data-i18n="v_balcony">ღია, არამინისებრი</span></div>
+      <div class="spec"><span class="spec__k" data-i18n="k_ground">პირველი სართული</span><span class="spec__v" data-i18n="v_ground">კომერციული ფართები</span></div>
+      <div class="spec"><span class="spec__k" data-i18n="k_access">შესასვლელები</span><span class="spec__v" data-i18n="v_access">შეზღუდული შესაძლებლობის მქონე პირებისთვის</span></div>
+    </div>
+  </section>
+
+  <!-- GREEN FRAME: exploded axonometric of the handover state -->
+  <section class="frame" id="frame">
+    <div class="frame__pin">
+      <div class="frame__copy">
+        <p class="eyebrow" data-i18n="frame_eyebrow">მდგომარეობა</p>
+        <h2 class="sec-title" data-split data-i18n="frame_title">მწვანე კარკასი</h2>
+        <ul class="frame__list">
+          <li data-i18n="f1">კომუნალური სისტემები სრულად არის დამონტაჟებული</li>
+          <li data-i18n="f2">შიდა ტიხრები დამონტაჟებულია განლაგების შესაბამისად</li>
+          <li data-i18n="f3">იატაკი გასწორებულია</li>
+          <li data-i18n="f4">კედლები მზადდება საბოლოო დასრულებისთვის</li>
+        </ul>
+      </div>
+      <div class="axo">
+        <div class="axo__stack">
+          <div class="axo__layer axo__layer--slab"></div>
+          <div class="axo__layer axo__layer--walls"></div>
+          <div class="axo__layer axo__layer--wires"></div>
+          <div class="axo__layer axo__layer--finish"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOCATION -->
+  <section class="loc" id="location">
+    <div class="loc__copy">
+      <p class="eyebrow" data-i18n="loc_eyebrow">მდებარეობა</p>
+      <h2 class="sec-title" data-split data-i18n="loc_title">ლეხ კაჩინსკის ქუჩა, 2ა</h2>
+      <p class="loc__text" data-i18n="loc_text">კომპლექსი მდებარეობს 300 არაგველების მეტროსადგურიდან 600 მეტრზე ოდნავ მეტი მანძილის დაშორებით.</p>
+      <div class="loc__far">
+        <div><span class="loc__n" data-count="5">5</span><span class="loc__u" data-i18n="km">კმ</span><span class="loc__l" data-i18n="l_rail">თბილისის რკინიგზის სადგური</span></div>
+        <div><span class="loc__n" data-count="14">14</span><span class="loc__u" data-i18n="km">კმ</span><span class="loc__l" data-i18n="l_air">თბილისის საერთაშორისო აეროპორტი</span></div>
+      </div>
+    </div>
+    <div class="radar">
+      <svg viewBox="0 0 600 600" class="radar__svg" aria-hidden="true">
+        <circle class="radar__ring" cx="300" cy="300" r="250"/>
+        <circle class="radar__ring" cx="300" cy="300" r="175"/>
+        <circle class="radar__ring" cx="300" cy="300" r="85"/>
+        <circle class="radar__sweep" cx="300" cy="300" r="250"/>
+        <circle class="radar__core" cx="300" cy="300" r="9"/>
+        <circle class="radar__pulse" cx="300" cy="300" r="9"/>
+      </svg>
+      <div class="radar__tag" style="--r:85"><b>200 <em data-i18n="m">მ</em></b><span data-i18n="r_bus">საზოგადოებრივი ტრანსპორტის გაჩერებები</span></div>
+      <div class="radar__tag" style="--r:175"><b>600 <em data-i18n="m">მ</em></b><span data-i18n="r_metro">300 არაგველის მეტროსადგური</span></div>
+      <div class="radar__tag" style="--r:250"><b>&lt;1 <em data-i18n="km">კმ</em></b><span data-i18n="r_river">მდინარის სანაპირო</span></div>
+    </div>
+  </section>
+
+  <!-- PURCHASE -->
+  <section class="buy">
+    <div class="buy__price">
+      <p class="eyebrow" data-i18n="price_label">ფასი მ²-ზე</p>
+      <div class="buy__big"><span class="buy__pre" data-i18n="from_pre"></span><span class="buy__num" data-count="4670">4 670</span><span class="buy__cur">₾</span><span class="buy__from" data-i18n="from">-დან</span></div>
+      <div class="buy__usd"><span class="buy__pre" data-i18n="from_pre"></span>$1 800 <span data-i18n="from">-დან</span></div>
+    </div>
+    <div class="buy__ways">
+      <h3 data-i18n="buy_title">შეძენის პირობები</h3>
+      <p data-i18n="buy_text">ფინანსური შესყიდვის პირობები გთავაზობთ არჩევანს სრულ გადახდასა და სესხს შორის.</p>
+      <div class="chip"><span class="chip__dot"></span><span data-i18n="buy_tbc">იპოთეკა — TBC Bank</span></div>
+    </div>
+  </section>
+
+  <!-- VAZISUBANI: delivered project -->
+  <section class="vaz" id="vazisubani">
+    <div class="vaz__hero">
+      <div class="vaz__mask"><img src="assets/img/vaz-2.webp" alt="Green House Vazisubani" loading="lazy"></div>
+      <div class="stamp" aria-hidden="true">
+        <svg viewBox="0 0 200 200"><defs><path id="sc" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs>
+          <text><textPath href="#sc" data-i18n="stamp">ჩაბარდა 2025 · დეველოპერისგან ყველა ბინა გაყიდულია ·</textPath></text></svg>
+        <span class="stamp__c">2025</span>
+      </div>
+    </div>
+    <div class="vaz__copy">
+      <p class="eyebrow" data-i18n="vaz_eyebrow">ჩაბარდა 2025</p>
+      <h2 class="vaz__title"><span data-split>Green House</span><span data-split class="accent">Vazisubani</span></h2>
+      <p class="vaz__addr" data-i18n="vaz_addr">თეოფანე დავითაიას ქუჩა, 16</p>
+      <div class="vaz__facts">
+        <div><span class="vaz__n" data-count="11">11</span><span class="vaz__l" data-i18n="s_floors">სართულიანობა</span></div>
+        <div><span class="vaz__n" data-count="70">70</span><span class="vaz__l" data-i18n="s_apts">ბინების რაოდენობა</span></div>
+        <div><span class="vaz__n">53,7–81,9</span><span class="vaz__l" data-i18n="vaz_area">ბინების ფართები, მ²</span></div>
+      </div>
+      <p class="vaz__sold" data-i18n="vaz_sold">დეველოპერისგან ყველა ბინა გაყიდულია</p>
+    </div>
+    <div class="collage">
+      <div class="collage__i c1" data-speed="-0.12"><img src="assets/img/vaz-1.webp" alt="Green House Vazisubani" loading="lazy"></div>
+      <div class="collage__i c2" data-speed="0.18"><img src="assets/img/vaz-detail.webp" alt="Green House Vazisubani" loading="lazy"></div>
+      <div class="collage__i c3" data-speed="-0.05"><img src="assets/img/vaz-3.webp" alt="Green House Vazisubani" loading="lazy"></div>
+      <div class="collage__i c4" data-speed="0.25"><img src="assets/img/vaz-balcony.webp" alt="Green House Vazisubani" loading="lazy"></div>
+    </div>
+  </section>
+
+  <!-- CONSTRUCTION PROGRESS -->
+  <section class="prog">
+    <h2 class="sec-title" data-split data-i18n="prog_title">მშენებლობის პროცესი</h2>
+    <div class="prog__rows">
+      <div class="prog__row">
+        <div class="prog__meta"><b>Green House Isani</b><span data-i18n="prog_isani">მარტი 2026 — ოქტომბერი 2026</span></div>
+        <div class="prog__strip">
+          <img src="assets/img/isani-site-1.webp" alt="Green House Isani" loading="lazy">
+          <img src="assets/img/isani-site-2.webp" alt="Green House Isani" loading="lazy">
+        </div>
+      </div>
+      <div class="prog__row">
+        <div class="prog__meta"><b>Green House Vazisubani</b><span data-i18n="prog_vaz">ნოემბერი 2023 — თებერვალი 2025</span></div>
+        <div class="prog__strip">
+          <img src="assets/img/vaz-site-1.webp" alt="Green House Vazisubani" loading="lazy">
+          <img src="assets/img/vaz-site-2.webp" alt="Green House Vazisubani" loading="lazy">
+          <img src="assets/img/vaz-site-3.webp" alt="Green House Vazisubani" loading="lazy">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about">
+    <div class="about__year" aria-hidden="true"><span>2</span><span>0</span><span>2</span><span>1</span></div>
+    <div class="about__copy">
+      <p class="eyebrow" data-i18n="about_eyebrow">დეველოპერის შესახებ</p>
+      <p class="about__text" data-words data-i18n="about_text">Green House Development ოპერირებს 2021 წლიდან და ფოკუსირებულია საქართველოში მოთხოვნადი უძრავი ქონების მშენებლობაზე.</p>
+    </div>
+  </section>
+
+  <!-- CONTACT: the tower returns, now with its night lighting -->
+  <section class="contact" id="contact">
+    <div class="contact__in">
+      <p class="eyebrow" data-i18n="nav_contact">კონტაქტი</p>
+      <a class="contact__phone" href="tel:+995571001144" aria-label="571 00 11 44"><span data-split>571 00 11 44</span></a>
+      <div class="contact__addr">
+        <div><span class="pin"></span><span data-i18n="addr_isani">ისანი, ლეხ კაჩინსკის 2ა</span></div>
+        <div><span class="pin"></span><span data-i18n="addr_office">ილორის ქ. 10, თბილისი</span></div>
+      </div>
+      <div class="contact__btns">
+        <a class="btn btn--solid magnetic" href="tel:+995571001144"><span data-i18n="call">დარეკვა</span></a>
+        <a class="btn magnetic" href="https://wa.me/995571001144" target="_blank" rel="noopener"><span>WhatsApp</span></a>
+        <a class="btn magnetic" href="https://www.instagram.com/greenhouse_development/" target="_blank" rel="noopener"><span>Instagram</span></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="ftr">
+  <div class="ftr__brand"><span class="mark mark--ftr"></span><span>მწვანე სახლი</span></div>
+  <span>© Green House Development</span>
+  <a href="https://www.instagram.com/greenhouse_development/" target="_blank" rel="noopener">@greenhouse_development</a>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script type="module" src="assets/js/main.js"></script>
+</body>
+</html>
