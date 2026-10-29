@@ -31,7 +31,10 @@ $('#highlights').innerHTML = PROJECTS.filter((p) => p.highlight).map((p) => `
   </a>`).join('');
 $('#allCount').textContent = PROJECTS.length;
 
-const names = PROJECTS.map((p) => `<span>${p.name}</span>`).join('');
+// Ticker shows the home-page selection plus the rest of the range, minus projects the owner
+// asked to keep off the home page.
+const OFF_HOME = ['angels', 'mgrand', 'roof', 'townsquare'];
+const names = PROJECTS.filter((p) => !OFF_HOME.includes(p.id)).map((p) => `<span>${p.name}</span>`).join('');
 $('#ticker').innerHTML = names + names;
 
 onLang((l) => {
