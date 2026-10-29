@@ -20,16 +20,18 @@ const cdp=await ctx.newCDPSession(p);
 // Layout keys (measured once, scroll positions in px)
 const measure=()=>p.evaluate(()=>{const top=(s)=>{const e=document.querySelector(s);return e.getBoundingClientRect().top+scrollY};
   const cases=[...document.querySelectorAll('.case')].map(c=>c.getBoundingClientRect().top+scrollY);
-  const svc=document.querySelector('.svc3d');const app=document.querySelector('.approach');
-  return {cases,hl:top('#highlights'),svcTop:top('.svc3d'),svcH:svc.offsetHeight,app:top('.approach'),appH:app.offsetHeight,contact:top('#contact'),H:document.documentElement.scrollHeight,vh:innerHeight};});
+  const svc=document.querySelector('.svc3d');const mir=document.querySelector('.mirror');const lab=document.querySelector('.lab');const app=document.querySelector('.approach');
+  return {cases,hl:top('#highlights'),svcTop:top('.svc3d'),svcH:svc.offsetHeight,app:top('.approach'),appH:app.offsetHeight,contact:top('#contact'),mT:mir.getBoundingClientRect().top+scrollY,mH:mir.offsetHeight,lT:lab.getBoundingClientRect().top+scrollY,lH:lab.offsetHeight,H:document.documentElement.scrollHeight,vh:innerHeight};});
 let L=await measure();
 let Y,K;
 function build(){
 const vh=L.vh, sv=L.svcTop, sr=L.svcH-vh;
 // Keyframes [time s, scrollY]; repeated values = intended holds.
-K=[[0,0],[4.6,0],[6.4,L.cases[0]-120],[8.2,L.cases[0]+260],[9.6,L.cases[1]-60],[11.0,L.cases[2]-60],[12.2,L.cases[3]-60],[13.6,L.hl-140],
-  [14.8,sv],[15.6,sv+sr*0.05],[16.8,sv+sr*0.3],[17.4,sv+sr*0.31],[18.6,sv+sr*0.56],[19.2,sv+sr*0.57],[20.4,sv+sr*0.82],[21.0,sv+sr*0.84],[22.2,sv+sr],
-  [23.4,L.app-20],[25.0,L.app+L.appH-vh*0.9],[27.0,Math.min(L.H-vh,L.contact+vh*0.3)],[30,Math.min(L.H-vh,L.contact+vh*0.3)]];
+K=[[0,0],[4.6,0],[6.0,L.mT],[9.0,L.mT+(L.mH-vh)*0.92],[9.6,L.mT+(L.mH-vh)*0.95],
+  [10.8,L.cases[0]-120],[12.0,L.cases[0]+260],[13.4,L.cases[1]-60],[14.8,L.cases[2]-60],[16.2,L.hl-140],[17.0,L.hl+260],
+  [18.2,sv],[18.8,sv+sr*0.05],[20.0,sv+sr*0.3],[20.6,sv+sr*0.31],[21.8,sv+sr*0.56],[22.4,sv+sr*0.57],[23.6,sv+sr*0.82],[24.2,sv+sr*0.84],[25.2,sv+sr],
+  [26.4,L.lT],[27.0,L.lT+(L.lH-vh)*0.05],[28.6,L.lT+(L.lH-vh)*0.3],[29.2,L.lT+(L.lH-vh)*0.36],[30.8,L.lT+(L.lH-vh)*0.63],[31.4,L.lT+(L.lH-vh)*0.69],[33.0,L.lT+(L.lH-vh)*0.97],
+  [34.2,L.app-20],[35.6,L.app+L.appH-vh*0.9],[37.4,Math.min(L.H-vh,L.contact+vh*0.3)],[40,Math.min(L.H-vh,L.contact+vh*0.3)]];
 // Monotone cubic interpolation (no overshoot, continuous velocity between holds)
 const xs=K.map(k=>k[0]),ys=K.map(k=>k[1]),n=K.length,d=[],m=[];
 for(let i=0;i<n-1;i++)d.push((ys[i+1]-ys[i])/(xs[i+1]-xs[i]));
@@ -51,9 +53,10 @@ for(let f=0;f<=fb;f++){
   await p.evaluate(()=>window.__step(1000/60));
   if(f<fa) continue;
   const r=await cdp.send('Page.captureScreenshot',{format:'jpeg',quality:94});
-  fs.writeFileSync(`/tmp/claude-0/reel/frames3/f${String(f).padStart(5,'0')}.jpg`,Buffer.from(r.data,'base64'));
-  const chap=await p.evaluate(()=>[...document.querySelectorAll('.chap')].findIndex(c=>c.classList.contains('is-on')));
-  log.push({f,y:Math.round(Y(t)),chap});
+  fs.writeFileSync(`/tmp/claude-0/reel/frames5/f${String(f).padStart(5,'0')}.jpg`,Buffer.from(r.data,'base64'));
+  const chap=await p.evaluate(()=>[...document.querySelectorAll('#chapters .chap')].findIndex(c=>c.classList.contains('is-on')));
+  const lchap=await p.evaluate(()=>[...document.querySelectorAll('#labChapters .chap')].findIndex(c=>c.classList.contains('is-on')));
+  log.push({f,y:Math.round(Y(t)),chap,lchap});
   if(f%60===0){console.log('frame',f,'/',fb,((Date.now()-t0)/1000|0)+'s');fs.writeFileSync('/tmp/claude-0/reel/log.json',JSON.stringify({L,K,log}));}
 }
 fs.writeFileSync('/tmp/claude-0/reel/log.json',JSON.stringify({L,K,log}));
