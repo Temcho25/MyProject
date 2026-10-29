@@ -1,28 +1,71 @@
 import {
   gsap, ScrollTrigger, $, $$, mobile, reduced, lowEnd, lenis, onLang, imgSet, M,
-  revealLines, intro, initCursor, initContact, initTilt, updateNav, scrollToEl,
+  revealLines, intro, initContact, updateNav, scrollToEl,
 } from './core.js';
 import { PROJECTS, T } from './data.js';
 import { createMark } from './mark3d.js';
 
-const featured = PROJECTS.filter((p) => p.featured);
+// Showcase: six projects that change on their own every few seconds.
+const SHOW = ['legal', 'rolex', 'coordinate', 'trio', 'orientiri', 'champions'].map((id) => PROJECTS.find((p) => p.id === id));
+const SLIDE_TIME = 4.5;
 
-/* ------------------------------------------------------------------ build */
-$('#featured').innerHTML = featured.map((p) => `
-  <article class="case">
-    <div class="case-media">
-      <a class="case-main" href="${p.url}" target="_blank" rel="noopener" data-cursor aria-label="${p.name}">
-        ${imgSet(p.id, p.main, '(max-width: 760px) 100vw, 92vw', false, p.name)}
-      </a>
-      <div class="case-detail" aria-hidden="true">${imgSet(p.id, p.detail, '(max-width: 760px) 46vw, 34vw')}</div>
+$('#featured').innerHTML = `
+  <div class="sc">
+    <a class="sc-frame" id="scFrame" href="${SHOW[0].url}" target="_blank" rel="noopener" aria-label="${SHOW[0].name}">
+      ${SHOW.map((p, i) => `<div class="sc-slide${i ? '' : ' is-on'}">${imgSet(p.id, p.main, '(max-width: 760px) 100vw, 92vw', i === 0, p.name)}</div>`).join('')}
+      <span class="sc-badge" id="scBadge"></span>
+    </a>
+    <div class="sc-bar">
+      <ol class="sc-names" role="tablist">
+        ${SHOW.map((p, i) => `<li><button role="tab" aria-selected="${i === 0}" data-i="${i}" class="${i ? '' : 'is-on'}"><span>${p.name}</span><i class="sc-prog"></i></button></li>`).join('')}
+      </ol>
+      <a class="pill" id="scVisit" href="${SHOW[0].url}" target="_blank" rel="noopener"><span data-i18n="work.visit"></span><i class="arrow">↗</i></a>
     </div>
-    <div class="case-meta">
-      <div><h3 class="case-name">${p.name}</h3><p class="case-tags" data-tags="${p.id}"></p></div>
-      <p class="case-desc" data-desc="${p.id}"></p>
-      <a class="pill" href="${p.url}" target="_blank" rel="noopener"><span data-i18n="work.visit"></span><i class="arrow">↗</i></a>
-    </div>
-  </article>`).join('');
+  </div>`;
 
+let scCur = 0, scTimer = null, scPaused = false, scInView = false;
+const slides = $$('.sc-slide'), scBtns = $$('.sc-names button');
+const badgeText = () => T[document.documentElement.lang || 'en'][SHOW[scCur].live ? 'work.live' : 'work.concept'];
+function scProgress() {
+  scTimer?.kill();
+  gsap.set('.sc-prog', { scaleX: 0 });
+  if (reduced) return;
+  scTimer = gsap.fromTo($('.sc-prog', scBtns[scCur]), { scaleX: 0 }, {
+    scaleX: 1, duration: SLIDE_TIME, ease: 'none', paused: scPaused || !scInView,
+    onComplete: () => scGo((scCur + 1) % SHOW.length),
+  });
+}
+function scGo(next, dir = 1) {
+  if (next === scCur) return;
+  const prev = slides[scCur], nxt = slides[next];
+  scCur = next;
+  const p = SHOW[next];
+  $('#scFrame').href = $('#scVisit').href = p.url;
+  $('#scFrame').setAttribute('aria-label', p.name);
+  $('#scBadge').textContent = badgeText();
+  scBtns.forEach((b, i) => { b.classList.toggle('is-on', i === next); b.setAttribute('aria-selected', String(i === next)); });
+  slides.forEach((sl) => sl.classList.remove('is-top'));
+  nxt.classList.add('is-on', 'is-top');
+  gsap.killTweensOf([nxt, $('img', nxt), $('img', prev)]);
+  const from = dir > 0 ? 'inset(0 0 0 100% round 22px)' : 'inset(0 100% 0 0 round 22px)';
+  gsap.fromTo(nxt, { clipPath: from }, { clipPath: 'inset(0 0% 0 0% round 22px)', duration: 1.15, ease: M.ease.inOut,
+    onComplete: () => { prev.classList.remove('is-on'); gsap.set($('img', prev), { xPercent: 0 }); } });
+  gsap.fromTo($('img', nxt), { xPercent: 7 * dir }, { xPercent: 0, duration: 1.5, ease: M.ease.out });
+  gsap.to($('img', prev), { xPercent: -5 * dir, duration: 1.15, ease: M.ease.inOut });
+  scProgress();
+}
+scBtns.forEach((b) => b.addEventListener('click', () => { const i = +b.dataset.i; scGo(i, i > scCur ? 1 : -1); }));
+// Pause while the visitor looks at a slide (desktop hover); swipe to change on touch.
+$('#scFrame').addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') { scPaused = true; scTimer?.pause(); } });
+$('#scFrame').addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') { scPaused = false; if (scInView) scTimer?.resume(); } });
+let sx = null, swiped = false;
+$('#scFrame').addEventListener('pointerdown', (e) => { sx = e.clientX; swiped = false; });
+$('#scFrame').addEventListener('pointerup', (e) => {
+  if (sx === null) return;
+  const dx = e.clientX - sx; sx = null;
+  if (Math.abs(dx) > 45) { swiped = true; scGo((scCur + (dx < 0 ? 1 : SHOW.length - 1)) % SHOW.length, dx < 0 ? 1 : -1); }
+});
+$('#scFrame').addEventListener('click', (e) => { if (swiped) { e.preventDefault(); swiped = false; } });
 
 // Ticker: what we do (not client names — only real clients are listed, in the clients row).
 const fillTicker = (l) => {
@@ -31,19 +74,32 @@ const fillTicker = (l) => {
 };
 
 onLang((l) => {
-  $$('[data-desc]').forEach((el) => { el.textContent = PROJECTS.find((p) => p.id === el.dataset.desc)[l]; });
-  // Honest label: launched client work is marked live, the rest are concepts.
-  $$('[data-tags]').forEach((el) => { const p = PROJECTS.find((x) => x.id === el.dataset.tags);
-    el.textContent = `${T[l][p.live ? 'work.live' : 'work.concept']} · ${p.tags[l]}`; });
+  // Honest badge on the slide: launched client work is "live", the rest are concepts.
+  $('#scBadge').textContent = T[l][SHOW[scCur].live ? 'work.live' : 'work.concept'];
   fillTicker(l);
 });
 initContact();
-initCursor();
-initTilt($$('.case-main'));
 
 /* ------------------------------------------------------------------ 3D mark */
 let mark = null;
 try { mark = createMark($('#gl'), { mobile, reduced, lowEnd }); } catch (e) { console.error('3D scene failed:', e); $('#gl').remove(); }
+
+/* ------------------------------------------------------------------ hero: play with the 3D mark */
+// Drag sideways to spin it (touch and mouse), tap to make the dot hop. Vertical scroll stays native.
+if (mark && !reduced) {
+  const hero = $('#hero');
+  let lastX = null, moved = 0;
+  hero.addEventListener('pointerdown', (e) => { lastX = e.clientX; moved = 0; });
+  window.addEventListener('pointermove', (e) => {
+    if (lastX === null) return;
+    const dx = e.clientX - lastX; lastX = e.clientX; moved += Math.abs(dx);
+    mark.state.spinV += dx * 0.012;
+  });
+  window.addEventListener('pointerup', () => {
+    if (lastX !== null && moved < 6) gsap.fromTo(mark.state, { hop: 0 }, { hop: 1, duration: 0.28, ease: 'power2.out', yoyo: true, repeat: 1 });
+    lastX = null;
+  });
+}
 
 /* ------------------------------------------------------------------ scroll choreography */
 function setupScroll() {
@@ -55,30 +111,17 @@ function setupScroll() {
     scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true },
   });
 
-  // Case studies: clip-path wipe in, then image parallax inside its frame.
-  $$('.case').forEach((c, i) => {
-    const main = $('.case-main', c);
-    // The frame tilts back in real perspective and settles flat as it arrives.
-    if (!reduced) {
-      gsap.fromTo($('.case-media', c), { rotationX: 16, rotationY: i % 2 ? -6 : 6, y: 80, transformPerspective: 1800, transformOrigin: '50% 100%' }, {
-        rotationX: 0, rotationY: 0, y: 0, ease: M.ease.soft,
-        scrollTrigger: { trigger: c, start: 'top 100%', end: 'top 30%', scrub: 0.8 },
-      });
-    }
-    gsap.fromTo(main, { clipPath: 'inset(16% 8% 16% 8% round 22px)' }, {
-      clipPath: 'inset(0% 0% 0% 0% round 22px)', ease: 'power2.out',
-      scrollTrigger: { trigger: main, start: 'top 95%', end: 'top 35%', scrub: 0.6 },
+  // Showcase: the frame tilts back in perspective and settles as it arrives; it only plays in view.
+  if (!reduced) {
+    gsap.fromTo('.sc-frame', { rotationX: 14, y: 70, transformPerspective: 1800, transformOrigin: '50% 100%' }, {
+      rotationX: 0, y: 0, ease: M.ease.soft, scrollTrigger: { trigger: '.sc', start: 'top 100%', end: 'top 35%', scrub: 0.8 },
     });
-    const det = $('.case-detail', c);
-    gsap.fromTo(det, { yPercent: 35 }, {
-      yPercent: -12, ease: 'none',
-      scrollTrigger: { trigger: main, start: 'top 75%', end: 'bottom 30%', scrub: 0.6 },
-    });
-    gsap.fromTo($('.case-meta', c).children, { y: 30, opacity: 0 }, {
-      y: 0, opacity: 1, duration: 1.2, stagger: 0.08, ease: 'expo.out',
-      scrollTrigger: { trigger: $('.case-meta', c), start: 'top 90%', once: true },
-    });
+  }
+  ScrollTrigger.create({
+    trigger: '.sc', start: 'top 80%', end: 'bottom 20%',
+    onToggle: (st) => { scInView = st.isActive; if (scInView && !scPaused) scTimer?.resume(); else scTimer?.pause(); },
   });
+  scProgress();
 
   setupChapters();
   setupMirror();
@@ -129,7 +172,6 @@ function setupMirror() {
   const order = (i) => Math.abs(i - mid); // rise from the centre outward
   gsap.set([letters, refl], { yPercent: 105 });
   gsap.set('.mw-line', { scaleX: 0 });
-  gsap.set('.mirror-cap', { opacity: 0, y: 20 });
   const tl = gsap.timeline({ scrollTrigger: { trigger: '.mirror', start: 'top 85%', end: 'top -25%', scrub: 0.5 } });
   tl.to('.mw-line', { scaleX: 1, duration: 0.3, ease: 'power2.inOut' }, 0);
   letters.forEach((el, i) => {
@@ -137,7 +179,6 @@ function setupMirror() {
     tl.to([el, refl[i]], { yPercent: 0, duration: 0.35, ease: 'power3.out' }, 0.08 + order(i) * 0.05);
   });
   tl.fromTo('.mword', { '--sheen': '120%' }, { '--sheen': '-20%', duration: 0.4, ease: 'none' }, 0.5);
-  tl.to('.mirror-cap', { opacity: 1, y: 0, duration: 0.2 }, 0.62);
 }
 
 /* ------------------------------------------------------------------ approach: stacked cards */
@@ -190,7 +231,8 @@ gsap.ticker.add(() => {
     mark.state.fin = Math.min(1, Math.max(0, p));
     // Services scene: fade the mark in as the pinned section arrives, out as it leaves.
     const top = svcTop - y, bottom = svcTop + svcH - y;
-    const inn = Math.min(1, Math.max(0, (vh - top) / (vh * 0.7)));
+    // Start only once the section is well on screen, so the mark never slides over the showcase.
+    const inn = Math.min(1, Math.max(0, (vh * 0.45 - top) / (vh * 0.45)));
     const outn = Math.min(1, Math.max(0, bottom / (vh * 0.7)));
     mark.state.svcOn = Math.min(inn, outn);
 

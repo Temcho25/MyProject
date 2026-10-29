@@ -191,6 +191,8 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
     svc: 0,                   // chapter position inside services, 0 → 4
     fin: 0,                   // contact section in view, 0 → 1
     scrollY: 0,               // written by the page ticker (no layout read here)
+    spinV: 0,                 // spin velocity from dragging the hero (rad/s)
+    hop: 0,                   // 0 → 1 → 0 when the visitor taps: the dot hops
   };
   const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
   window.addEventListener('pointermove', (e) => {
@@ -221,6 +223,7 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
   }
   let time = 0, last = performance.now(), raf = 0, running = true;
   const sm = { out: 0, fin: 0, on: 0, k: 0 };
+  let spin = 0; // accumulated drag spin, eases back to the resting pose
 
   function frame(now) {
     if (!running) return;
@@ -235,6 +238,10 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
     sm.on = damp(sm.on, state.svcOn, 7, dt);
     sm.k = damp(sm.k, state.svc, 6, dt);
     const { out, fin, on, k } = sm;
+    // Drag spin: inertia, then a gentle pull back to the composed angle.
+    spin += state.spinV * dt;
+    state.spinV *= Math.exp(-2.4 * dt);
+    spin = damp(spin, 0, Math.abs(state.spinV) < 0.3 ? 1.2 : 0, dt);
 
     const heroVis = 1 - out;
     const visible = heroVis > 0.005 || on > 0.005 || fin > 0.005;
@@ -262,7 +269,7 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
     const o = O;
     dot.position.set(
       MathUtils.lerp(dotHome.x + w2 * 30, o.x, w1),
-      MathUtils.lerp(dotHome.y + (1 - d) * 150 + w2 * 8, o.y, w1),
+      MathUtils.lerp(dotHome.y + (1 - d) * 150 + w2 * 8 + state.hop * 26, o.y, w1),
       MathUtils.lerp(w0 * 8, o.z, w1),
     );
     dot.visible = d > 0.001;
@@ -294,7 +301,7 @@ export function createMark(canvas, { mobile, reduced, lowEnd }) {
     mark.rotation.set(
       (0.16 + Math.sin(time * 0.6) * 0.05 * idle + mouse.y * 0.2) * (1 - flat) - out * 0.5 * (1 - on) * (1 - fin),
       (-0.42 + Math.sin(time * 0.4) * 0.12 * idle + mouse.x * 0.32) * (1 - flat * 0.9)
-        + out * 1.4 * (1 - on) * (1 - fin) + on * (k * 0.35 - 0.2) * (1 - flat) + fin * 0.1,
+        + out * 1.4 * (1 - on) * (1 - fin) + on * (k * 0.35 - 0.2) * (1 - flat) + fin * 0.1 + spin * (1 - on),
       Math.sin(time * 0.5) * 0.02 * idle,
     );
 
