@@ -16,6 +16,7 @@ P2P-сканер USDT для GEL и USD (Binance, Bybit, OKX) с Telegram-бот
 """
 
 import argparse
+import html
 import json
 import os
 import re
@@ -23,6 +24,7 @@ import sys
 import time
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
@@ -80,6 +82,10 @@ class Ad:
     completion: float    # 0..1
     payments: List[str] = field(default_factory=list)
     decimals: int = 2    # знаков в цене — шаг цены для своих объявлений
+    link: str = ""       # ссылка на профиль продавца / объявление
+
+    def __post_init__(self):
+        self.nick = html.escape(str(self.nick))  # ники идут в HTML-сообщения Telegram
 
     @property
     def ex(self) -> str:
@@ -153,6 +159,7 @@ def fetch_binance(fiat: str, side: str, amount: float, pay_keys: List[str], page
                 orders=int(_f(u.get("monthOrderCount"))),
                 completion=_f(u.get("monthFinishRate")),
                 payments=[canon_payment(m.get("identifier") or m.get("tradeMethodName", "")) for m in a.get("tradeMethods", [])],
+                link=f"https://p2p.binance.com/en/advertiserDetail?advertiserNo={u.get('userNo', '')}",
             ))
         if len(rows) < 20:
             break
@@ -198,6 +205,9 @@ def fetch_bybit(fiat: str, side: str, amount: float, pay_keys: List[str], pages:
                 orders=int(_f(x.get("recentOrderNum"))),
                 completion=_f(x.get("recentExecuteRate")) / 100.0,
                 payments=[canon_payment(names.get(str(p), str(p))) for p in x.get("payments", [])],
+                link=(f"https://www.bybit.com/fiat/trade/otc/profile/{x['userMaskId']}/USDT/{fiat}/item"
+                      if x.get("userMaskId") else
+                      f"https://www.bybit.com/fiat/trade/otc/?actionType={'1' if side == 'ask' else '0'}&token=USDT&fiat={fiat}"),
             ))
         if len(rows) < 20:
             break
@@ -225,6 +235,9 @@ def fetch_okx(fiat: str, side: str, amount: float, pay_keys: List[str], pages: i
             orders=int(_f(x.get("completedOrderQuantity"))),
             completion=_f(x.get("completedRate")),
             payments=[canon_payment(p) for p in x.get("paymentMethods", [])],
+            link=(f"https://www.okx.com/p2p/ads-merchant?publicUserId={x['publicUserId']}"
+                  if x.get("publicUserId") else
+                  f"https://www.okx.com/p2p-markets/{fiat.lower()}/{'buy' if side == 'ask' else 'sell'}-usdt"),
         ))
     return ads
 
@@ -507,6 +520,106 @@ def scan(cfg: dict) -> Tuple[Dict, List[Opportunity], Optional[float]]:
     return book, opps, nbg
 
 
+# ---------------------------------------------------------------- /buy и /sell
+CUR_ALIAS = {"ЛАРИ": "GEL", "₾": "GEL", "GEL": "GEL", "$": "USD", "ДОЛЛАР": "USD", "ДОЛЛАРОВ": "USD",
+             "ДОЛЛАРА": "USD", "USD": "USD", "USDT": "USDT", "ЮСДТ": "USDT"}
+
+
+def parse_amount(cfg: dict, args: List[str]) -> Tuple[float, str, str]:
+    """'/buy 500 gel' | '/buy 200 usdt' | '/buy usd 300' | '/buy' -> (сумма, валюта суммы, фиат)."""
+    amount, cur = None, None
+    for a in args:
+        a2 = a.replace(",", ".")
+        try:
+            amount = float(a2)
+            continue
+        except ValueError:
+            pass
+        cur = CUR_ALIAS.get(a.upper(), a.upper())
+    fiat = cur if cur in cfg["fiats"] else "GEL"
+    if cur == "USDT":
+        unit = "USDT"
+    elif cur and cur not in cfg["fiats"]:
+        raise ValueError(f"Валюта {cur} не поддерживается. Можно: {', '.join(cfg['fiats'])}, USDT")
+    else:
+        unit = fiat
+    if amount is None:
+        amount, _ = capital_for(cfg, fiat)
+        unit = fiat
+    if amount <= 0:
+        raise ValueError("Сумма должна быть больше нуля")
+    return amount, unit, fiat
+
+
+def quote(cfg: dict, side: str, args: List[str], top: int = 5) -> str:
+    """side='ask' — где купить USDT дешевле всего, 'bid' — где продать дороже всего."""
+    try:
+        amount, unit, fiat = parse_amount(cfg, args)
+    except ValueError as e:
+        return f"{e}\n\nПримеры: /buy 500 gel • /buy 200 usdt • /sell 300 usd"
+    pay_keys = [k.lower() for k in cfg.get("payment_methods", [])]
+    server_amount = amount if unit != "USDT" else 0
+
+    def get(ex):
+        try:
+            return FETCHERS[ex](fiat, side, server_amount, pay_keys, cfg.get("pages", 2))
+        except Exception as e:
+            log(f"[{ex} {fiat} {side}] ошибка: {e}")
+            return []
+
+    with ThreadPoolExecutor(len(cfg["exchanges"])) as pool:
+        ads = [a for lst in pool.map(get, cfg["exchanges"]) for a in lst]
+
+    def fiat_of(ad):  # сколько фиата в этой сделке
+        return amount * ad.price if unit == "USDT" else amount
+
+    ads = [a for a in ads if good_ad(a, cfg, fiat_of(a), fiat_of(a), pay_keys)]
+    ads.sort(key=lambda a: a.price, reverse=(side == "bid"))
+    seen, uniq = set(), []
+    for a in ads:
+        if (a.exchange, a.nick) not in seen:
+            seen.add((a.exchange, a.nick))
+            uniq.append(a)
+    if not uniq:
+        return (f"😕 Не нашёл подходящих объявлений на {amount:g} {unit}.\n"
+                "Попробуй другую сумму — у продавцов есть мин/макс лимиты.")
+
+    buy = side == "ask"
+    if unit == "USDT":
+        title = f"🛒 <b>Купить {amount:g} USDT за {fiat}</b>" if buy else f"💰 <b>Продать {amount:g} USDT за {fiat}</b>"
+    else:
+        title = f"🛒 <b>Купить USDT на {amount:g} {unit}</b>" if buy else f"💰 <b>Продать USDT за {amount:g} {unit}</b>"
+    lines = [title, f"Лучшие {min(top, len(uniq))} из {len(uniq)} надёжных объявлений (Binance, Bybit, OKX)", ""]
+    medals = ["🥇", "🥈", "🥉", "4.", "5.", "6.", "7.", "8."]
+    for i, a in enumerate(uniq[:top]):
+        f_amt = fiat_of(a)
+        u_amt = amount if unit == "USDT" else amount / a.price
+        deal = (f"{money(f_amt, fiat)} → <b>{usdt(u_amt)}</b>" if buy
+                else f"{usdt(u_amt)} → <b>{money(f_amt, fiat)}</b>")
+        lines += [
+            f"{medals[i]} <b>{a.price:g}</b> — {a.ex} — {a.who()}",
+            f"    {deal}",
+            f"    {a.banks(pay_keys)} • лимит {a.min_fiat:g}–{a.max_fiat:g} {fiat} • <a href=\"{a.link}\">открыть</a>",
+            "",
+        ]
+    b, w = uniq[0], uniq[min(top, len(uniq)) - 1]
+    if len(uniq) > 1 and b.price != w.price:
+        if unit == "USDT":
+            diff = abs(b.price - w.price) * amount
+        else:
+            diff = abs(amount / b.price - amount / w.price) * (b.price if buy else w.price)
+        lines.append(f"💡 Лучший вариант выгоднее {len(uniq[:top])}-го на ≈ {money(diff, fiat)}.")
+    if fiat == "GEL":
+        nbg = fetch_nbg_usd()
+        if nbg:
+            d = (b.price / nbg - 1) * 100
+            lines.append(f"📈 1 USDT = {b.price:g} GEL — это на {abs(d):.2f}% {'дешевле' if d < 0 else 'дороже'} "
+                         f"официального доллара (НБГ {nbg:.4f}).")
+    lines += ["", "⚠️ Ссылка ведёт на профиль трейдера — выбери у него объявление с этой ценой. "
+              "Платить только со своего счёта, USDT отпускать после поступления денег."]
+    return "\n".join(lines)
+
+
 # ---------------------------------------------------------------- Telegram
 def tg_send(cfg: dict, text: str) -> bool:
     token, chat = cfg["telegram"]["bot_token"], cfg["telegram"]["chat_id"]
@@ -529,7 +642,11 @@ HELP = (
     "/balance 2000 gel\n"
     "/balance 500 usd\n"
     "/balance — показать баланс\n\n"
-    "/plan — лучший сценарий прямо сейчас, по шагам\n"
+    "<b>Где выгоднее купить / продать USDT:</b>\n"
+    "/buy 500 gel — где купить USDT на 500 лари\n"
+    "/buy 200 usdt — где купить 200 USDT\n"
+    "/sell 300 usd — где продать USDT за 300 $\n\n"
+    "/plan — лучший арбитражный сценарий, по шагам\n"
     "/scan — цены на всех биржах\n"
     "/pause — выключить уведомления\n"
     "/resume — включить уведомления\n"
@@ -638,6 +755,9 @@ class TgBot:
             tg_send(self.cfg, "▶️ Уведомления включены.")
         elif cmd in ("/balance", "/bal"):
             tg_send(self.cfg, handle_balance(self.cfg, args))
+        elif cmd in ("/buy", "/sell"):
+            tg_send(self.cfg, "⏳ Ищу лучшие предложения (~10 сек)…")
+            tg_send(self.cfg, quote(self.cfg, "ask" if cmd == "/buy" else "bid", args))
         elif cmd in handlers:
             tg_send(self.cfg, "⏳ Сканирую биржи (~20 сек)…")
             handlers[cmd]()
@@ -777,10 +897,17 @@ def main():
     ap.add_argument("--all", action="store_true", help="показать все окна, даже убыточные")
     ap.add_argument("--plan", action="store_true", help="напечатать лучший сценарий")
     ap.add_argument("--test-telegram", action="store_true", help="отправить тестовое сообщение")
+    ap.add_argument("--buy", nargs="*", metavar="ARG", help="где купить USDT, напр. --buy 500 gel")
+    ap.add_argument("--sell", nargs="*", metavar="ARG", help="где продать USDT, напр. --sell 200 usdt")
     args = ap.parse_args()
 
     cfg = load_cfg(args.config)
     bot = TgBot(cfg) if cfg["telegram"]["bot_token"] else None
+
+    if args.buy is not None or args.sell is not None:
+        side, a = ("ask", args.buy) if args.buy is not None else ("bid", args.sell)
+        print(strip_html(quote(cfg, side, a)))
+        return
 
     if args.test_telegram:
         ok = tg_send(cfg, "✅ P2P-сканер подключён к Telegram.")
