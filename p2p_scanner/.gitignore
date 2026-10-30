@@ -3,3 +3,4 @@ __pycache__/
 chat_id.txt
 balance.json
 settings.json
+sent_signals.json

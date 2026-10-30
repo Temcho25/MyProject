@@ -784,6 +784,7 @@ HELP = (
     "/interval 20 — как часто проверять (сек)\n"
     "/exchanges binance — только Binance (/exchanges all — все)\n"
     "/digest 30 — сводка рынка раз в 30 мин (/digest off — выкл)\n\n"
+    "/status — работает ли бот, сколько сигналов отправил\n"
     "/pause — выключить уведомления\n"
     "/resume — включить уведомления\n"
     "/help — эта справка\n\n"
@@ -828,6 +829,8 @@ def parse_text(text: str, cfg: dict) -> List[Tuple[str, List[str]]]:
         pass  # это про биржи, не про паузу
     elif _has(t, "стоп", "хватит", "не пиши", "не присылай", "не скидывай", "не кидай", "пауза", "выключи", "замолчи", "отключи"):
         return [("/pause", [])]
+    if _has(t, "статус", "работаешь", "живой", "ты тут", "работает ли", "status"):
+        return [("/status", [])]
     if _has(t, "помощь", "что умеешь", "команды", "help"):
         return [("/help", [])]
     # «напиши / сообщи когда ... 0.995»
@@ -1135,6 +1138,8 @@ class TgBot:
             tg_send(self.cfg, handle_alert(self.cfg, args))
         elif cmd in ("/exchanges", "/exchange", "/birzha"):
             tg_send(self.cfg, handle_exchanges(self.cfg, args))
+        elif cmd in ("/status", "/статус"):
+            tg_send(self.cfg, status_text(self.cfg, self.paused))
         elif cmd == "/digest":
             tg_send(self.cfg, handle_digest(self.cfg, args))
         elif cmd == "/interval":
@@ -1169,13 +1174,50 @@ def book_text(book: Dict, nbg: Optional[float]) -> str:
     return "\n".join(lines)
 
 
+STATS = {"started": time.time(), "scans": 0, "last_scan": 0.0, "signals": 0, "alerts": 0,
+         "last_signal": "", "next_digest": 0.0, "cooldown_min": 30}
+
+
+def status_text(cfg: dict, paused: bool) -> str:
+    now = time.time()
+    up = int((now - STATS["started"]) / 60)
+    ago = int(now - STATS["last_scan"]) if STATS["last_scan"] else None
+    lines = [
+        "🩺 <b>Статус бота</b>",
+        f"Работает: {up // 60} ч {up % 60} мин • уведомления {'⏸ на паузе' if paused else '▶️ включены'}",
+        f"Биржи: {', '.join(EX_LABEL.get(e, e) for e in cfg['exchanges'])} • {', '.join(cfg['fiats'])}",
+        f"Проверок: {STATS['scans']} (каждые {cfg['interval_sec']} сек)"
+        + (f", последняя {ago} сек назад" if ago is not None else ""),
+        f"Отправлено сигналов: {STATS['signals']}, алертов: {STATS['alerts']}",
+    ]
+    if STATS["last_signal"]:
+        lines.append(f"Последний сигнал: {STATS['last_signal']}")
+    lines.append(f"Один и тот же сигнал повторяю не чаще раза в {STATS['cooldown_min']:g} мин.")
+    if cfg.get("digest_min") and STATS["next_digest"]:
+        lines.append(f"Следующая сводка в {datetime.fromtimestamp(STATS['next_digest']):%H:%M}")
+    return "\n".join(lines)
+
+
 class Deduper:
     """Не шлёт одно и то же окно чаще cooldown, если прибыль заметно не выросла."""
+
+    FILE = os.path.join(HERE, "sent_signals.json")  # помним отправленное и после перезапуска
 
     def __init__(self, cooldown_min: float, improve_pct: float):
         self.cooldown = cooldown_min * 60
         self.improve = improve_pct
-        self.sent: Dict[str, Tuple[float, float]] = {}
+        try:
+            with open(self.FILE) as f:
+                self.sent: Dict[str, Tuple[float, float]] = {k: tuple(v) for k, v in json.load(f).items()}
+        except Exception:
+            self.sent = {}
+
+    def _save(self):
+        try:
+            with open(self.FILE, "w") as f:
+                json.dump(self.sent, f)
+        except Exception:
+            pass
 
     def should_send(self, o: Opportunity) -> bool:
         last = self.sent.get(o.key)
@@ -1183,6 +1225,7 @@ class Deduper:
         if last and now - last[0] < self.cooldown and o.profit_pct < last[1] + self.improve:
             return False
         self.sent[o.key] = (now, o.profit_pct)
+        self._save()
         return True
 
 
@@ -1361,13 +1404,14 @@ def main():
         return
 
     dedup = Deduper(cfg["cooldown_min"], cfg["resend_if_better_by_pct"])
+    STATS["cooldown_min"] = cfg["cooldown_min"]
     if not args.once:
         log(f"Старт: {', '.join(cfg['exchanges'])} | {', '.join(cfg['fiats'])} | "
             f"каждые {cfg['interval_sec']} с | Telegram {'вкл' if bot else 'выкл'}")
         if bot and not bot.chat_id:
             log("Напиши своему боту /start в Telegram — он запомнит твой чат.")
         elif bot:
-            tg_send(cfg, "✅ Сканер обновлён и запущен.\n\n" + HELP)
+            tg_send(cfg, "✅ Бот запущен. Команды: /help • статус: /status")
 
     def cmd_scan():
         book, opps, nbg = scan(cfg)
@@ -1383,6 +1427,8 @@ def main():
     while True:
         try:
             book, opps, nbg = scan(cfg)
+            STATS["scans"] += 1
+            STATS["last_scan"] = time.time()
             print_book(book, nbg)
             th = thresholds(cfg)  # мог измениться через /threshold
             hits = [o for o in opps if o.profit_pct >= th[o.kind]]
@@ -1398,16 +1444,23 @@ def main():
             if bot and bot.chat_id and not bot.paused:
                 for msg in check_price_alerts(cfg, book):
                     tg_send(cfg, msg)
+                    log("→ Telegram: ценовой алерт")
+                    STATS["alerts"] += 1
                 bal = cfg.get("balance") or {}
                 for o in hits:
                     if dedup.should_send(o):
                         note = (f"💡 У тебя в балансе нет {o.fiat} — сигнал для информации "
                                 f"(или задай: /balance 500 {o.fiat.lower()}).\n\n") if bal and o.fiat not in bal else ""
                         tg_send(cfg, "🚨 <b>Сигнал!</b>\n\n" + note + o.plan + "\n\n" + SAFETY)
+                        log(f"→ Telegram: сигнал {o.key} {o.profit_pct:+.2f}%")
+                        STATS["signals"] += 1
+                        STATS["last_signal"] = f"{datetime.now():%H:%M} {strip_html(o.text)} {o.profit_pct:+.2f}%"
                 digest_min = cfg.get("digest_min", 0)
                 if digest_min and time.time() - last_digest >= digest_min * 60:
                     tg_send(cfg, digest_text(cfg, book, opps, nbg, hits))
                     last_digest = time.time()
+                    STATS["next_digest"] = last_digest + digest_min * 60
+                    log("→ Telegram: сводка")
         except KeyboardInterrupt:
             raise
         except Exception as e:
