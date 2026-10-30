@@ -1427,7 +1427,8 @@ def main():
         tg_send(cfg, best_plans(cfg, opps))
 
     handlers = {"/scan": cmd_scan, "/plan": cmd_plan}
-    last_digest = 0.0  # первая сводка — сразу после старта
+    last_digest = time.time()  # первая сводка — через digest_min после старта, а не сразу
+    STATS["next_digest"] = last_digest + cfg.get("digest_min", 0) * 60
 
     while True:
         try:
