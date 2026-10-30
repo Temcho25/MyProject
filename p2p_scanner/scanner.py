@@ -48,6 +48,12 @@ PAYMENTS = {
 PAY_LABEL = {"tbc": "TBC", "bog": "Bank of Georgia", "liberty": "Liberty", "credo": "Credo",
              "basis": "Basis", "tera": "Terabank", "fastoo": "Fastoo"}
 EX_LABEL = {"binance": "Binance", "bybit": "Bybit", "okx": "OKX"}
+EX_WORDS = [
+    ("binance", ("binance", "бинанс", "бинанc", "байнанс", "бинанц")),
+    ("bybit", ("bybit", "байбит", "бaйбит", "бибит")),
+    ("okx", ("okx", "окх", "окекс", "оккх")),
+]
+EX_ALIAS = {w: k for k, ws in EX_WORDS for w in ws}
 
 
 def _norm(s: str) -> str:
@@ -659,6 +665,7 @@ HELP = (
     "/alert — список алертов\n"
     "/threshold — порог прибыли для сигналов\n"
     "/interval 20 — как часто проверять (сек)\n"
+    "/exchanges binance — только Binance (/exchanges all — все)\n"
     "/digest 30 — сводка рынка раз в 30 мин (/digest off — выкл)\n\n"
     "/pause — выключить уведомления\n"
     "/resume — включить уведомления\n"
@@ -709,6 +716,14 @@ def parse_text(text: str, cfg: dict) -> List[Tuple[str, List[str]]]:
     if _has(t, "алерт", "мои уведомлени"):
         return [("/alert", [])]
 
+    # биржи: «только бинанс», «пока по бинансу», «байбит и окх», «все биржи»
+    exs = [k for k, ws in EX_WORDS if _has(t, *ws)]
+    set_ex: List[Tuple[str, List[str]]] = []
+    if _has(t, "все бирж", "всех бирж", "всем бирж", "на всех"):
+        set_ex = [("/exchanges", ["all"])]
+    elif exs and not _has(t, "купить", "куплю", "продать", "продам"):
+        set_ex = [("/exchanges", exs)]
+
     wants_signals = _has(t, "сигнал", "присылай", "скидывай", "включи", "продолжай", "кидай")
     owns = _has(t, "у меня", "есть", "имею", "баланс", "располагаю", "капитал", "бюджет")
     acts: List[Tuple[str, List[str]]] = []
@@ -734,7 +749,10 @@ def parse_text(text: str, cfg: dict) -> List[Tuple[str, List[str]]]:
     elif _has(t, "сводк"):
         acts.append(("/digest", [num] if num else []))
 
-    if acts:
+    if set_ex and not acts and num is None:
+        return set_ex
+    acts = set_ex + acts  # сначала биржи — чтобы план уже считался по ним
+    if acts and (acts != set_ex):
         return acts
     if num:  # просто «500$» — считаем, что это баланс
         return [("/balance", [num, (cur if cur in cfg["fiats"] else cfg["fiats"][0]).lower()])]
@@ -771,7 +789,29 @@ def save_settings(cfg: dict):
         json.dump({"interval_sec": cfg["interval_sec"],
                    "alert_min_profit_pct": cfg["alert_min_profit_pct"],
                    "price_alerts": cfg.get("price_alerts", []),
-                   "digest_min": cfg.get("digest_min", 0)}, f, ensure_ascii=False)
+                   "digest_min": cfg.get("digest_min", 0),
+                   "exchanges": cfg["exchanges"]}, f, ensure_ascii=False)
+
+
+def handle_exchanges(cfg: dict, args: List[str]) -> str:
+    if args:
+        if args[0].lower() in ("all", "все", "всё"):
+            chosen = list(FETCHERS)
+        else:
+            chosen = []
+            for a in args:
+                k = EX_ALIAS.get(a.lower().strip(","))
+                if k and k not in chosen:
+                    chosen.append(k)
+            if not chosen:
+                return "Не понял биржу. Можно: binance, bybit, okx. Пример: /exchanges binance"
+        cfg["exchanges"] = chosen
+        save_settings(cfg)
+    names = ", ".join(EX_LABEL[e] for e in cfg["exchanges"])
+    note = ("\nℹ️ С одной биржей сигналы «купить на одной → продать на другой» не ищутся, "
+            "остаются сделки внутри биржи и свои объявления." if len(cfg["exchanges"]) == 1 else "")
+    return (f"🏦 Работаю с биржами: <b>{names}</b>{note}\n\n"
+            "Изменить: /exchanges binance bybit • все: /exchanges all")
 
 
 def handle_interval(cfg: dict, args: List[str]) -> str:
@@ -964,6 +1004,8 @@ class TgBot:
             tg_send(self.cfg, handle_balance(self.cfg, args))
         elif cmd == "/alert":
             tg_send(self.cfg, handle_alert(self.cfg, args))
+        elif cmd in ("/exchanges", "/exchange", "/birzha"):
+            tg_send(self.cfg, handle_exchanges(self.cfg, args))
         elif cmd == "/digest":
             tg_send(self.cfg, handle_digest(self.cfg, args))
         elif cmd == "/interval":
@@ -1157,6 +1199,8 @@ def load_cfg(path: str) -> dict:
     cfg["price_alerts"] = s.get("price_alerts", [])
     if "digest_min" in s:
         cfg["digest_min"] = s["digest_min"]
+    if s.get("exchanges"):
+        cfg["exchanges"] = [e for e in s["exchanges"] if e in FETCHERS] or cfg["exchanges"]
     return cfg
 
 
