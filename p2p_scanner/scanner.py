@@ -29,6 +29,11 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
+# Время в сообщениях — тбилисское (можно поменять переменной окружения TZ)
+os.environ.setdefault("TZ", "Asia/Tbilisi")
+if hasattr(time, "tzset"):
+    time.tzset()
+
 UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130 Safari/537.36"
 HERE = os.path.dirname(os.path.abspath(__file__))
 CHAT_FILE = os.path.join(HERE, "chat_id.txt")
