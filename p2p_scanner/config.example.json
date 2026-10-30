@@ -39,7 +39,7 @@
     "maker": 1.0,
     "fx": 0.7
   },
-  "interval_sec": 60,
+  "interval_sec": 20,
   "cooldown_min": 30,
   "resend_if_better_by_pct": 0.2,
   "telegram": {

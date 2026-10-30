@@ -426,20 +426,26 @@ def scan(cfg: dict) -> Tuple[Dict, List[Opportunity], Optional[float]]:
     pay_keys = [k.lower() for k in cfg.get("payment_methods", [])]
     pages = cfg.get("pages", 2)
 
-    for fiat in cfg["fiats"]:
+    def fetch_best(job):
+        fiat, ex, side = job
         amount, _ = capital_for(cfg, fiat)
         min_size = min(amount, float(cfg["trade_amount"].get(fiat, amount)))
-        book[fiat] = {}
-        for ex in cfg["exchanges"]:
-            book[fiat][ex] = {}
-            for side in ("ask", "bid"):
-                try:
-                    ads = FETCHERS[ex](fiat, side, min_size, pay_keys, pages)
-                    ads = [a for a in ads if good_ad(a, cfg, amount, min_size, pay_keys)]
-                    book[fiat][ex][side] = best(ads, side)
-                except Exception as e:
-                    log(f"[{ex} {fiat} {side}] ошибка: {e}")
-                    book[fiat][ex][side] = None
+        try:
+            ads = FETCHERS[ex](fiat, side, min_size, pay_keys, pages)
+            return job, best([a for a in ads if good_ad(a, cfg, amount, min_size, pay_keys)], side)
+        except Exception as e:
+            log(f"[{ex} {fiat} {side}] ошибка: {e}")
+            return job, None
+
+    if "bybit" in cfg["exchanges"]:
+        _bybit_payment_names()  # справочник грузится ~10 с один раз — не дёргаем его из каждого потока
+    # все запросы к биржам — параллельно: проход занимает секунды, а не ~20 с
+    jobs =[(f, ex, s) for f in cfg["fiats"] for ex in cfg["exchanges"] for s in ("ask", "bid")]
+    with ThreadPoolExecutor(max_workers=min(12, len(jobs))) as pool:
+        nbg_future = pool.submit(fetch_nbg_usd) if {"GEL", "USD"} <= set(cfg["fiats"]) else None
+        for (fiat, ex, side), ad in pool.map(fetch_best, jobs):
+            book.setdefault(fiat, {}).setdefault(ex, {})[side] = ad
+        nbg = nbg_future.result() if nbg_future else None
 
     opps: List[Opportunity] = []
     fees = cfg["fees"]
@@ -489,8 +495,7 @@ def scan(cfg: dict) -> Tuple[Dict, List[Opportunity], Optional[float]]:
             opps.append(Opportunity("maker", f"maker:{fiat}:{ex}", pct, profit, fiat, head, plan))
 
     # 3) fx-круг GEL ↔ USD через USDT и банк
-    nbg = fetch_nbg_usd() if {"GEL", "USD"} <= set(book) else None
-    if nbg:
+    if nbg and {"GEL", "USD"} <= set(book):
         bank = fees["bank_fx_spread_pct"] / 100
         usd_to_gel = nbg * (1 - bank)   # продаём USD банку
         gel_to_usd = nbg * (1 + bank)   # покупаем USD у банка
@@ -648,6 +653,12 @@ HELP = (
     "/sell 300 usd — где продать USDT за 300 $\n\n"
     "/plan — лучший арбитражный сценарий, по шагам\n"
     "/scan — цены на всех биржах\n"
+    "<b>Алерты:</b>\n"
+    "/alert buy 2.57 — напишу, когда USDT будет по 2.57 или дешевле\n"
+    "/alert sell 2.62 — когда можно продать по 2.62 или дороже\n"
+    "/alert — список алертов\n"
+    "/threshold — порог прибыли для сигналов\n"
+    "/interval 20 — как часто проверять (сек)\n\n"
     "/pause — выключить уведомления\n"
     "/resume — включить уведомления\n"
     "/help — эта справка\n\n"
@@ -666,6 +677,122 @@ def load_balance() -> Dict[str, float]:
 def save_balance(bal: Dict[str, float]):
     with open(BALANCE_FILE, "w") as f:
         json.dump(bal, f)
+
+
+SETTINGS_FILE = os.path.join(HERE, "settings.json")
+KIND_NAMES = {"cross": "купить→продать", "maker": "свои объявления", "fx": "через доллар"}
+
+
+def load_settings() -> dict:
+    try:
+        with open(SETTINGS_FILE) as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def save_settings(cfg: dict):
+    with open(SETTINGS_FILE, "w") as f:
+        json.dump({"interval_sec": cfg["interval_sec"],
+                   "alert_min_profit_pct": cfg["alert_min_profit_pct"],
+                   "price_alerts": cfg.get("price_alerts", [])}, f, ensure_ascii=False)
+
+
+def handle_interval(cfg: dict, args: List[str]) -> str:
+    if args:
+        try:
+            sec = int(float(args[0]))
+        except ValueError:
+            return "Пример: /interval 30"
+        cfg["interval_sec"] = max(10, min(3600, sec))
+        save_settings(cfg)
+        return f"⏱ Теперь проверяю каждые <b>{cfg['interval_sec']} сек</b>. Применится со следующей проверки."
+    return f"⏱ Проверяю каждые <b>{cfg['interval_sec']} сек</b>.\nИзменить: /interval 20 (от 10 до 3600)"
+
+
+def handle_threshold(cfg: dict, args: List[str]) -> str:
+    t = cfg["alert_min_profit_pct"]
+    if len(args) >= 2:
+        kind = {"купить": "cross", "свои": "maker", "доллар": "fx"}.get(args[0].lower(), args[0].lower())
+        if kind not in t:
+            return "Тип: cross, maker или fx. Пример: /threshold maker 0.5"
+        try:
+            t[kind] = float(args[1].replace(",", "."))
+        except ValueError:
+            return "Пример: /threshold maker 0.5"
+        save_settings(cfg)
+    lines = ["🎚 <b>Порог сигнала</b> (минимальная прибыль):"]
+    lines += [f"• {k} ({KIND_NAMES[k]}): <b>{v:g}%</b>" for k, v in t.items()]
+    lines += ["", "Чем ниже порог — тем чаще сигналы (но меньше прибыль).",
+              "Изменить: /threshold maker 0.5  •  /threshold cross 0.1"]
+    return "\n".join(lines)
+
+
+def handle_alert(cfg: dict, args: List[str]) -> str:
+    alerts = cfg.setdefault("price_alerts", [])
+    usage = ("Примеры:\n/alert buy 2.57 — напишу, когда USDT можно купить по 2.57 GEL или дешевле\n"
+             "/alert sell 2.62 — когда можно продать по 2.62 или дороже\n"
+             "/alert buy 0.99 usd — то же в долларах\n"
+             "/alert — список  •  /alert del 1 — удалить  •  /alert off — удалить все")
+    if not args:
+        if not alerts:
+            return "🔔 Ценовых алертов нет.\n\n" + usage
+        rows = [f"{i}. {'купить' if a['side'] == 'buy' else 'продать'} по "
+                f"{'≤' if a['side'] == 'buy' else '≥'} {a['price']:g} {a['fiat']}" for i, a in enumerate(alerts, 1)]
+        return "🔔 <b>Твои алерты:</b>\n" + "\n".join(rows) + "\n\n" + usage
+    cmd = args[0].lower()
+    if cmd in ("off", "clear", "выкл"):
+        alerts.clear()
+        save_settings(cfg)
+        return "🔕 Все ценовые алерты удалены."
+    if cmd in ("del", "rm", "удалить"):
+        try:
+            removed = alerts.pop(int(args[1]) - 1)
+        except (IndexError, ValueError):
+            return "Пример: /alert del 1"
+        save_settings(cfg)
+        return f"Удалил: {removed['side']} {removed['price']:g} {removed['fiat']}"
+    side = {"buy": "buy", "купить": "buy", "sell": "sell", "продать": "sell"}.get(cmd)
+    if not side or len(args) < 2:
+        return usage
+    try:
+        price = float(args[1].replace(",", "."))
+    except ValueError:
+        return usage
+    fiat = CUR_ALIAS.get(args[2].upper(), args[2].upper()) if len(args) > 2 else ("USD" if price < 1.5 else "GEL")
+    if fiat not in cfg["fiats"]:
+        return f"Валюта {fiat} не сканируется. Можно: {', '.join(cfg['fiats'])}"
+    alerts.append({"side": side, "price": price, "fiat": fiat})
+    save_settings(cfg)
+    return (f"🔔 Готово! Напишу, как только USDT можно будет "
+            f"{'купить по ' + format(price, 'g') + ' ' + fiat + ' или дешевле' if side == 'buy' else 'продать по ' + format(price, 'g') + ' ' + fiat + ' или дороже'}.\n"
+            f"Проверяю каждые {cfg['interval_sec']} сек.")
+
+
+def check_price_alerts(cfg: dict, book: Dict) -> List[str]:
+    """Срабатывает один раз и удаляет алерт. Возвращает тексты сообщений."""
+    out, left = [], []
+    for a in cfg.get("price_alerts", []):
+        side = "ask" if a["side"] == "buy" else "bid"
+        ads = [s.get(side) for s in book.get(a["fiat"], {}).values() if s.get(side)]
+        b = best(ads, side)
+        hit = b and (b.price <= a["price"] if side == "ask" else b.price >= a["price"])
+        if not hit:
+            left.append(a)
+            continue
+        verb = "купить" if side == "ask" else "продать"
+        out.append(
+            f"🔔 <b>Алерт сработал!</b>\n\nСейчас можно <b>{verb}</b> USDT по <b>{b.price:g} {a['fiat']}</b> "
+            f"(ты ждал {'≤' if side == 'ask' else '≥'} {a['price']:g})\n\n"
+            f"{b.ex} — {b.who()}\n{b.banks([k.lower() for k in cfg.get('payment_methods', [])])} • "
+            f"лимит {b.min_fiat:g}–{b.max_fiat:g} {a['fiat']} • <a href=\"{b.link}\">открыть</a>\n\n"
+            f"Все варианты: /{'buy' if side == 'ask' else 'sell'} {a['fiat'].lower()}\n"
+            f"Алерт удалён. Поставить снова: /alert {a['side']} {a['price']:g} {a['fiat'].lower()}"
+        )
+    if out:
+        cfg["price_alerts"] = left
+        save_settings(cfg)
+    return out
 
 
 def balance_text(cfg: dict) -> str:
@@ -755,6 +882,12 @@ class TgBot:
             tg_send(self.cfg, "▶️ Уведомления включены.")
         elif cmd in ("/balance", "/bal"):
             tg_send(self.cfg, handle_balance(self.cfg, args))
+        elif cmd == "/alert":
+            tg_send(self.cfg, handle_alert(self.cfg, args))
+        elif cmd == "/interval":
+            tg_send(self.cfg, handle_interval(self.cfg, args))
+        elif cmd == "/threshold":
+            tg_send(self.cfg, handle_threshold(self.cfg, args))
         elif cmd in ("/buy", "/sell"):
             tg_send(self.cfg, "⏳ Ищу лучшие предложения (~10 сек)…")
             tg_send(self.cfg, quote(self.cfg, "ask" if cmd == "/buy" else "bid", args))
@@ -861,7 +994,7 @@ DEFAULT_CFG = {
         "bank_fx_spread_pct": 1.0,
     },
     "alert_min_profit_pct": {"cross": 0.3, "maker": 1.0, "fx": 0.7},
-    "interval_sec": 60,
+    "interval_sec": 20,
     "cooldown_min": 30,
     "resend_if_better_by_pct": 0.2,
     "telegram": {"bot_token": "", "chat_id": ""},
@@ -886,6 +1019,11 @@ def load_cfg(path: str) -> dict:
     cfg["fiats"] = [f.upper() for f in cfg["fiats"]]
     cfg["exchanges"] = [e.lower() for e in cfg["exchanges"] if e.lower() in FETCHERS]
     cfg["balance"] = load_balance()
+    s = load_settings()  # то, что менял через бота, важнее config.json
+    if "interval_sec" in s:
+        cfg["interval_sec"] = s["interval_sec"]
+    cfg["alert_min_profit_pct"] = {**cfg["alert_min_profit_pct"], **s.get("alert_min_profit_pct", {})}
+    cfg["price_alerts"] = s.get("price_alerts", [])
     return cfg
 
 
@@ -914,7 +1052,6 @@ def main():
         print("Отправлено" if ok else "Не удалось: проверь bot_token / chat_id")
         return
 
-    th = thresholds(cfg)
     dedup = Deduper(cfg["cooldown_min"], cfg["resend_if_better_by_pct"])
     if not args.once:
         log(f"Старт: {', '.join(cfg['exchanges'])} | {', '.join(cfg['fiats'])} | "
@@ -938,6 +1075,7 @@ def main():
         try:
             book, opps, nbg = scan(cfg)
             print_book(book, nbg)
+            th = thresholds(cfg)  # мог измениться через /threshold
             hits = [o for o in opps if o.profit_pct >= th[o.kind]]
             print()
             if args.plan:
@@ -949,6 +1087,8 @@ def main():
                     top = opps[0] if opps else None
                     log("Выгодных окон нет" + (f" (лучшее: {top.kind} {top.profit_pct:+.2f}%)" if top else ""))
             if bot and bot.chat_id and not bot.paused:
+                for msg in check_price_alerts(cfg, book):
+                    tg_send(cfg, msg)
                 for o in mine(cfg, hits):
                     if dedup.should_send(o):
                         tg_send(cfg, "🚨 <b>Сигнал!</b>\n\n" + o.plan + "\n\n" + SAFETY)
