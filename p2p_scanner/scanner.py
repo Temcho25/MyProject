@@ -541,7 +541,7 @@ def parse_amount(cfg: dict, args: List[str]) -> Tuple[float, str, str]:
         except ValueError:
             pass
         cur = CUR_ALIAS.get(a.upper(), a.upper())
-    fiat = cur if cur in cfg["fiats"] else "GEL"
+    fiat = cur if cur in cfg["fiats"] else cfg["fiats"][0]
     if cur == "USDT":
         unit = "USDT"
     elif cur and cur not in cfg["fiats"]:
@@ -644,18 +644,18 @@ def tg_send(cfg: dict, text: str) -> bool:
 HELP = (
     "🤖 <b>P2P-сканер USDT</b>\n\n"
     "<b>Сначала скажи, сколько у тебя денег:</b>\n"
-    "/balance 2000 gel\n"
     "/balance 500 usd\n"
+    "/balance 1000 gel\n"
     "/balance — показать баланс\n\n"
     "<b>Где выгоднее купить / продать USDT:</b>\n"
-    "/buy 500 gel — где купить USDT на 500 лари\n"
+    "/buy 300 usd — где купить USDT на 300 $\n"
     "/buy 200 usdt — где купить 200 USDT\n"
     "/sell 300 usd — где продать USDT за 300 $\n\n"
     "/plan — лучший арбитражный сценарий, по шагам\n"
     "/scan — цены на всех биржах\n"
     "<b>Алерты:</b>\n"
-    "/alert buy 2.57 — напишу, когда USDT будет по 2.57 или дешевле\n"
-    "/alert sell 2.62 — когда можно продать по 2.62 или дороже\n"
+    "/alert buy 0.995 — напишу, когда USDT будет по 0.995 $ или дешевле\n"
+    "/alert sell 1.005 — когда можно продать по 1.005 $ или дороже\n"
     "/alert — список алертов\n"
     "/threshold — порог прибыли для сигналов\n"
     "/interval 20 — как часто проверять (сек)\n"
@@ -733,7 +733,7 @@ def handle_threshold(cfg: dict, args: List[str]) -> str:
 def handle_alert(cfg: dict, args: List[str]) -> str:
     alerts = cfg.setdefault("price_alerts", [])
     usage = ("Примеры:\n/alert buy 2.57 — напишу, когда USDT можно купить по 2.57 GEL или дешевле\n"
-             "/alert sell 2.62 — когда можно продать по 2.62 или дороже\n"
+             "/alert sell 1.005 — когда можно продать по 1.005 $ или дороже\n"
              "/alert buy 0.99 usd — то же в долларах\n"
              "/alert — список  •  /alert del 1 — удалить  •  /alert off — удалить все")
     if not args:
@@ -761,7 +761,7 @@ def handle_alert(cfg: dict, args: List[str]) -> str:
         price = float(args[1].replace(",", "."))
     except ValueError:
         return usage
-    fiat = CUR_ALIAS.get(args[2].upper(), args[2].upper()) if len(args) > 2 else ("USD" if price < 1.5 else "GEL")
+    fiat = CUR_ALIAS.get(args[2].upper(), args[2].upper()) if len(args) > 2 else (("USD" if price < 1.5 else "GEL") if len(cfg["fiats"]) > 1 else cfg["fiats"][0])
     if fiat not in cfg["fiats"]:
         return f"Валюта {fiat} не сканируется. Можно: {', '.join(cfg['fiats'])}"
     alerts.append({"side": side, "price": price, "fiat": fiat})
@@ -810,7 +810,7 @@ def handle_balance(cfg: dict, args: List[str]) -> str:
         return balance_text(cfg)
     try:
         amount = float(args[0].replace(",", "."))
-        cur = (args[1] if len(args) > 1 else "GEL").upper()
+        cur = (args[1] if len(args) > 1 else cfg["fiats"][0]).upper()
         cur = {"ЛАРИ": "GEL", "ЛАРИ.": "GEL", "₾": "GEL", "$": "USD", "ДОЛЛАР": "USD", "ДОЛЛАРОВ": "USD"}.get(cur, cur)
     except ValueError:
         return "Не понял. Пример: /balance 2000 gel"
