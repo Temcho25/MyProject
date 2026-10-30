@@ -576,11 +576,12 @@ def scan(cfg: dict) -> Tuple[Dict, List[Opportunity], Optional[float]]:
 
     # 2) maker: свои объявления внутри биржи
     mk = fees["maker_pct"]
+    ad_ok = set(cfg.get("ad_exchanges") or cfg["exchanges"])  # где пользователь может ставить свои объявления
     for fiat, exs in book.items():
         cap, user_cap = capital_for(cfg, fiat)
         for ex, s in exs.items():
             ask, bid = s.get("ask"), s.get("bid")
-            if not ask or not bid:
+            if not ask or not bid or ex not in ad_ok:
                 continue
             tick = 10 ** -max(ask.decimals, bid.decimals, 2)
             buy_p, sell_p = round(bid.price + tick, 6), round(ask.price - tick, 6)
@@ -603,7 +604,7 @@ def scan(cfg: dict) -> Tuple[Dict, List[Opportunity], Optional[float]]:
             if not ask:
                 continue
             for b_ex, b in exs.items():
-                if a_ex == b_ex:
+                if a_ex == b_ex or b_ex not in ad_ok:
                     continue
                 b_ask, b_bid = b.get("ask"), b.get("bid")
                 if b_ask:  # встаём на шаг дешевле лучшего продавца на B
@@ -798,6 +799,7 @@ HELP = (
     "/threshold — порог прибыли для сигналов\n"
     "/interval 20 — как часто проверять (сек)\n"
     "/exchanges binance — только Binance (/exchanges all — все)\n"
+    "/ads binance — где ты можешь ставить свои объявления\n"
     "/digest 30 — сводка рынка раз в 30 мин (/digest off — выкл)\n\n"
     "/status — работает ли бот, сколько сигналов отправил\n"
     "/pause — выключить уведомления\n"
@@ -939,7 +941,8 @@ def save_settings(cfg: dict):
                    "alert_min_profit_pct": cfg["alert_min_profit_pct"],
                    "price_alerts": cfg.get("price_alerts", []),
                    "digest_min": cfg.get("digest_min", 0),
-                   "exchanges": cfg["exchanges"]}, f, ensure_ascii=False)
+                   "exchanges": cfg["exchanges"],
+                   "ad_exchanges": cfg.get("ad_exchanges")}, f, ensure_ascii=False)
 
 
 def handle_exchanges(cfg: dict, args: List[str]) -> str:
@@ -1150,6 +1153,18 @@ class TgBot:
             tg_send(self.cfg, handle_balance(self.cfg, args))
         elif cmd == "/alert":
             tg_send(self.cfg, handle_alert(self.cfg, args))
+        elif cmd == "/ads":
+            if args:
+                chosen = ([e for e in FETCHERS] if args[0].lower() in ("all", "все") else
+                          [] if args[0].lower() in ("none", "нигде", "off") else
+                          [EX_ALIAS[a.lower()] for a in args if a.lower() in EX_ALIAS])
+                self.cfg["ad_exchanges"] = chosen
+                save_settings(self.cfg)
+            cur = self.cfg.get("ad_exchanges")
+            names = "все биржи" if cur is None else (", ".join(EX_LABEL[e] for e in cur) or "нигде")
+            tg_send(self.cfg, f"📝 Свои объявления могу ставить: <b>{names}</b>\n"
+                              "Сигналы «свои объявления» и «купить → своё объявление» — только для них.\n"
+                              "Изменить: /ads binance okx • /ads none")
         elif cmd in ("/exchanges", "/exchange", "/birzha"):
             tg_send(self.cfg, handle_exchanges(self.cfg, args))
         elif re.fullmatch(r"/p\d+", cmd):
@@ -1436,6 +1451,8 @@ def load_cfg(path: str) -> dict:
     cfg["price_alerts"] = s.get("price_alerts", [])
     if "digest_min" in s:
         cfg["digest_min"] = s["digest_min"]
+    if "ad_exchanges" in s:
+        cfg["ad_exchanges"] = s["ad_exchanges"]
     if s.get("exchanges"):
         cfg["exchanges"] = [e for e in s["exchanges"] if e in FETCHERS] or cfg["exchanges"]
     return cfg
