@@ -703,7 +703,9 @@ def parse_text(text: str, cfg: dict) -> List[Tuple[str, List[str]]]:
     cur = next((c for c, ws in _CUR_WORDS if _has(t, *ws)), None)
     num = f"{amount:g}" if amount is not None else None
 
-    if _has(t, "стоп", "хватит", "не пиши", "не присылай", "не скидывай", "не кидай", "пауза", "выключи", "замолчи", "отключи"):
+    if any(_has(t, *ws) for _, ws in EX_WORDS) and _has(t, "отключи", "убери", "удали"):
+        pass  # это про биржи, не про паузу
+    elif _has(t, "стоп", "хватит", "не пиши", "не присылай", "не скидывай", "не кидай", "пауза", "выключи", "замолчи", "отключи"):
         return [("/pause", [])]
     if _has(t, "помощь", "что умеешь", "команды", "help"):
         return [("/help", [])]
@@ -721,6 +723,11 @@ def parse_text(text: str, cfg: dict) -> List[Tuple[str, List[str]]]:
     set_ex: List[Tuple[str, List[str]]] = []
     if _has(t, "все бирж", "всех бирж", "всем бирж", "на всех"):
         set_ex = [("/exchanges", ["all"])]
+    elif exs and _has(t, "убери", "удали", "убрать", "без ", "отключи"):
+        left = [e for e in cfg["exchanges"] if e not in exs] or cfg["exchanges"]
+        set_ex = [("/exchanges", left)]
+    elif exs and _has(t, "добав", "подключ", "еще", "тоже", "плюс", "скачал", "установил", "зарегал", "зарегистр"):
+        set_ex = [("/exchanges", list(dict.fromkeys(cfg["exchanges"] + exs)))]
     elif exs and not _has(t, "купить", "куплю", "продать", "продам"):
         set_ex = [("/exchanges", exs)]
 
