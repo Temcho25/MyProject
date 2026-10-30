@@ -820,6 +820,10 @@ def parse_text(text: str, cfg: dict) -> List[Tuple[str, List[str]]]:
     cur = next((c for c, ws in _CUR_WORDS if _has(t, *ws)), None)
     num = f"{amount:g}" if amount is not None else None
 
+    if _has(t, "сводк"):  # «стоп сводки», «сводка каждые 60 минут», «выключи сводку»
+        if _has(t, "стоп", "выключ", "отключ", "не надо", "убери", "off", "хватит", "не присылай"):
+            return [("/digest", ["off"])]
+        return [("/digest", [num] if num else [])]
     if any(_has(t, *ws) for _, ws in EX_WORDS) and _has(t, "отключи", "убери", "удали"):
         pass  # это про биржи, не про паузу
     elif _has(t, "стоп", "хватит", "не пиши", "не присылай", "не скидывай", "не кидай", "пауза", "выключи", "замолчи", "отключи"):
