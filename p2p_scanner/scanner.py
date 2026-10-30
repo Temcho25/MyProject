@@ -120,6 +120,7 @@ class Opportunity:
     fiat: str
     text: str            # короткий заголовок
     plan: str = ""       # пошаговый сценарий
+    short: str = ""      # 2–3 строки для уведомления
 
 
 # ---------------------------------------------------------------- HTTP
@@ -568,7 +569,10 @@ def scan(cfg: dict) -> Tuple[Dict, List[Opportunity], Optional[float]]:
                 pct = profit / size * 100
                 head = f"🔁 {fiat}: {ask.ex}{'' if a_ex == b_ex else '→' + bid.ex}"
                 plan = plan_cross(fiat, size, ask, bid, got, transfer, sell, revenue, profit, pct, pay_keys, cap if user_cap else 0)
-                opps.append(Opportunity("cross", f"cross:{fiat}:{a_ex}:{b_ex}", pct, profit, fiat, head, plan))
+                route = ask.ex if a_ex == b_ex else f"{ask.ex} → {bid.ex}"
+                short = (f"🔁 <b>{route}: {pct:+.2f}%  ({profit:+.2f} {fiat})</b>\n"
+                         f"Купить по {ask.price:g} → сразу продать по {bid.price:g}")
+                opps.append(Opportunity("cross", f"cross:{fiat}:{a_ex}:{b_ex}", pct, profit, fiat, head, plan, short))
 
     # 2) maker: свои объявления внутри биржи
     mk = fees["maker_pct"]
@@ -586,7 +590,9 @@ def scan(cfg: dict) -> Tuple[Dict, List[Opportunity], Optional[float]]:
             pct = profit / cap * 100
             head = f"📊 {fiat}: спред на {ask.ex}"
             plan = plan_maker(fiat, cap, ask, bid, buy_p, sell_p, pct, profit, mk, pay_keys, user_cap)
-            opps.append(Opportunity("maker", f"maker:{fiat}:{ex}", pct, profit, fiat, head, plan))
+            short = (f"📊 <b>Свои объявления на {ask.ex}: {pct:+.2f}%  ({profit:+.2f} {fiat})</b>\n"
+                     f"Куплю по {buy_p:g} → продам по {sell_p:g}")
+            opps.append(Opportunity("maker", f"maker:{fiat}:{ex}", pct, profit, fiat, head, plan, short))
 
     # 4) relay: купить на A сразу (у продавца), продать СВОИМ объявлением на B
     for fiat, exs in book.items():
@@ -620,7 +626,9 @@ def scan(cfg: dict) -> Tuple[Dict, List[Opportunity], Optional[float]]:
                 plan = plan_relay(fiat, size, ask, b_ex, b_ask, b_bid, sell_p, alone, got, transfer,
                                   revenue, profit, pct, mk, pay_keys, user_cap)
                 head = f"🚚 {fiat}: {ask.ex} → своё объявление на {EX_LABEL.get(b_ex, b_ex)}"
-                opps.append(Opportunity("relay", f"relay:{fiat}:{a_ex}:{b_ex}", pct, profit, fiat, head, plan))
+                short = (f"🚚 <b>{ask.ex} → {EX_LABEL.get(b_ex, b_ex)}: {pct:+.2f}%  ({profit:+.2f} {fiat})</b>\n"
+                         f"Купить на {ask.ex} по {ask.price:g} → своё объявление на {EX_LABEL.get(b_ex, b_ex)} по {sell_p:g}")
+                opps.append(Opportunity("relay", f"relay:{fiat}:{a_ex}:{b_ex}", pct, profit, fiat, head, plan, short))
 
     # 3) fx-круг GEL ↔ USD через USDT и банк
     if nbg and {"GEL", "USD"} <= set(book):
@@ -647,7 +655,9 @@ def scan(cfg: dict) -> Tuple[Dict, List[Opportunity], Optional[float]]:
                     pct = (end / start - 1) * 100
                     route = f"{start_cur}→USDT→{other}→{start_cur}"
                     plan = plan_fx(route, start_cur, start_cur, start, ask, bid, got, transfer, mid, rate, nbg, end, pct, pay_keys, user_cap)
-                    opps.append(Opportunity("fx", f"fx:{start_cur}:{a_ex}:{b_ex}", pct, end - start, start_cur, "💱 " + route, plan))
+                    short = (f"💱 <b>{route}: {pct:+.2f}%  ({end - start:+.2f} {start_cur})</b>\n"
+                             f"Купить по {ask.price:g} {start_cur} → продать по {bid.price:g} {other}")
+                    opps.append(Opportunity("fx", f"fx:{start_cur}:{a_ex}:{b_ex}", pct, end - start, start_cur, "💱 " + route, plan, short))
 
     opps.sort(key=lambda o: o.profit_pct, reverse=True)
     return book, opps, nbg
@@ -1035,12 +1045,9 @@ def check_price_alerts(cfg: dict, book: Dict) -> List[str]:
             continue
         verb = "купить" if side == "ask" else "продать"
         out.append(
-            f"🔔 <b>Алерт сработал!</b>\n\nСейчас можно <b>{verb}</b> USDT по <b>{b.price:g} {a['fiat']}</b> "
-            f"(ты ждал {'≤' if side == 'ask' else '≥'} {a['price']:g})\n\n"
-            f"{b.ex} — {b.who()}\n{b.banks([k.lower() for k in cfg.get('payment_methods', [])])} • "
-            f"лимит {b.min_fiat:g}–{b.max_fiat:g} {a['fiat']} • <a href=\"{b.link}\">открыть</a>\n\n"
-            f"Все варианты: /{'buy' if side == 'ask' else 'sell'} {a['fiat'].lower()}\n"
-            f"Алерт удалён. Поставить снова: /alert {a['side']} {a['price']:g} {a['fiat'].lower()}"
+            f"🔔 <b>{verb.capitalize()} по {b.price:g} {a['fiat']}</b> (ждал {'≤' if side == 'ask' else '≥'} {a['price']:g})\n"
+            f"{b.ex} • {b.nick} • <a href=\"{b.link}\">открыть</a>\n"
+            f"Все варианты: /{'buy' if side == 'ask' else 'sell'}"
         )
     if out:
         cfg["price_alerts"] = left
@@ -1143,6 +1150,9 @@ class TgBot:
             tg_send(self.cfg, handle_alert(self.cfg, args))
         elif cmd in ("/exchanges", "/exchange", "/birzha"):
             tg_send(self.cfg, handle_exchanges(self.cfg, args))
+        elif re.fullmatch(r"/p\d+", cmd):
+            plan = PLANS.get(int(cmd[2:]))
+            tg_send(self.cfg, (plan + "\n\n" + SAFETY) if plan else "Этот план устарел. Свежий: /plan")
         elif cmd in ("/status", "/статус"):
             tg_send(self.cfg, status_text(self.cfg, self.paused))
         elif cmd == "/digest":
@@ -1177,6 +1187,17 @@ def book_text(book: Dict, nbg: Optional[float]) -> str:
             lines.append(f"<code>{ex:<8}{(f'{ask.price:g}' if ask else '—'):>7}{(f'{bid.price:g}' if bid else '—'):>9}</code>")
         lines.append("")
     return "\n".join(lines)
+
+
+PLANS: Dict[int, str] = {}  # номер → подробный план (для /p1, /p2…)
+
+
+def remember_plan(o: Opportunity) -> int:
+    n = (max(PLANS) + 1) if PLANS else 1
+    PLANS[n] = o.plan
+    for old in sorted(PLANS)[:-20]:  # держим последние 20
+        PLANS.pop(old, None)
+    return n
 
 
 STATS = {"started": time.time(), "scans": 0, "last_scan": 0.0, "signals": 0, "alerts": 0,
@@ -1260,28 +1281,24 @@ def thresholds(cfg: dict) -> Dict[str, float]:
 
 def digest_text(cfg: dict, book: Dict, opps: List[Opportunity], nbg: Optional[float], hits) -> str:
     """Короткая сводка рынка — приходит по расписанию, даже когда сигналов нет."""
-    lines = [f"📋 <b>Сводка {datetime.now():%H:%M}</b>", ""]
+    lines = [f"📋 <b>Сводка {datetime.now():%H:%M}</b>"]
     for fiat, exs in book.items():
-        asks = [s["ask"] for s in exs.values() if s.get("ask")]
-        bids = [s["bid"] for s in exs.values() if s.get("bid")]
-        a, b = best(asks, "ask"), best(bids, "bid")
-        lines.append(f"<b>{fiat}</b>: купить {a.price:g} ({a.ex}) • продать {b.price:g} ({b.ex})"
-                     if a and b else f"<b>{fiat}</b>: нет данных")
-    if nbg:
-        lines.append(f"НБГ: 1 USD = {nbg:.4f} GEL")
-    lines.append("")
+        a = best([s["ask"] for s in exs.values() if s.get("ask")], "ask")
+        b = best([s["bid"] for s in exs.values() if s.get("bid")], "bid")
+        if a and b:
+            lines.append(f"Купить {a.price:g} ({a.ex}) • продать {b.price:g} ({b.ex})"
+                         + (f" [{fiat}]" if len(book) > 1 else ""))
     th = thresholds(cfg)
-    for kind, name in (("cross", "🔁 Купить→продать"), ("relay", "🚚 Купить→своё объявление"),
-                       ("maker", "📊 Свои объявления"), ("fx", "💱 Через доллар")):
+    icons = {"cross": "🔁", "relay": "🚚", "maker": "📊", "fx": "💱"}
+    parts = []
+    for kind in ("relay", "maker", "cross", "fx"):
         ks = [o for o in opps if o.kind == kind]
         if ks:
             o = ks[0]
-            mark = "🟢" if o.profit_pct >= th[kind] else "⚪️"
-            lines.append(f"{mark} {name}: {o.profit_pct:+.2f}% ({o.fiat}) • порог {th[kind]:g}%")
-    lines += ["", "🚨 Есть сигнал — план уже прислал выше." if hits else "Сигналов нет — рынок спокойный.",
-              f"Следующая сводка через {cfg['digest_min']} мин • /digest 60 • /digest off • план: /plan"]
-    if cfg.get("price_alerts"):
-        lines.append(f"🔔 Активных ценовых алертов: {len(cfg['price_alerts'])} (/alert)")
+            parts.append(f"{'🟢' if o.profit_pct >= th[kind] else '⚪️'}{icons[kind]} {o.profit_pct:+.2f}%")
+    if parts:
+        lines.append("  ".join(parts))
+    lines.append("Подробно: /plan")
     return "\n".join(lines)
 
 
@@ -1457,7 +1474,9 @@ def main():
                     if dedup.should_send(o):
                         note = (f"💡 У тебя в балансе нет {o.fiat} — сигнал для информации "
                                 f"(или задай: /balance 500 {o.fiat.lower()}).\n\n") if bal and o.fiat not in bal else ""
-                        tg_send(cfg, "🚨 <b>Сигнал!</b>\n\n" + note + o.plan + "\n\n" + SAFETY)
+                        n = remember_plan(o)
+                        extra = f"\n💡 Нет {o.fiat} в балансе — для информации" if note else ""
+                        tg_send(cfg, f"🚨 {o.short}{extra}\n\nПо шагам: /p{n}")
                         log(f"→ Telegram: сигнал {o.key} {o.profit_pct:+.2f}%")
                         STATS["signals"] += 1
                         STATS["last_signal"] = f"{datetime.now():%H:%M} {strip_html(o.text)} {o.profit_pct:+.2f}%"
