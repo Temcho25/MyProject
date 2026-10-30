@@ -902,6 +902,8 @@ def parse_text(text: str, cfg: dict) -> List[Tuple[str, List[str]]]:
         return acts
     if num:  # просто «500$» — считаем, что это баланс
         return [("/balance", [num, (cur if cur in cfg["fiats"] else cfg["fiats"][0]).lower()])]
+    if smalltalk(text):
+        return [("/smalltalk", [text])]
     return [("/unknown_text", [])]
 
 
@@ -1167,6 +1169,10 @@ class TgBot:
         elif cmd in handlers:
             tg_send(self.cfg, "⏳ Сканирую биржи (~20 сек)…")
             handlers[cmd]()
+        elif cmd == "/smalltalk":
+            reply = smalltalk(" ".join(args)) or "👋"
+            market = STATS.get("last_summary")
+            tg_send(self.cfg, reply + (f"\n\n{market}" if market else "") + "\n\nПодробно: /plan • статус: /status")
         elif cmd == "/unknown_text":
             tg_send(self.cfg, "🤔 Не понял. Попробуй так:\n"
                               "«у меня есть 500$, давай сигналы»\n"
@@ -1198,6 +1204,41 @@ def remember_plan(o: Opportunity) -> int:
     for old in sorted(PLANS)[:-20]:  # держим последние 20
         PLANS.pop(old, None)
     return n
+
+
+def market_line(cfg: dict, book: Dict, opps: List[Opportunity]) -> str:
+    """Две строки о рынке прямо сейчас — для ответов на «как дела»."""
+    lines = []
+    for fiat, exs in book.items():
+        a = best([s["ask"] for s in exs.values() if s.get("ask")], "ask")
+        b = best([s["bid"] for s in exs.values() if s.get("bid")], "bid")
+        if a and b:
+            lines.append(f"Купить {a.price:g} ({a.ex}) • продать {b.price:g} ({b.ex})")
+    th = thresholds(cfg)
+    good = [o for o in opps if o.profit_pct >= th[o.kind]]
+    if good:
+        o = good[0]
+        lines.append(f"Лучшее сейчас: {o.short.splitlines()[0]}")
+    else:
+        lines.append("Выгодных окон пока нет — жду.")
+    return "\n".join(lines)
+
+
+SMALLTALK = [
+    (("спасибо", "спс", "благодар", "thanks"), "Пожалуйста! 🙌"),
+    (("привет", "здравств", "hello", "hi ", "салам", "гамарджоба", "добрый"), "Привет! 👋"),
+    (("как дела", "ты как", "как ты", "как жизнь", "что нового", "как оно", "че как", "чё как"), "Всё хорошо, работаю 💪"),
+    (("молодец", "красава", "класс", "круто", "топ"), "Стараюсь! 😎"),
+    (("пока", "спокойной", "до завтра", "bye"), "До связи! Я продолжаю следить за рынком 👀"),
+]
+
+
+def smalltalk(text: str) -> Optional[str]:
+    t = " " + text.lower().replace("ё", "е") + " "
+    for words, reply in SMALLTALK:
+        if any(w in t for w in words):
+            return reply
+    return None
 
 
 STATS = {"started": time.time(), "scans": 0, "last_scan": 0.0, "signals": 0, "alerts": 0,
@@ -1452,6 +1493,7 @@ def main():
             book, opps, nbg = scan(cfg)
             STATS["scans"] += 1
             STATS["last_scan"] = time.time()
+            STATS["last_summary"] = market_line(cfg, book, opps)
             print_book(book, nbg)
             th = thresholds(cfg)  # мог измениться через /threshold
             hits = [o for o in opps if o.profit_pct >= th[o.kind]]
