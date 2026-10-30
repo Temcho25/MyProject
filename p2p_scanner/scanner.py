@@ -658,7 +658,8 @@ HELP = (
     "/alert sell 2.62 — когда можно продать по 2.62 или дороже\n"
     "/alert — список алертов\n"
     "/threshold — порог прибыли для сигналов\n"
-    "/interval 20 — как часто проверять (сек)\n\n"
+    "/interval 20 — как часто проверять (сек)\n"
+    "/digest 30 — сводка рынка раз в 30 мин (/digest off — выкл)\n\n"
     "/pause — выключить уведомления\n"
     "/resume — включить уведомления\n"
     "/help — эта справка\n\n"
@@ -695,7 +696,8 @@ def save_settings(cfg: dict):
     with open(SETTINGS_FILE, "w") as f:
         json.dump({"interval_sec": cfg["interval_sec"],
                    "alert_min_profit_pct": cfg["alert_min_profit_pct"],
-                   "price_alerts": cfg.get("price_alerts", [])}, f, ensure_ascii=False)
+                   "price_alerts": cfg.get("price_alerts", []),
+                   "digest_min": cfg.get("digest_min", 0)}, f, ensure_ascii=False)
 
 
 def handle_interval(cfg: dict, args: List[str]) -> str:
@@ -884,6 +886,8 @@ class TgBot:
             tg_send(self.cfg, handle_balance(self.cfg, args))
         elif cmd == "/alert":
             tg_send(self.cfg, handle_alert(self.cfg, args))
+        elif cmd == "/digest":
+            tg_send(self.cfg, handle_digest(self.cfg, args))
         elif cmd == "/interval":
             tg_send(self.cfg, handle_interval(self.cfg, args))
         elif cmd == "/threshold":
@@ -951,6 +955,48 @@ def thresholds(cfg: dict) -> Dict[str, float]:
     return {"cross": t["cross"], "maker": t["maker"], "fx": t["fx"]}
 
 
+def digest_text(cfg: dict, book: Dict, opps: List[Opportunity], nbg: Optional[float], hits) -> str:
+    """Короткая сводка рынка — приходит по расписанию, даже когда сигналов нет."""
+    lines = [f"📋 <b>Сводка {datetime.now():%H:%M}</b>", ""]
+    for fiat, exs in book.items():
+        asks = [s["ask"] for s in exs.values() if s.get("ask")]
+        bids = [s["bid"] for s in exs.values() if s.get("bid")]
+        a, b = best(asks, "ask"), best(bids, "bid")
+        lines.append(f"<b>{fiat}</b>: купить {a.price:g} ({a.ex}) • продать {b.price:g} ({b.ex})"
+                     if a and b else f"<b>{fiat}</b>: нет данных")
+    if nbg:
+        lines.append(f"НБГ: 1 USD = {nbg:.4f} GEL")
+    lines.append("")
+    th = thresholds(cfg)
+    for kind, name in (("cross", "🔁 Купить→продать"), ("maker", "📊 Свои объявления"), ("fx", "💱 Через доллар")):
+        ks = [o for o in opps if o.kind == kind]
+        if ks:
+            o = ks[0]
+            mark = "🟢" if o.profit_pct >= th[kind] else "⚪️"
+            lines.append(f"{mark} {name}: {o.profit_pct:+.2f}% ({o.fiat}) • порог {th[kind]:g}%")
+    lines += ["", "🚨 Есть сигнал — план уже прислал выше." if hits else "Сигналов нет — рынок спокойный.",
+              f"Следующая сводка через {cfg['digest_min']} мин • /digest 60 • /digest off • план: /plan"]
+    if cfg.get("price_alerts"):
+        lines.append(f"🔔 Активных ценовых алертов: {len(cfg['price_alerts'])} (/alert)")
+    return "\n".join(lines)
+
+
+def handle_digest(cfg: dict, args: List[str]) -> str:
+    if args:
+        a = args[0].lower()
+        if a in ("off", "выкл", "0"):
+            cfg["digest_min"] = 0
+        else:
+            try:
+                cfg["digest_min"] = max(5, min(1440, int(float(a))))
+            except ValueError:
+                return "Пример: /digest 30  или  /digest off"
+        save_settings(cfg)
+    if not cfg.get("digest_min"):
+        return "📋 Сводка выключена. Включить: /digest 30 (раз в 30 минут)"
+    return f"📋 Сводка рынка приходит раз в <b>{cfg['digest_min']} мин</b>. Изменить: /digest 60 • выключить: /digest off"
+
+
 def mine(cfg: dict, opps: List[Opportunity]) -> List[Opportunity]:
     """Если баланс задан — только окна в тех валютах, которые у тебя есть."""
     bal = cfg.get("balance") or {}
@@ -997,6 +1043,7 @@ DEFAULT_CFG = {
     "interval_sec": 20,
     "cooldown_min": 30,
     "resend_if_better_by_pct": 0.2,
+    "digest_min": 30,
     "telegram": {"bot_token": "", "chat_id": ""},
 }
 
@@ -1024,6 +1071,8 @@ def load_cfg(path: str) -> dict:
         cfg["interval_sec"] = s["interval_sec"]
     cfg["alert_min_profit_pct"] = {**cfg["alert_min_profit_pct"], **s.get("alert_min_profit_pct", {})}
     cfg["price_alerts"] = s.get("price_alerts", [])
+    if "digest_min" in s:
+        cfg["digest_min"] = s["digest_min"]
     return cfg
 
 
@@ -1070,6 +1119,7 @@ def main():
         tg_send(cfg, best_plans(cfg, opps))
 
     handlers = {"/scan": cmd_scan, "/plan": cmd_plan}
+    last_digest = 0.0  # первая сводка — сразу после старта
 
     while True:
         try:
@@ -1089,9 +1139,16 @@ def main():
             if bot and bot.chat_id and not bot.paused:
                 for msg in check_price_alerts(cfg, book):
                     tg_send(cfg, msg)
-                for o in mine(cfg, hits):
+                bal = cfg.get("balance") or {}
+                for o in hits:
                     if dedup.should_send(o):
-                        tg_send(cfg, "🚨 <b>Сигнал!</b>\n\n" + o.plan + "\n\n" + SAFETY)
+                        note = (f"💡 У тебя в балансе нет {o.fiat} — сигнал для информации "
+                                f"(или задай: /balance 500 {o.fiat.lower()}).\n\n") if bal and o.fiat not in bal else ""
+                        tg_send(cfg, "🚨 <b>Сигнал!</b>\n\n" + note + o.plan + "\n\n" + SAFETY)
+                digest_min = cfg.get("digest_min", 0)
+                if digest_min and time.time() - last_digest >= digest_min * 60:
+                    tg_send(cfg, digest_text(cfg, book, opps, nbg, hits))
+                    last_digest = time.time()
         except KeyboardInterrupt:
             raise
         except Exception as e:
