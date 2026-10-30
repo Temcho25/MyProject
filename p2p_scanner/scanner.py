@@ -663,8 +663,82 @@ HELP = (
     "/pause — выключить уведомления\n"
     "/resume — включить уведомления\n"
     "/help — эта справка\n\n"
-    "Когда появится выгодное окно, я сам пришлю пошаговый план под твою сумму."
+    "Когда появится выгодное окно, я сам пришлю пошаговый план под твою сумму.\n\n"
+    "💬 <b>Можно писать обычным текстом:</b>\n"
+    "«у меня есть 500$, давай сигналы»\n"
+    "«где купить 300 usdt» • «где продать 200 usdt»\n"
+    "«напиши когда можно купить по 0.995»\n"
+    "«какой сейчас курс» • «что делать» • «стоп»"
 )
+
+# ---------------------------------------------------------------- обычный текст
+_CUR_WORDS = [
+    ("USDT", ("usdt", "юсдт", "тезер", "tether", "usdт")),
+    ("USD", ("$", "usd", "долл", "бакс", "доллар")),
+    ("GEL", ("gel", "лари", "₾", "lari")),
+]
+
+
+def _has(t: str, *words) -> bool:
+    return any(w in t for w in words)
+
+
+def parse_text(text: str, cfg: dict) -> List[Tuple[str, List[str]]]:
+    """Понимает простые фразы и превращает их в команды бота (без внешнего ИИ)."""
+    t = " " + text.lower().replace("ё", "е") + " "
+    t = re.sub(r"(?<=\d)[\s ](?=\d{3}\b)", "", t)          # «1 000» → «1000»
+    m = re.search(r"(\d+(?:[.,]\d+)?)\s*(к|k|тыс)?", t)
+    amount = None
+    if m:
+        amount = float(m.group(1).replace(",", "."))
+        if m.group(2):
+            amount *= 1000
+    cur = next((c for c, ws in _CUR_WORDS if _has(t, *ws)), None)
+    num = f"{amount:g}" if amount is not None else None
+
+    if _has(t, "стоп", "хватит", "не пиши", "не присылай", "не скидывай", "не кидай", "пауза", "выключи", "замолчи", "отключи"):
+        return [("/pause", [])]
+    if _has(t, "помощь", "что умеешь", "команды", "help"):
+        return [("/help", [])]
+    # «напиши / сообщи когда ... 0.995»
+    if num and _has(t, "напиши когда", "сообщи когда", "дай знать", "уведоми", "алерт", "скажи когда", "напомни"):
+        side = "sell" if _has(t, "прода", "sell") else "buy"
+        return [("/alert", [side, num] + ([cur.lower()] if cur in cfg["fiats"] else []))]
+    if _has(t, "алерт", "уведомлени") and _has(t, "удали", "убери", "сбрось", "отмени"):
+        return [("/alert", ["off"])]
+    if _has(t, "алерт", "мои уведомлени"):
+        return [("/alert", [])]
+
+    wants_signals = _has(t, "сигнал", "присылай", "скидывай", "включи", "продолжай", "кидай")
+    owns = _has(t, "у меня", "есть", "имею", "баланс", "располагаю", "капитал", "бюджет")
+    acts: List[Tuple[str, List[str]]] = []
+
+    if num and (owns or wants_signals):
+        if cur == "USDT":
+            # USDT пересчитаем в доллары по ≈1:1 — для расчёта сценариев этого достаточно
+            cur_b = "USD" if "USD" in cfg["fiats"] else cfg["fiats"][0]
+        else:
+            cur_b = cur if cur in cfg["fiats"] else cfg["fiats"][0]
+        acts.append(("/balance", [num, cur_b.lower()]))
+    elif _has(t, "купить", "куплю", "покупк", "закупит"):
+        return [("/buy", [x for x in (num, cur.lower() if cur else None) if x])]
+    elif _has(t, "продать", "продам", "продаж", "слить", "сдать"):
+        return [("/sell", [x for x in (num, cur.lower() if cur else None) if x])]
+
+    if wants_signals:
+        acts.append(("/resume", []))
+    if wants_signals or _has(t, "план", "что делать", "что мне делать", "сценари", "как заработать", "куда"):
+        acts.append(("/plan", []))
+    elif _has(t, "курс", "цен", "сколько стоит", "рынок", "что там"):
+        acts.append(("/scan", []))
+    elif _has(t, "сводк"):
+        acts.append(("/digest", [num] if num else []))
+
+    if acts:
+        return acts
+    if num:  # просто «500$» — считаем, что это баланс
+        return [("/balance", [num, (cur if cur in cfg["fiats"] else cfg["fiats"][0]).lower()])]
+    return [("/unknown_text", [])]
 
 
 def load_balance() -> Dict[str, float]:
@@ -858,9 +932,12 @@ class TgBot:
                 msg = u.get("message") or {}
                 chat = str((msg.get("chat") or {}).get("id", ""))
                 parts = (msg.get("text") or "").strip().split()
-                if not chat or not parts or not parts[0].startswith("/"):
+                if not chat or not parts:
                     continue
-                cmd, args = parts[0].split("@")[0].lower(), parts[1:]
+                if parts[0].startswith("/"):
+                    actions = [(parts[0].split("@")[0].lower(), parts[1:])]
+                else:
+                    actions = parse_text(msg.get("text", ""), self.cfg)  # обычный текст → команды
                 if not self.chat_id:  # первый, кто написал боту, становится владельцем
                     self.cfg["telegram"]["chat_id"] = chat
                     with open(CHAT_FILE, "w") as f:
@@ -868,10 +945,11 @@ class TgBot:
                     log(f"Привязан chat_id {chat}")
                 if chat != self.chat_id:
                     continue  # чужие чаты игнорируем
-                try:
-                    self.dispatch(cmd, args, handlers)
-                except Exception as e:
-                    tg_send(self.cfg, f"Ошибка: {e}")
+                for cmd, args in actions:
+                    try:
+                        self.dispatch(cmd, args, handlers)
+                    except Exception as e:
+                        tg_send(self.cfg, f"Ошибка: {e}")
 
     def dispatch(self, cmd: str, args: List[str], handlers: Dict):
         if cmd in ("/start", "/help"):
@@ -898,6 +976,12 @@ class TgBot:
         elif cmd in handlers:
             tg_send(self.cfg, "⏳ Сканирую биржи (~20 сек)…")
             handlers[cmd]()
+        elif cmd == "/unknown_text":
+            tg_send(self.cfg, "🤔 Не понял. Попробуй так:\n"
+                              "«у меня есть 500$, давай сигналы»\n"
+                              "«где купить 300 usdt»\n"
+                              "«напиши когда можно купить по 0.995»\n"
+                              "«какой курс» • «что делать» • «стоп»\n\nВсе команды: /help")
         else:
             tg_send(self.cfg, "Не знаю такой команды.\n\n" + HELP)
 
