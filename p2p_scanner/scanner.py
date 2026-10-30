@@ -47,11 +47,12 @@ PAYMENTS = {
 }
 PAY_LABEL = {"tbc": "TBC", "bog": "Bank of Georgia", "liberty": "Liberty", "credo": "Credo",
              "basis": "Basis", "tera": "Terabank", "fastoo": "Fastoo"}
-EX_LABEL = {"binance": "Binance", "bybit": "Bybit", "okx": "OKX"}
+EX_LABEL = {"binance": "Binance", "bybit": "Bybit", "okx": "OKX", "bitget": "Bitget"}
 EX_WORDS = [
     ("binance", ("binance", "бинанс", "бинанc", "байнанс", "бинанц")),
     ("bybit", ("bybit", "байбит", "бaйбит", "бибит")),
     ("okx", ("okx", "окх", "окекс", "оккх")),
+    ("bitget", ("bitget", "битгет", "битгейт", "бидгет")),
 ]
 EX_ALIAS = {w: k for k, ws in EX_WORDS for w in ws}
 
@@ -248,7 +249,51 @@ def fetch_okx(fiat: str, side: str, amount: float, pay_keys: List[str], pages: i
     return ads
 
 
-FETCHERS = {"binance": fetch_binance, "bybit": fetch_bybit, "okx": fetch_okx}
+BITGET_PAY_IDS = {"tbc": "45", "bog": "46", "liberty": "323"}
+_BITGET_CACHE: Dict[tuple, Tuple[float, list]] = {}
+BITGET_TTL = 60  # Bitget быстро отвечает 429 — спрашиваем не чаще раза в минуту
+
+
+def fetch_bitget(fiat: str, side: str, amount: float, pay_keys: List[str], pages: int) -> List[Ad]:
+    key = (fiat, side, tuple(pay_keys))
+    hit = _BITGET_CACHE.get(key)
+    if hit and time.time() - hit[0] < BITGET_TTL:
+        return hit[1]
+    ids = [BITGET_PAY_IDS[k] for k in pay_keys if k in BITGET_PAY_IDS] or [None]
+    ads, seen = [], set()
+    try:
+        for pid in ids:
+            body = {"side": 1 if side == "ask" else 2, "pageNo": 1, "pageSize": 20,
+                    "coinCode": "USDT", "fiatCode": fiat, "languageType": 0}
+            if pid:
+                body["paymethodId"] = pid
+            d = http_json("https://www.bitget.com/v1/p2p/pub/adv/queryAdvList", body)
+            for x in (d.get("data") or {}).get("dataList") or []:
+                if x.get("adNo") in seen:
+                    continue
+                seen.add(x.get("adNo"))
+                ads.append(Ad(
+                    exchange="bitget", fiat=fiat, side=side,
+                    price=_f(x["price"]), decimals=_dec(x["price"]),
+                    min_fiat=_f(x.get("minAmount")),
+                    max_fiat=_f(x.get("maxAmount")),
+                    available_usdt=_f(x.get("lastAmount")),
+                    nick=x.get("nickName", "?"),
+                    orders=int(_f(x.get("turnoverNum"))),
+                    completion=_f(x.get("turnoverRate")),
+                    payments=[canon_payment(q.get("paymethodName", "")) for q in x.get("paymethodInfo", [])],
+                    link=f"https://www.bitget.com/p2p-trade?fiatName={fiat}",
+                ))
+            time.sleep(0.3)
+    except Exception:
+        if hit:  # при 429 отдаём прошлые данные
+            return hit[1]
+        raise
+    _BITGET_CACHE[key] = (time.time(), ads)
+    return ads
+
+
+FETCHERS = {"binance": fetch_binance, "bybit": fetch_bybit, "okx": fetch_okx, "bitget": fetch_bitget}
 
 
 def fetch_nbg_usd() -> Optional[float]:
@@ -388,7 +433,7 @@ def plan_maker(fiat, cap, ask: Ad, bid: Ad, buy_p, sell_p, pct, profit, maker_pc
         "",
         "⚠️ Следи за объявлениями: если кто-то перебил цену — подвинь свою на шаг. "
         "Если цена ушла против тебя — не продавай в минус, подожди.",
-        "ℹ️ Чтобы ставить объявления, нужна верификация; на OKX и Bybit часто нужен статус мерчанта.",
+        "ℹ️ Чтобы ставить объявления, нужна верификация; на OKX, Bybit и Bitget часто нужен статус мерчанта.",
     ]
     if ask.nick == bid.nick:
         lines.insert(1, f"⚠️ На обеих сторонах один трейдер ({ask.nick}) — клиентов мало, сделки могут идти медленно.")
@@ -422,6 +467,44 @@ def plan_fx(route, start_cur, end_cur, start, ask: Ad, bid: Ad, got_usdt, transf
     ]
     if pct <= 0:
         lines.append("⛔️ Сейчас в минус — <b>не делай</b>.")
+    return "\n".join(lines)
+
+
+def plan_relay(fiat, size, ask: Ad, b_ex, b_ask, b_bid, sell_p, alone, got, transfer, revenue, profit, pct,
+               maker_pct, pay_keys, user_cap):
+    B = EX_LABEL.get(b_ex, b_ex)
+    lines = [
+        f"🚚 <b>{fiat}: купить на {ask.ex} → продать своим объявлением на {B}</b>  <b>{pct:+.2f}%</b>",
+        "",
+        f"💼 Сумма: <b>{money(size, fiat)}</b>" + ("" if user_cap else " (пример — задай баланс)"),
+        "",
+        f"<b>1. Купить USDT на {ask.ex}</b> (сразу, у продавца)",
+        f"P2P → Купить → {ask.banks(pay_keys)} → {ask.who()} по <b>{ask.price:g}</b>",
+        f"{money(size, fiat)} → ≈ <b>{usdt(got)}</b>",
+        "",
+        f"<b>2. Перевести USDT на {B}</b>",
+        f"Депозит USDT на {B} → вывод с {ask.ex} (сеть TON / Aptos / BEP20 — дешевле всего). Комиссия ≈ {transfer:g} USDT.",
+        "",
+        f"<b>3. Своё объявление «Продам USDT» на {B}</b>",
+        f"Цена <b>{sell_p:g}</b> {fiat}, объём ≈ {usdt(got - transfer)}, оплата {ask.banks(pay_keys)}.",
+    ]
+    if alone:
+        lines.append(f"🟢 На {B} сейчас <b>нет других продавцов</b> с грузинскими банками — ты будешь единственным. "
+                     f"Цена — на шаг ниже, чем у продавцов на других биржах. "
+                     f"Покупателей там немного: проверь, будут ли сделки, начни с небольшой суммы.")
+    elif b_ask:
+        lines.append(f"Сейчас лучший продавец на {B}: {b_ask.nick} по {b_ask.price:g} — ты на шаг дешевле, будешь первым в списке.")
+    if b_bid:
+        lines.append(f"Покупатели на {B} сейчас готовы платить до {b_bid.price:g} (это ниже твоей цены — нужно ждать, пока покупатель придёт к тебе).")
+    lines += [
+        "Покупатель платит → проверь деньги в банке и ФИО → отпусти USDT.",
+        "",
+        f"✅ <b>Итог: {money(size, fiat)} → {money(revenue, fiat)}  ({profit:+.2f} {fiat}, {pct:+.2f}%)</b>",
+        f"Учтены перевод {transfer:g} USDT и комиссия мейкера {maker_pct:g}%.",
+        "⏱ Продажа своим объявлением может занять от минут до часов.",
+    ]
+    if pct <= 0:
+        lines.insert(1, "⛔️ Сейчас в минус — <b>не делай</b>.")
     return "\n".join(lines)
 
 
@@ -499,6 +582,40 @@ def scan(cfg: dict) -> Tuple[Dict, List[Opportunity], Optional[float]]:
             head = f"📊 {fiat}: спред на {ask.ex}"
             plan = plan_maker(fiat, cap, ask, bid, buy_p, sell_p, pct, profit, mk, pay_keys, user_cap)
             opps.append(Opportunity("maker", f"maker:{fiat}:{ex}", pct, profit, fiat, head, plan))
+
+    # 4) relay: купить на A сразу (у продавца), продать СВОИМ объявлением на B
+    for fiat, exs in book.items():
+        cap, user_cap = capital_for(cfg, fiat)
+        all_asks = {ex: s.get("ask") for ex, s in exs.items() if s.get("ask")}
+        for a_ex, a in exs.items():
+            ask = a.get("ask")
+            if not ask:
+                continue
+            for b_ex, b in exs.items():
+                if a_ex == b_ex:
+                    continue
+                b_ask, b_bid = b.get("ask"), b.get("bid")
+                if b_ask:  # встаём на шаг дешевле лучшего продавца на B
+                    sell_p = round(b_ask.price - 10 ** -max(b_ask.decimals, 2), 6)
+                    alone = False
+                else:      # на B продавцов нет — конкурентов нет, ставим на шаг ниже самого дорогого продавца на других биржах
+                    others = [x for e, x in all_asks.items() if e != b_ex]
+                    if not others:
+                        continue
+                    top = max(others, key=lambda x: x.price)
+                    sell_p, alone = round(top.price - 10 ** -max(top.decimals, 2), 6), True
+                if b_bid and sell_p <= b_bid.price:
+                    continue  # тогда выгоднее просто продать покупателю — это уже сигнал cross
+                transfer = fees["withdraw_usdt"].get(a_ex, 1.0)
+                size = min(cap, ad_cap(ask))
+                got = size / ask.price
+                revenue = (got - transfer) * sell_p * (1 - mk / 100)
+                profit = revenue - size
+                pct = profit / size * 100
+                plan = plan_relay(fiat, size, ask, b_ex, b_ask, b_bid, sell_p, alone, got, transfer,
+                                  revenue, profit, pct, mk, pay_keys, user_cap)
+                head = f"🚚 {fiat}: {ask.ex} → своё объявление на {EX_LABEL.get(b_ex, b_ex)}"
+                opps.append(Opportunity("relay", f"relay:{fiat}:{a_ex}:{b_ex}", pct, profit, fiat, head, plan))
 
     # 3) fx-круг GEL ↔ USD через USDT и банк
     if nbg and {"GEL", "USD"} <= set(book):
@@ -780,7 +897,8 @@ def save_balance(bal: Dict[str, float]):
 
 
 SETTINGS_FILE = os.path.join(HERE, "settings.json")
-KIND_NAMES = {"cross": "купить→продать", "maker": "свои объявления", "fx": "через доллар"}
+KIND_NAMES = {"cross": "купить→продать", "maker": "свои объявления", "fx": "через доллар",
+              "relay": "купить→своё объявление на другой бирже"}
 
 
 def load_settings() -> dict:
@@ -836,7 +954,7 @@ def handle_interval(cfg: dict, args: List[str]) -> str:
 def handle_threshold(cfg: dict, args: List[str]) -> str:
     t = cfg["alert_min_profit_pct"]
     if len(args) >= 2:
-        kind = {"купить": "cross", "свои": "maker", "доллар": "fx"}.get(args[0].lower(), args[0].lower())
+        kind = {"купить": "cross", "свои": "maker", "доллар": "fx", "перевод": "relay"}.get(args[0].lower(), args[0].lower())
         if kind not in t:
             return "Тип: cross, maker или fx. Пример: /threshold maker 0.5"
         try:
@@ -845,7 +963,7 @@ def handle_threshold(cfg: dict, args: List[str]) -> str:
             return "Пример: /threshold maker 0.5"
         save_settings(cfg)
     lines = ["🎚 <b>Порог сигнала</b> (минимальная прибыль):"]
-    lines += [f"• {k} ({KIND_NAMES[k]}): <b>{v:g}%</b>" for k, v in t.items()]
+    lines += [f"• {k} ({KIND_NAMES.get(k, k)}): <b>{v:g}%</b>" for k, v in t.items()]
     lines += ["", "Чем ниже порог — тем чаще сигналы (но меньше прибыль).",
               "Изменить: /threshold maker 0.5  •  /threshold cross 0.1"]
     return "\n".join(lines)
@@ -1085,7 +1203,7 @@ def strip_html(s: str) -> str:
 
 def thresholds(cfg: dict) -> Dict[str, float]:
     t = cfg["alert_min_profit_pct"]
-    return {"cross": t["cross"], "maker": t["maker"], "fx": t["fx"]}
+    return {"cross": t["cross"], "maker": t["maker"], "fx": t["fx"], "relay": t.get("relay", 0.3)}
 
 
 def digest_text(cfg: dict, book: Dict, opps: List[Opportunity], nbg: Optional[float], hits) -> str:
@@ -1101,7 +1219,8 @@ def digest_text(cfg: dict, book: Dict, opps: List[Opportunity], nbg: Optional[fl
         lines.append(f"НБГ: 1 USD = {nbg:.4f} GEL")
     lines.append("")
     th = thresholds(cfg)
-    for kind, name in (("cross", "🔁 Купить→продать"), ("maker", "📊 Свои объявления"), ("fx", "💱 Через доллар")):
+    for kind, name in (("cross", "🔁 Купить→продать"), ("relay", "🚚 Купить→своё объявление"),
+                       ("maker", "📊 Свои объявления"), ("fx", "💱 Через доллар")):
         ks = [o for o in opps if o.kind == kind]
         if ks:
             o = ks[0]
@@ -1140,9 +1259,10 @@ def best_plans(cfg: dict, opps: List[Opportunity]) -> str:
     """Лучший сценарий каждого типа: сначала выгодные, иначе честно — что лучшее и почему не делать."""
     th = thresholds(cfg)
     opps = mine(cfg, opps)
-    names = {"cross": "Купить и сразу продать", "maker": "Свои объявления", "fx": "Через доллар и банк"}
+    names = {"cross": "Купить и сразу продать", "relay": "Купить → своё объявление на другой бирже",
+             "maker": "Свои объявления", "fx": "Через доллар и банк"}
     out = []
-    for kind in ("cross", "maker", "fx"):
+    for kind in ("cross", "relay", "maker", "fx"):
         ks = [o for o in opps if o.kind == kind]
         if not ks:
             continue
@@ -1172,7 +1292,7 @@ DEFAULT_CFG = {
         "withdraw_usdt": {"binance": 1.0, "bybit": 1.0, "okx": 1.0},
         "bank_fx_spread_pct": 1.0,
     },
-    "alert_min_profit_pct": {"cross": 0.3, "maker": 1.0, "fx": 0.7},
+    "alert_min_profit_pct": {"cross": 0.3, "maker": 1.0, "fx": 0.7, "relay": 0.3},
     "interval_sec": 20,
     "cooldown_min": 30,
     "resend_if_better_by_pct": 0.2,
