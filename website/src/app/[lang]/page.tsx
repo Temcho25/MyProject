@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Fragment } from "react";
 import Link from "next/link";
 import type { Locale } from "@/i18n/locales";
 import { getDictionary } from "@/i18n";
@@ -62,19 +63,21 @@ export default async function Home({ params }: Props) {
         </div>
 
         <div className="hero-front pointer-events-none absolute inset-0 -z-10 hidden md:block" aria-hidden>
-          <div className="absolute right-[12%] top-[30%] float-a"><span className="chip"><span className="dot" />{tours[0].route[1].city[locale]}</span></div>
-          <div className="absolute right-[30%] top-[46%] float-b"><span className="chip"><span className="dot" />{tours[1].route[0].city[locale]}</span></div>
-          <div className="absolute right-[8%] top-[58%] float-b"><span className="chip"><span className="dot" />{tours[2].route[2].city[locale]}</span></div>
+          <div className="absolute right-[16%] top-[28%] float-a"><span className="chip"><span className="dot" />{tours[0].route[1].city[locale]}</span></div>
+          <div className="absolute right-[6%] top-[44%] float-b"><span className="chip"><span className="dot" />{tours[1].route[0].city[locale]}</span></div>
+          <div className="absolute right-[14%] top-[60%] float-a"><span className="chip"><span className="dot" />{tours[2].route[2].city[locale]}</span></div>
         </div>
 
         <div className="hero-content container-x pb-16 pt-[calc(var(--header-h)+40px)] md:pb-24">
           <p className="eyebrow !text-white fade-up" style={{ "--d": "100ms" } as React.CSSProperties}>{h.eyebrow}</p>
           <h1 className="kinetic font-display display-xl mt-5 max-w-5xl">
             {h.heroTitle.map((word, i) => (
-              <span key={i} className="w">
-                <span style={{ "--i": i } as React.CSSProperties} className={i === 1 ? "text-red italic" : ""}>{word}</span>
-                {i < h.heroTitle.length - 1 ? " " : ""}
-              </span>
+              <Fragment key={i}>
+                <span className="w">
+                  <span style={{ "--i": i } as React.CSSProperties} className={i === 1 ? "text-red italic" : ""}>{word}</span>
+                </span>
+                {i < h.heroTitle.length - 1 ? " " : null}
+              </Fragment>
             ))}
           </h1>
           <p className="lead mt-6 max-w-xl !text-white/85 fade-up" style={{ "--d": "800ms" } as React.CSSProperties}>{h.heroSubtitle}</p>

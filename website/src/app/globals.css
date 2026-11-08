@@ -33,6 +33,7 @@
   --radius-card: var(--radius);
 }
 
+@layer base {
 /* ── Base ─────────────────────────────────────────────────────────── */
 html {
   scroll-behavior: smooth;
@@ -70,6 +71,9 @@ html[lang="ka"] .eyebrow { letter-spacing: 0.08em; }
 .eyebrow::before { content: ""; width: 26px; height: 2px; background: currentColor; border-radius: 2px; }
 .lead { font-size: clamp(1.05rem, 1.6vw, 1.25rem); line-height: 1.6; color: var(--ink-2); }
 
+}
+
+@layer components {
 /* ── Buttons ──────────────────────────────────────────────────────── */
 .btn {
   position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
@@ -274,6 +278,8 @@ html[lang="ka"] .eyebrow { letter-spacing: 0.08em; }
 .mobile-panel[data-open="true"] { clip-path: circle(150% at calc(100% - 40px) 36px); }
 .mobile-panel a.m-link { opacity: 0; transform: translateY(20px); transition: opacity 0.5s, transform 0.6s var(--ease-out); transition-delay: calc(var(--i) * 45ms + 200ms); }
 .mobile-panel[data-open="true"] a.m-link { opacity: 1; transform: none; }
+
+}
 
 /* ── Reduced motion: keep everything readable and still ──────────── */
 @media (prefers-reduced-motion: reduce) {

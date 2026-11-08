@@ -1,4 +1,6 @@
-import manifest from "@/data/photo-manifest.json";
+import "server-only";
+import fs from "node:fs";
+import path from "node:path";
 import type { Locale, Localized } from "@/i18n/locales";
 
 export type Photo = {
@@ -16,7 +18,18 @@ export type Photo = {
   focal?: "center" | "top" | "bottom";
 };
 
-export const photos = manifest as Photo[];
+/**
+ * Real photos come from src/data/photo-manifest.json.
+ * Until it exists, branded placeholders (photo-manifest.placeholder.json) keep the site viewable.
+ */
+function loadManifest(): Photo[] {
+  const dir = path.join(process.cwd(), "src", "data");
+  const real = path.join(dir, "photo-manifest.json");
+  const file = fs.existsSync(real) ? real : path.join(dir, "photo-manifest.placeholder.json");
+  return JSON.parse(fs.readFileSync(file, "utf8")) as Photo[];
+}
+
+export const photos = loadManifest();
 const byKey = new Map(photos.map((p) => [p.key, p]));
 
 /** Fallback order when a key is missing (so a typo never breaks a page). */

@@ -1,0 +1,632 @@
+[
+ {
+  "key": "zhangjiajie-pillars",
+  "file": "/images/placeholders/zhangjiajie-pillars.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "zhangjiajie",
+  "place": "Zhangjiajie",
+  "alt": {
+   "ru": "Zhangjiajie",
+   "en": "Zhangjiajie",
+   "ka": "Zhangjiajie"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "avatar-mountains",
+  "file": "/images/placeholders/avatar-mountains.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "avatar",
+  "place": "Avatar Mountains",
+  "alt": {
+   "ru": "Avatar Mountains",
+   "en": "Avatar Mountains",
+   "ka": "Avatar Mountains"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "zhangjiajie-mist",
+  "file": "/images/placeholders/zhangjiajie-mist.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "zhangjiajie",
+  "place": "Zhangjiajie",
+  "alt": {
+   "ru": "Zhangjiajie",
+   "en": "Zhangjiajie",
+   "ka": "Zhangjiajie"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "tianmen-mountain",
+  "file": "/images/placeholders/tianmen-mountain.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "avatar",
+  "place": "Tianmen Mountain",
+  "alt": {
+   "ru": "Tianmen Mountain",
+   "en": "Tianmen Mountain",
+   "ka": "Tianmen Mountain"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "great-wall-winter",
+  "file": "/images/placeholders/great-wall-winter.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "beijing",
+  "place": "Great Wall · winter",
+  "alt": {
+   "ru": "Great Wall · winter",
+   "en": "Great Wall · winter",
+   "ka": "Great Wall · winter"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "great-wall",
+  "file": "/images/placeholders/great-wall.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "beijing",
+  "place": "Great Wall",
+  "alt": {
+   "ru": "Great Wall",
+   "en": "Great Wall",
+   "ka": "Great Wall"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "forbidden-city",
+  "file": "/images/placeholders/forbidden-city.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "beijing",
+  "place": "Forbidden City",
+  "alt": {
+   "ru": "Forbidden City",
+   "en": "Forbidden City",
+   "ka": "Forbidden City"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "temple-of-heaven",
+  "file": "/images/placeholders/temple-of-heaven.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "beijing",
+  "place": "Temple of Heaven",
+  "alt": {
+   "ru": "Temple of Heaven",
+   "en": "Temple of Heaven",
+   "ka": "Temple of Heaven"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "harbin-ice-festival",
+  "file": "/images/placeholders/harbin-ice-festival.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "harbin",
+  "place": "Harbin Ice Festival",
+  "alt": {
+   "ru": "Harbin Ice Festival",
+   "en": "Harbin Ice Festival",
+   "ka": "Harbin Ice Festival"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "harbin-snow-sculpture",
+  "file": "/images/placeholders/harbin-snow-sculpture.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "harbin",
+  "place": "Harbin · snow sculptures",
+  "alt": {
+   "ru": "Harbin · snow sculptures",
+   "en": "Harbin · snow sculptures",
+   "ka": "Harbin · snow sculptures"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "harbin-st-sophia",
+  "file": "/images/placeholders/harbin-st-sophia.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "harbin",
+  "place": "St. Sophia, Harbin",
+  "alt": {
+   "ru": "St. Sophia, Harbin",
+   "en": "St. Sophia, Harbin",
+   "ka": "St. Sophia, Harbin"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "terracotta-army",
+  "file": "/images/placeholders/terracotta-army.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "xian",
+  "place": "Terracotta Army",
+  "alt": {
+   "ru": "Terracotta Army",
+   "en": "Terracotta Army",
+   "ka": "Terracotta Army"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "xian-city-wall",
+  "file": "/images/placeholders/xian-city-wall.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "xian",
+  "place": "Xi'an City Wall",
+  "alt": {
+   "ru": "Xi'an City Wall",
+   "en": "Xi'an City Wall",
+   "ka": "Xi'an City Wall"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "xian-bell-tower",
+  "file": "/images/placeholders/xian-bell-tower.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "xian",
+  "place": "Xi'an Bell Tower",
+  "alt": {
+   "ru": "Xi'an Bell Tower",
+   "en": "Xi'an Bell Tower",
+   "ka": "Xi'an Bell Tower"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "big-wild-goose-pagoda",
+  "file": "/images/placeholders/big-wild-goose-pagoda.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "xian",
+  "place": "Giant Wild Goose Pagoda",
+  "alt": {
+   "ru": "Giant Wild Goose Pagoda",
+   "en": "Giant Wild Goose Pagoda",
+   "ka": "Giant Wild Goose Pagoda"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "shaolin-temple",
+  "file": "/images/placeholders/shaolin-temple.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "culture",
+  "place": "Shaolin Temple",
+  "alt": {
+   "ru": "Shaolin Temple",
+   "en": "Shaolin Temple",
+   "ka": "Shaolin Temple"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "longmen-grottoes",
+  "file": "/images/placeholders/longmen-grottoes.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "culture",
+  "place": "Longmen Grottoes",
+  "alt": {
+   "ru": "Longmen Grottoes",
+   "en": "Longmen Grottoes",
+   "ka": "Longmen Grottoes"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "li-river",
+  "file": "/images/placeholders/li-river.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "guilin",
+  "place": "Li River",
+  "alt": {
+   "ru": "Li River",
+   "en": "Li River",
+   "ka": "Li River"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "guilin-karst",
+  "file": "/images/placeholders/guilin-karst.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "guilin",
+  "place": "Guilin",
+  "alt": {
+   "ru": "Guilin",
+   "en": "Guilin",
+   "ka": "Guilin"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "yangshuo-karst",
+  "file": "/images/placeholders/yangshuo-karst.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "yangshuo",
+  "place": "Yangshuo",
+  "alt": {
+   "ru": "Yangshuo",
+   "en": "Yangshuo",
+   "ka": "Yangshuo"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "yangshuo-yulong-river",
+  "file": "/images/placeholders/yangshuo-yulong-river.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "yangshuo",
+  "place": "Yulong River",
+  "alt": {
+   "ru": "Yulong River",
+   "en": "Yulong River",
+   "ka": "Yulong River"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "chengdu-panda",
+  "file": "/images/placeholders/chengdu-panda.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "chengdu",
+  "place": "Chengdu · pandas",
+  "alt": {
+   "ru": "Chengdu · pandas",
+   "en": "Chengdu · pandas",
+   "ka": "Chengdu · pandas"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "chengdu-street",
+  "file": "/images/placeholders/chengdu-street.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "chengdu",
+  "place": "Chengdu",
+  "alt": {
+   "ru": "Chengdu",
+   "en": "Chengdu",
+   "ka": "Chengdu"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "chongqing-hongyadong",
+  "file": "/images/placeholders/chongqing-hongyadong.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "chongqing",
+  "place": "Hongyadong, Chongqing",
+  "alt": {
+   "ru": "Hongyadong, Chongqing",
+   "en": "Hongyadong, Chongqing",
+   "ka": "Hongyadong, Chongqing"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "chongqing-skyline",
+  "file": "/images/placeholders/chongqing-skyline.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "chongqing",
+  "place": "Chongqing",
+  "alt": {
+   "ru": "Chongqing",
+   "en": "Chongqing",
+   "ka": "Chongqing"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "changsha-orange-isle",
+  "file": "/images/placeholders/changsha-orange-isle.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "cities",
+  "place": "Changsha",
+  "alt": {
+   "ru": "Changsha",
+   "en": "Changsha",
+   "ka": "Changsha"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "shanghai-bund",
+  "file": "/images/placeholders/shanghai-bund.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "cities",
+  "place": "Shanghai",
+  "alt": {
+   "ru": "Shanghai",
+   "en": "Shanghai",
+   "ka": "Shanghai"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "guangzhou-canton-tower",
+  "file": "/images/placeholders/guangzhou-canton-tower.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "cities",
+  "place": "Guangzhou",
+  "alt": {
+   "ru": "Guangzhou",
+   "en": "Guangzhou",
+   "ka": "Guangzhou"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "shenzhen-skyline",
+  "file": "/images/placeholders/shenzhen-skyline.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "cities",
+  "place": "Shenzhen",
+  "alt": {
+   "ru": "Shenzhen",
+   "en": "Shenzhen",
+   "ka": "Shenzhen"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "high-speed-train",
+  "file": "/images/placeholders/high-speed-train.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "culture",
+  "place": "High-speed train",
+  "alt": {
+   "ru": "High-speed train",
+   "en": "High-speed train",
+   "ka": "High-speed train"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "chinese-hotpot",
+  "file": "/images/placeholders/chinese-hotpot.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "food",
+  "place": "Hot pot",
+  "alt": {
+   "ru": "Hot pot",
+   "en": "Hot pot",
+   "ka": "Hot pot"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "chinese-dumplings",
+  "file": "/images/placeholders/chinese-dumplings.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "food",
+  "place": "Dumplings",
+  "alt": {
+   "ru": "Dumplings",
+   "en": "Dumplings",
+   "ka": "Dumplings"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "street-food",
+  "file": "/images/placeholders/street-food.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "food",
+  "place": "Street food",
+  "alt": {
+   "ru": "Street food",
+   "en": "Street food",
+   "ka": "Street food"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "chinese-tea",
+  "file": "/images/placeholders/chinese-tea.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "culture",
+  "place": "Chinese tea",
+  "alt": {
+   "ru": "Chinese tea",
+   "en": "Chinese tea",
+   "ka": "Chinese tea"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ },
+ {
+  "key": "red-lanterns",
+  "file": "/images/placeholders/red-lanterns.webp",
+  "width": 1600,
+  "height": 1000,
+  "category": "culture",
+  "place": "Red lanterns",
+  "alt": {
+   "ru": "Red lanterns",
+   "en": "Red lanterns",
+   "ka": "Red lanterns"
+  },
+  "author": "Placeholder",
+  "license": "—",
+  "licenseUrl": "#",
+  "source": "#",
+  "focal": "center"
+ }
+]
