@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { locales } from "@/i18n/locales";
+import { locales, type Locale } from "@/i18n/locales";
 import { tours } from "@/data/tours";
 import { allSlugs, getPost, postLocales } from "@/lib/blog";
 import { href, paths } from "@/lib/routes";
@@ -10,7 +10,7 @@ const PAGES_UPDATED = "2026-11-08";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const entries: MetadataRoute.Sitemap = [];
-  const add = (path: string, priority: number, lastModified = PAGES_UPDATED, available = locales) => {
+  const add = (path: string, priority: number, lastModified = PAGES_UPDATED, available: readonly Locale[] = locales) => {
     for (const l of available) {
       entries.push({
         url: absoluteUrl(href(l, path)),

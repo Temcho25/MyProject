@@ -26,6 +26,8 @@ npm run dev                  # http://localhost:3000
 
 Production check: `npm run build && npm start`.
 
+Node.js: developed and built on **Node 26 LTS** (`.nvmrc`); works on Node 22.13+ (`engines` in package.json), so Vercel can use its default Node version.
+
 ## Deploy to Vercel
 
 1. Import the GitHub repo in Vercel.
